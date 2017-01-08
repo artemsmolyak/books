@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<books>
+    <book assesment="ui-&gt;assesment-&gt;text()" author="ui-&gt;author-&gt;text()" name="ui-&gt;name-&gt;text()" date="ui-&gt;date-&gt;text()" annotation="ui-&gt;annotation-&gt;toPlainText()">Student 1</book>
+    <book assesment="2" author="ui-&gt;author-&gt;text()" name="ui-&gt;name-&gt;text()" date="ui-&gt;date-&gt;text()" annotation="ui-&gt;annotation-&gt;toPlainText()">Student 1</book>
+    <book assesment="3" author="ui-&gt;author-&gt;text()" name="ui-&gt;name-&gt;text()" date="ui-&gt;date-&gt;text()" annotation="ui-&gt;annotation-&gt;toPlainText()">Student 1</book>
+</books>
