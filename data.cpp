@@ -1,5 +1,5 @@
 #include "data.h"
-
+#include "qstringlist.h"
 
 Data::Data(QString assessment, QString authorName,
            QString bookTitle, QString date,
@@ -21,4 +21,11 @@ QString Data::toString()
                    bookTitle + " " +
                    date + " +" +
                    annotation);
+}
+
+QStringList Data::toQStringList()
+{
+    QStringList h;
+
+   return h;
 }

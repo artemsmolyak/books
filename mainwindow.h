@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include "dialog.h"
 #include "data.h"
+#include "qstringlistmodel.h"
 
 namespace Ui {
 //class MainWindow;
@@ -18,9 +19,14 @@ private:
     QString path = "C:\\Users\\Artyom\\Documents\\books\\books.xml";
     Dialog * dialog;
     QList <Data> dataList;
+    QStringList dataStringList;
+
+    QStringListModel *dataModel;
 
 public:
     explicit MainWindow(QWidget *parent = 0);
+    void guiSettings();
+
 
     bool readXml();
 

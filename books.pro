@@ -36,5 +36,9 @@ HEADERS  += mainwindow.h \
 
 FORMS    += \
     mainwindow.ui \
-    dialog33.ui \
     dialog.ui
+
+DISTFILES +=
+
+RESOURCES += \
+    resource/rsc.qrc

@@ -5,6 +5,9 @@
 #include "QDebug"
 #include "QFile"
 #include "dialog.h"
+#include "QPixmap"
+#include "QSortFilterProxyModel"
+#include "QStringListModel"
 
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -15,14 +18,38 @@ MainWindow::MainWindow(QWidget *parent) :
     Dialog * dialog = new Dialog();
 
     ui->setupUi(this);
+    guiSettings();
+
     //connect(this->ui->,  SIGNAL(clicked(bool)), this, SLOT(saveXml()));
 
     connect(ui->addBtn, SIGNAL(clicked(bool)), dialog, SLOT(show()));
     connect(dialog, SIGNAL(newItemIsReady(Data)), this, SLOT(getNewItem(Data)));
     connect(this, SIGNAL(hideDialog()), dialog, SLOT(hide()));
 
+    ui->labelPic->setPixmap(QPixmap("C:\\Users\\Artyom\\Documents\\books\\resource\\empty.png"));
+
             //saveXml();
     readXml();
+
+    dataModel = new QStringListModel(this);
+    dataModel->setStringList(dataStringList);
+
+    QSortFilterProxyModel * sortModel = new QSortFilterProxyModel(this);
+    sortModel->setSourceModel(dataModel);
+    sortModel->setFilterKeyColumn(0);
+
+    ui->listView->setModel(sortModel);
+
+
+
+
+}
+
+void MainWindow::guiSettings()
+{
+    ui->sortComboBox->addItem("По автору");
+    ui->sortComboBox->addItem("По названию");
+    ui->sortComboBox->addItem("По дате прочтения");
 }
 
 bool MainWindow::readXml()
@@ -73,6 +100,7 @@ bool MainWindow::readXml()
                 Data tmpData(assesment, authorName, bookTitle, date, annotation);
 
                 dataList.append(tmpData);
+                dataStringList.append(tmpData.toString());
 
             }
         }
@@ -175,12 +203,12 @@ void MainWindow::getNewItem(Data data)
 
 void MainWindow::updateDataList()
 {
-    ui->listWidget->clear();
+//    ui->listWidget->clear();
 
-    for(Data data : dataList)
-    {
-        ui->listWidget->addItem(data.toString());
-    }
+//    for(Data data : dataList)
+//    {
+//        ui->listWidget->addItem(data.toString());
+//    }
 }
 
 void MainWindow::testSlot(Data mes)

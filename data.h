@@ -21,6 +21,9 @@ public:
 
     QString toString();
 
+
+    QStringList toQStringList();
+
 };
 
 #endif // DATA_H
