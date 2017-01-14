@@ -5,6 +5,7 @@
 #include "dialog.h"
 #include "data.h"
 #include "qstringlistmodel.h"
+#include "tablemodel.h"
 
 namespace Ui {
 //class MainWindow;
@@ -21,7 +22,10 @@ private:
     QList <Data> dataList;
     QStringList dataStringList;
 
-    QStringListModel *dataModel;
+
+    TableModel * tableModel;
+
+    //QStringListModel *dataModel;
 
 public:
     explicit MainWindow(QWidget *parent = 0);

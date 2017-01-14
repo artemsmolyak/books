@@ -26,34 +26,34 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(dialog, SIGNAL(newItemIsReady(Data)), this, SLOT(getNewItem(Data)));
     connect(this, SIGNAL(hideDialog()), dialog, SLOT(hide()));
 
-    connect(ui->listView, SIGNAL(clicked(QModelIndex)), this, SLOT(chooseListIndex(QModelIndex)));
+    connect(ui->tableView, SIGNAL(clicked(QModelIndex)), this, SLOT(chooseListIndex(QModelIndex)));
 
     ui->labelPic->setPixmap(QPixmap("://empty.png"));
 
-            //saveXml();
+
     readXml();
 
-    dataModel = new QStringListModel(this);
-    dataModel->setStringList(dataStringList);
-
+    tableModel = new TableModel(dataList);
 
     QSortFilterProxyModel * sortModel = new QSortFilterProxyModel(this);
-    sortModel->setSourceModel(dataModel);
+    sortModel->setSourceModel(tableModel);
     sortModel->setFilterKeyColumn(0);
 
-    ui->listView->setModel(sortModel);
-    ui->listView->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    ui->tableView->setModel(sortModel);
+    ui->tableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
 
+    ui->tableView->setSelectionBehavior(QAbstractItemView::SelectRows);
+    ui->tableView->setColumnHidden(3, true);
+    ui->tableView->setColumnHidden(4, true);
 
-
-
+    ui->tableView->resizeRowsToContents();
 }
 
 void MainWindow::guiSettings()
 {
-    ui->sortComboBox->addItem("По автору");
-    ui->sortComboBox->addItem("По названию");
-    ui->sortComboBox->addItem("По дате прочтения");
+    ui->sortComboBox->addItem("By author");
+    ui->sortComboBox->addItem("By title");
+    ui->sortComboBox->addItem("By id");
 }
 
 bool MainWindow::readXml()
@@ -138,7 +138,6 @@ void MainWindow::saveXml()
     }
 
 
-
     QXmlStreamWriter xml(&xmlFile);
     xml.setAutoFormatting(true);
 
@@ -199,17 +198,20 @@ void MainWindow::saveXml()
 void MainWindow::getNewItem(Data data)
 {
     qDebug() << " getNewItem !!! " <<data.toString();
-    //dataList.append(data);
 
 
-    int row = dataModel->rowCount();
+    int row = tableModel->rowCount(QModelIndex());
+    tableModel->insertRows(row, 1);
+    QModelIndex index = tableModel->index(row, 0);
+    tableModel->setData(index, QVariant("!!!!"), 0);
 
 
-    dataModel->insertRows(row, 1);
-    dataModel->insertRows(row, 1);
 
-    QModelIndex index = dataModel->index(row);
-    dataModel->setData(index, QVariant("!!!!"));
+//    dataModel->insertRows(row, 1);
+//    dataModel->insertRows(row, 1);
+
+//    QModelIndex index = dataModel->index(row);
+//    dataModel->setData(index, QVariant("!!!!"));
 
 
 //    for(QString str: dataStringList)
@@ -236,13 +238,20 @@ void MainWindow::testSlot(Data mes)
 
 void MainWindow::chooseListIndex(QModelIndex index)
 {
-    qDebug() << "here" <<index.row();
+    qDebug() << "here" <<index.row() << index.column();
 
-    //??? how to get data from model??? We should have one tableModel
+    QStringList list;
 
-    QVariant review = dataModel->data(index, Qt::EditRole);
-    ui->plainTextEdit->document()->setPlainText(review.toString());
-    ui->additionalWin1->setText(review.toString());
-    ui->additionalWin2->setText(review.toString());
+    for(int i = 0; i < 5; i++)
+    {
+        QModelIndex newIn  = tableModel->index(index.row(), i);
+
+        QVariant QV = tableModel->data(newIn, Qt::DisplayRole);
+        list << QV.toString();
+    }
+
+    ui->reviewtextEdit->document()->setPlainText(list.at(3));
+    ui->additionalWin1->setText(list.at(4));
+    ui->additionalWin2->setText(list.at(4));
 
 }

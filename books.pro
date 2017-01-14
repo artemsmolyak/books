@@ -27,18 +27,22 @@ SOURCES += main.cpp\
         mainwindow.cpp \
     data.cpp \
     dialog.cpp \
-    test.cpp
+    test.cpp \
+    tablemodel.cpp
+
 
 HEADERS  += mainwindow.h \
     data.h \
     dialog.h \
-    test.h
+    test.h \
+    tablemodel.h
+
 
 FORMS    += \
     mainwindow.ui \
     dialog.ui
 
-DISTFILES +=
+
 
 RESOURCES += \
     resource/rsc.qrc
