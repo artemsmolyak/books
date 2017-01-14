@@ -26,7 +26,9 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(dialog, SIGNAL(newItemIsReady(Data)), this, SLOT(getNewItem(Data)));
     connect(this, SIGNAL(hideDialog()), dialog, SLOT(hide()));
 
-    ui->labelPic->setPixmap(QPixmap("C:\\Users\\Artyom\\Documents\\books\\resource\\empty.png"));
+    connect(ui->listView, SIGNAL(clicked(QModelIndex)), this, SLOT(chooseListIndex(QModelIndex)));
+
+    ui->labelPic->setPixmap(QPixmap("://empty.png"));
 
             //saveXml();
     readXml();
@@ -34,11 +36,13 @@ MainWindow::MainWindow(QWidget *parent) :
     dataModel = new QStringListModel(this);
     dataModel->setStringList(dataStringList);
 
+
     QSortFilterProxyModel * sortModel = new QSortFilterProxyModel(this);
     sortModel->setSourceModel(dataModel);
     sortModel->setFilterKeyColumn(0);
 
     ui->listView->setModel(sortModel);
+    ui->listView->setEditTriggers(QAbstractItemView::NoEditTriggers);
 
 
 
@@ -126,7 +130,7 @@ MainWindow::~MainWindow()
 
 void MainWindow::saveXml()
 {
-    QFile xmlFile("C:\\Users\\Artyom\\Documents\\books\\books.xml");
+    QFile xmlFile("://books.xml");
     if (!xmlFile.open(QIODevice::ReadWrite))
     {
         qDebug() << "file not open";
@@ -194,10 +198,24 @@ void MainWindow::saveXml()
 
 void MainWindow::getNewItem(Data data)
 {
-    qDebug() << " getNewItem !!! ";
-    dataList.append(data);
-    updateDataList();
+    qDebug() << " getNewItem !!! " <<data.toString();
+    //dataList.append(data);
 
+
+    int row = dataModel->rowCount();
+
+
+    dataModel->insertRows(row, 1);
+    dataModel->insertRows(row, 1);
+
+    QModelIndex index = dataModel->index(row);
+    dataModel->setData(index, QVariant("!!!!"));
+
+
+//    for(QString str: dataStringList)
+//        qDebug() << str;
+
+    //updateDataList();
     emit hideDialog();
 }
 
@@ -214,4 +232,17 @@ void MainWindow::updateDataList()
 void MainWindow::testSlot(Data mes)
 {
     qDebug() << "test Slot " << mes.toString();
+}
+
+void MainWindow::chooseListIndex(QModelIndex index)
+{
+    qDebug() << "here" <<index.row();
+
+    //??? how to get data from model??? We should have one tableModel
+
+    QVariant review = dataModel->data(index, Qt::EditRole);
+    ui->plainTextEdit->document()->setPlainText(review.toString());
+    ui->additionalWin1->setText(review.toString());
+    ui->additionalWin2->setText(review.toString());
+
 }

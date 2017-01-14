@@ -16,7 +16,7 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 private:
-    QString path = "C:\\Users\\Artyom\\Documents\\books\\books.xml";
+    QString path = "://books.xml";
     Dialog * dialog;
     QList <Data> dataList;
     QStringList dataStringList;
@@ -45,6 +45,7 @@ public  slots:
     void getNewItem(Data data);
     void updateDataList();
     void testSlot(Data);
+    void chooseListIndex(QModelIndex index);
 
 };
 
