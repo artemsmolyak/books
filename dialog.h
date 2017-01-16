@@ -20,16 +20,16 @@ public:
 private:
     Ui::Dialog *ui;
 
+signals:
+    void newItemIsReady(Data data);
+    void testEmit(Data string);
 
- signals:
- void newItemIsReady(Data data);
-  void testEmit(Data string);
-
-
- public slots:
+public slots:
     void addNewItem();
 
 
+private slots:
+    void on_cancelButton_released();
 };
 
 #endif // DIALOG_H

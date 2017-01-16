@@ -8,7 +8,7 @@ Dialog::Dialog(QWidget *parent) :
 {
     ui->setupUi(this);
     //connect(ui->buttonBox, SIGNAL(clicked(QAbstractButton*)), this, SLOT(addNewItem()));
-    connect(ui->pushButton, SIGNAL(clicked(bool)), this, SLOT(addNewItem()));
+    connect(ui->okButton, SIGNAL(clicked(bool)), this, SLOT(addNewItem()));
 
 
 }
@@ -32,3 +32,8 @@ void Dialog::addNewItem()
 }
 
 
+
+void Dialog::on_cancelButton_released()
+{
+    this->hide();
+}
