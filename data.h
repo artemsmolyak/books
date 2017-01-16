@@ -3,7 +3,7 @@
 
 #include "QString"
 #include "QObject"
-
+#include "QPixmap"
 
 
 class Data
@@ -16,11 +16,14 @@ private:
     QString authorName;
     QString bookTitle;
     QString date;
-    QString annotation;
+    QString review;
+    QPixmap bookCoverPixmap;
     int id;
 
 
 public:
+    Data( QString assessment,  QString authorName,
+          QString bookTitle, QString date, QString annotation, QPixmap bookCoverPixmap);
     Data( QString assessment,  QString authorName,
           QString bookTitle, QString date, QString annotation);
 
@@ -37,7 +40,7 @@ public:
     QString getBookTitle() const;
     void setBookTitle(const QString &value);
     QString getDate() const;
-    QString getAnnotation() const;
+    QString getReview() const;
     void setAnnotation(const QString &value);
     int getId() const;
     void setId(int value);

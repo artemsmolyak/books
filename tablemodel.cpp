@@ -85,7 +85,7 @@
          case 2:
             return data.getAuthorName();
          case 3:
-            return data.getAnnotation();
+            return data.getReview();
          case 4:
             return data.getDate();
          default:

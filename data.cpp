@@ -39,14 +39,14 @@ QString Data::getDate() const
     return date;
 }
 
-QString Data::getAnnotation() const
+QString Data::getReview() const
 {
-    return annotation;
+    return review;
 }
 
 void Data::setAnnotation(const QString &value)
 {
-    annotation = value;
+    review = value;
 }
 
 int Data::getId() const
@@ -62,11 +62,28 @@ void Data::setId(int value)
 Data::Data(QString assessment, QString authorName,
            QString bookTitle, QString date,
            QString annotation):
-    assessment(assessment),
+      assessment(assessment),
       authorName(authorName),
       bookTitle(bookTitle),
       date(date),
-     annotation(annotation)
+      review(annotation)
+{
+    qDebug() <<" size "<< size;
+   id = size;
+   size++;
+}
+
+
+
+Data::Data(QString assessment, QString authorName,
+           QString bookTitle, QString date,
+           QString annotation, QPixmap bookCoverPixmap):
+      assessment(assessment),
+      authorName(authorName),
+      bookTitle(bookTitle),
+      date(date),
+      review(annotation),
+      bookCoverPixmap(bookCoverPixmap)
 {
     qDebug() <<" size "<< size;
    id = size;
@@ -85,7 +102,7 @@ QString Data::toString()
                    authorName + " " +
                    bookTitle + " " +
                    date + " +" +
-                   annotation);
+                   review);
 }
 
 QStringList Data::toQStringList()

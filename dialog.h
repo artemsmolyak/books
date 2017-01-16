@@ -19,6 +19,7 @@ public:
 
 private:
     Ui::Dialog *ui;
+    QPixmap bookCoverPixmap;
 
 signals:
     void newItemIsReady(Data data);
@@ -26,7 +27,7 @@ signals:
 
 public slots:
     void addNewItem();
-
+    void savePicture();
 
 private slots:
     void on_cancelButton_released();

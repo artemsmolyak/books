@@ -22,11 +22,15 @@ MainWindow::MainWindow(QWidget *parent) :
 
     //connect(this->ui->,  SIGNAL(clicked(bool)), this, SLOT(saveXml()));
 
-    connect(ui->addBtn, SIGNAL(clicked(bool)), dialog, SLOT(show()));
+    connect(ui->addBtn, SIGNAL(clicked(bool)), dialog, SLOT(show()));    
     connect(dialog, SIGNAL(newItemIsReady(Data)), this, SLOT(getNewItem(Data)));
-    connect(this, SIGNAL(hideDialog()), dialog, SLOT(hide()));
 
+
+    connect(this, SIGNAL(hideDialog()), dialog, SLOT(hide()));
     connect(ui->tableView, SIGNAL(clicked(QModelIndex)), this, SLOT(chooseListIndex(QModelIndex)));
+
+
+
 
     ui->labelPic->setPixmap(QPixmap("://empty.png"));
 
@@ -99,9 +103,15 @@ bool MainWindow::readXml()
                 QString authorName = reader.attributes().value("author").toString();
                 QString bookTitle =  reader.attributes().value("name").toString();
                 QString date = reader.attributes().value("date").toString();
-                QString  annotation = reader.attributes().value("annotation").toString();
+                QString  review = reader.attributes().value("annotation").toString();
+                //QString imageQString = reader.attributes().value("picture").toString();
 
-                Data tmpData(assesment, authorName, bookTitle, date, annotation);
+//                QByteArray text;
+//                text.fromBase64()
+//                QPixmap::from
+
+                Data tmpData(assesment, authorName, bookTitle,
+                             date,  review);
 
                 dataList.append(tmpData);
                 dataStringList.append(tmpData.toString());
