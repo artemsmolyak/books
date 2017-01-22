@@ -29,6 +29,10 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(this, SIGNAL(hideDialog()), dialog, SLOT(hide()));
     connect(ui->tableView, SIGNAL(clicked(QModelIndex)), this, SLOT(chooseListIndex(QModelIndex)));
 
+//     connect(tableModel, SIGNAL(dataChanged(QModelIndex,QModelIndex,QVector<int>)),
+//             this,
+
+
 
 
 
@@ -104,14 +108,18 @@ bool MainWindow::readXml()
                 QString bookTitle =  reader.attributes().value("name").toString();
                 QString date = reader.attributes().value("date").toString();
                 QString  review = reader.attributes().value("annotation").toString();
-                //QString imageQString = reader.attributes().value("picture").toString();
+                QString imageQString = reader.attributes().value("picture").toString();
+
+
+               QByteArray textByte =  imageQString.toLocal8Bit();
 
 //                QByteArray text;
 //                text.fromBase64()
-//                QPixmap::from
+                QPixmap pix;
+                pix.loadFromData(textByte, "png");
 
                 Data tmpData(assesment, authorName, bookTitle,
-                             date,  review);
+                             date,  review, pix, imageQString);
 
                 dataList.append(tmpData);
                 dataStringList.append(tmpData.toString());
@@ -212,8 +220,13 @@ void MainWindow::getNewItem(Data data)
 
     int row = tableModel->rowCount(QModelIndex());
     tableModel->insertRows(row, 1);
+
+
     QModelIndex index = tableModel->index(row, 0);
-    tableModel->setData(index, QVariant("!!!!"), 0);
+
+    QVariant variant  = QVariant::fromValue(data);
+
+    tableModel->setData(index, variant, Qt::EditRole);
 
 
 
@@ -252,7 +265,7 @@ void MainWindow::chooseListIndex(QModelIndex index)
 
     QStringList list;
 
-    for(int i = 0; i < 5; i++)
+    for(int i = 0; i < tableModel->columnCount(index); i++)
     {
         QModelIndex newIn  = tableModel->index(index.row(), i);
 
@@ -264,4 +277,11 @@ void MainWindow::chooseListIndex(QModelIndex index)
     ui->additionalWin1->setText(list.at(4));
     ui->additionalWin2->setText(list.at(4));
 
+    QString picQString = list.at(6);
+    QByteArray textByte =  QByteArray::fromBase64(picQString.toLocal8Bit());
+    QPixmap pix;
+    pix.loadFromData(textByte, "png");
+    qDebug() <<"pix size "<< pix.size();
+    pix = pix.scaled(200, 200);
+    ui->labelPic->setPixmap(pix);
 }

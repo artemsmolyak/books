@@ -59,36 +59,71 @@ void Data::setId(int value)
     id = value;
 }
 
-Data::Data(QString assessment, QString authorName,
-           QString bookTitle, QString date,
-           QString annotation):
-      assessment(assessment),
-      authorName(authorName),
-      bookTitle(bookTitle),
-      date(date),
-      review(annotation)
+//Data::Data(QString assessment, QString authorName,
+//           QString bookTitle, QString date,
+//           QString annotation):
+//      assessment(assessment),
+//      authorName(authorName),
+//      bookTitle(bookTitle),
+//      date(date),
+//      review(annotation)
+//{
+//    qDebug() <<" size "<< size;
+//   id = size;
+//   size++;
+//}
+
+
+
+QString Data::getBookCoverQString() const
 {
-    qDebug() <<" size "<< size;
-   id = size;
-   size++;
+    return bookCoverQString;
 }
 
+void Data::setBookCoverQString(const QString &value)
+{
+    bookCoverQString = value;
+}
 
+QPixmap Data::getBookCoverPixmap() const
+{
+    return bookCoverPixmap;
+}
+
+void Data::setBookCoverPixmap(const QPixmap &value)
+{
+    bookCoverPixmap = value;
+}
 
 Data::Data(QString assessment, QString authorName,
            QString bookTitle, QString date,
-           QString annotation, QPixmap bookCoverPixmap):
+           QString annotation, QPixmap bookCoverPixmap,
+           QString bookCoverQString):
       assessment(assessment),
       authorName(authorName),
       bookTitle(bookTitle),
       date(date),
       review(annotation),
-      bookCoverPixmap(bookCoverPixmap)
+      bookCoverPixmap(bookCoverPixmap),
+      bookCoverQString(bookCoverQString)
 {
     qDebug() <<" size "<< size;
-   id = size;
-   size++;
+    id = size;
+    size++;
 }
+
+//Data::Data(QString assessment, QString authorName, QString bookTitle, QString date, QString annotation, QString bookCoverQString):
+//assessment(assessment),
+//authorName(authorName),
+//bookTitle(bookTitle),
+//date(date),
+//review(annotation),
+//bookCoverQString(bookCoverQString)
+//{
+//    qDebug() <<" size "<< size;
+//    id = size;
+//    size++;
+//}
 
 Data::Data()
 {

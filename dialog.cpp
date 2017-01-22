@@ -31,7 +31,22 @@ void Dialog::addNewItem()
     QString   date = ui->dateEdit->text();
     QString  review = ui->reviewEdit->toPlainText();
 
-    emit newItemIsReady(Data(assessment, author, title, date, review, bookCoverPixmap));
+    qDebug() << "bookCoverPixmap size " << bookCoverPixmap.size();
+
+    QByteArray bArray;
+    QBuffer buffer(&bArray);
+    buffer.open(QIODevice::WriteOnly);
+    bookCoverPixmap.save(&buffer, "PNG");
+
+    qDebug() <<"buf "<< buffer.size();
+    QString photoString(bArray.toBase64());
+
+    qDebug() << "!!in add new Item ";
+    qDebug() << "!in add new Item " << photoString.length();
+  //  qDebug() << "in add new Item " << photoString; //<< photoString.size();
+
+    emit newItemIsReady(Data(assessment, author, title,
+                             date, review, bookCoverPixmap, photoString));
 }
 
 void Dialog::savePicture()

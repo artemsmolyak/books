@@ -62,7 +62,7 @@
  int TableModel::columnCount(const QModelIndex &parent) const
  {
      Q_UNUSED(parent);
-     return 5;
+     return 7;
  }
 
  QVariant TableModel::data(const QModelIndex &index, int role) const
@@ -88,6 +88,11 @@
             return data.getReview();
          case 4:
             return data.getDate();
+         case 5:
+            return data.getBookCoverPixmap();
+         case 6:
+            return data.getBookCoverQString();
+
          default:
              break;
          }
@@ -124,10 +129,13 @@
      Q_UNUSED(index);
      beginInsertRows(QModelIndex(), position, position+rows-1);
 
-//     for (int row=0; row < rows; row++) {
+     for (int row=0; row < rows; row++) {
+         Data data;
+         listofData.insert(position, data);
 //         QPair<QString, QString> pair(" ", " ");
 //         listofData.insert(position, pair);
-//     }
+
+     }
 
      endInsertRows();
      return true;
@@ -151,8 +159,21 @@
      Q_UNUSED(index);
      Q_UNUSED(value);
      Q_UNUSED(role);
-//         if (index.isValid() && role == Qt::EditRole) {
-//                 int row = index.row();
+
+ qDebug() << "setData " << index.isValid() << index.column() << index.row() << bool(role == Qt::EditRole);
+
+         if (index.isValid() && role == Qt::EditRole) {
+                 int row = index.row();
+                 Data data = listofData.value(row);
+                 data = value.value<Data>();
+
+                 qDebug() << "setData";
+                 qDebug() << data.getAssessment();
+                 qDebug() << data.getAuthorName();
+                 qDebug() << data.getBookTitle();
+
+
+                 qDebug() <<" photo "<< data.getBookCoverQString() ;
 
 //                 QPair<QString, QString> p = listOfPairs.value(row);
 
@@ -163,11 +184,11 @@
 //         else
 //             return false;
 
-//         listofData.replace(row, p);
-//                 emit(dataChanged(index, index));
+         listofData.replace(row, data);
+                 emit(dataChanged(index, index));
 
-//         return true;
-//         }
+         return true;
+         }
 
          return false;
  }
