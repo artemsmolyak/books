@@ -4,37 +4,25 @@
 #include "QXmlStreamWriter"
 #include "QDebug"
 #include "QFile"
-#include "dialog.h"
 #include "QPixmap"
 #include "QSortFilterProxyModel"
 #include "QStringListModel"
+#include "dialog.h"
 
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::Window) //, dialog(new Dialog)
 {
-
-    Dialog * dialog = new Dialog();
-
     ui->setupUi(this);
+    dialog = new Dialog();
     guiSettings();
-
     //connect(this->ui->,  SIGNAL(clicked(bool)), this, SLOT(saveXml()));
 
-    connect(ui->addBtn, SIGNAL(clicked(bool)), dialog, SLOT(show()));    
     connect(dialog, SIGNAL(newItemIsReady(Data)), this, SLOT(getNewItem(Data)));
-
-
     connect(this, SIGNAL(hideDialog()), dialog, SLOT(hide()));
     connect(ui->tableView, SIGNAL(clicked(QModelIndex)), this, SLOT(chooseListIndex(QModelIndex)));
-
-
-
-
     ui->labelPic->setPixmap(QPixmap("://empty.png"));
-
-
     readXml();
 
     tableModel = new TableModel(dataList);
@@ -70,7 +58,6 @@ bool MainWindow::readXml()
       qDebug() << "file not open";
       return false;
     }
-
 
     QXmlStreamReader reader;
     reader.setDevice(&in);
@@ -263,5 +250,20 @@ void MainWindow::chooseListIndex(QModelIndex index)
     ui->reviewtextEdit->document()->setPlainText(list.at(3));
     ui->additionalWin1->setText(list.at(4));
     ui->additionalWin2->setText(list.at(4));
+
+}
+void MainWindow::on_addButton_released()
+{
+    dialog->reset();
+    dialog->show();
+}
+
+void MainWindow::on_deleteButton_released()
+{
+
+}
+
+void MainWindow::on_updateButton_released()
+{
 
 }

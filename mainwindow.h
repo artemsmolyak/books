@@ -2,10 +2,11 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include "dialog.h"
 #include "data.h"
 #include "qstringlistmodel.h"
 #include "tablemodel.h"
+
+class Dialog;
 
 namespace Ui {
 //class MainWindow;
@@ -16,33 +17,15 @@ class MainWindow : public QMainWindow
 {
     Q_OBJECT
 
-private:
-    QString path = "://books.xml";
-    Dialog * dialog;
-    QList <Data> dataList;
-    QStringList dataStringList;
-
-
-    TableModel * tableModel;
-
-    //QStringListModel *dataModel;
-
 public:
     explicit MainWindow(QWidget *parent = 0);
-    void guiSettings();
-
-
-    bool readXml();
-
     ~MainWindow();
 
-private:
-    Ui:: Window *ui;
-
+    void guiSettings();
+    bool readXml();
 
 signals:
     void hideDialog();
-
 
 public  slots:
     void saveXml();
@@ -51,6 +34,20 @@ public  slots:
     void testSlot(Data);
     void chooseListIndex(QModelIndex index);
 
+private slots:
+    void on_addButton_released();
+    void on_deleteButton_released();
+    void on_updateButton_released();
+
+private:
+    Ui:: Window *ui;
+    QString path = "://books.xml";
+    Dialog * dialog;
+    QList <Data> dataList;
+    QStringList dataStringList;
+    TableModel * tableModel;
+
+    //QStringListModel *dataModel;
 };
 
 #endif // MAINWINDOW_H
