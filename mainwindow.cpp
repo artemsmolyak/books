@@ -194,7 +194,7 @@ MainWindow::~MainWindow()
 
 void MainWindow::saveXml()
 {
-    QFile xmlFile("C:\\Users\\Artyom\\Documents\\books\\resource\\books.xml");   //
+    QFile xmlFile(path);   //
 
     if (xmlFile.exists())
     {
