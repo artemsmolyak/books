@@ -30,7 +30,8 @@ private:
 public:
     explicit MainWindow(QWidget *parent = 0);
     void guiSettings();
-
+    QString convertQPixmapToQString(QPixmap pic);
+    QPixmap convertQStringToQPixmap(QString pic);
 
     bool readXml();
 

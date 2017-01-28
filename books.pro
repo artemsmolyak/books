@@ -47,3 +47,5 @@ FORMS    += \
 RESOURCES += \
     resource/rsc.qrc
 CONFIG += c++11
+
+DISTFILES +=

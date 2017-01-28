@@ -89,9 +89,10 @@
          case 4:
             return data.getDate();
          case 5:
-            return data.getBookCoverPixmap();
+            return data.getAssessment();
          case 6:
-            return data.getBookCoverQString();
+            return data.getBookCoverPixmap();
+
 
          default:
              break;
@@ -171,9 +172,8 @@
                  qDebug() << data.getAssessment();
                  qDebug() << data.getAuthorName();
                  qDebug() << data.getBookTitle();
+                 qDebug() << data.getBookCoverPixmap().size();
 
-
-                 qDebug() <<" photo "<< data.getBookCoverQString() ;
 
 //                 QPair<QString, QString> p = listOfPairs.value(row);
 

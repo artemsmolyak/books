@@ -8,6 +8,7 @@
 #include "QPixmap"
 #include "QSortFilterProxyModel"
 #include "QStringListModel"
+#include "QBuffer"
 
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -26,14 +27,11 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(dialog, SIGNAL(newItemIsReady(Data)), this, SLOT(getNewItem(Data)));
 
 
-    connect(this, SIGNAL(hideDialog()), dialog, SLOT(hide()));
+    //connect(this, SIGNAL(hideDialog()), dialog, SLOT(hide()));
     connect(ui->tableView, SIGNAL(clicked(QModelIndex)), this, SLOT(chooseListIndex(QModelIndex)));
 
 //     connect(tableModel, SIGNAL(dataChanged(QModelIndex,QModelIndex,QVector<int>)),
 //             this,
-
-
-
 
 
     ui->labelPic->setPixmap(QPixmap("://empty.png"));
@@ -64,6 +62,24 @@ void MainWindow::guiSettings()
     ui->sortComboBox->addItem("By id");
 }
 
+QString MainWindow::convertQPixmapToQString(QPixmap pic)
+{
+    QByteArray bArray;
+    QBuffer buffer(&bArray);
+    buffer.open(QIODevice::WriteOnly);
+    pic.save(&buffer, "PNG");
+    QString photoString(bArray.toBase64());
+    return photoString;
+}
+
+QPixmap MainWindow::convertQStringToQPixmap(QString pic)
+{
+    QByteArray textByte =  QByteArray::fromBase64(pic.toLocal8Bit());
+    QPixmap pix;
+    pix.loadFromData(textByte, "png");
+    return pix;
+}
+
 bool MainWindow::readXml()
 {
     qDebug() << "reading";
@@ -71,10 +87,9 @@ bool MainWindow::readXml()
     QFile in(path);
     if(!in.open(QFile::ReadOnly | QFile::Text))
     {
-      qDebug() << "file not open";
+      qDebug() << "file not open for read!";
       return false;
     }
-
 
     QXmlStreamReader reader;
     reader.setDevice(&in);
@@ -95,38 +110,27 @@ bool MainWindow::readXml()
             if(reader.name() == "book") {
                 qDebug() << "Book";
 
-
-//                QString assessment;
-//                QString authorName;
-//                QString bookTitle;
-//                QString date;
-//                QString annotation;
-
-
                 QString assesment = reader.attributes().value("assesment").toString();
                 QString authorName = reader.attributes().value("author").toString();
-                QString bookTitle =  reader.attributes().value("name").toString();
+                QString bookTitle =  reader.attributes().value("title").toString();
                 QString date = reader.attributes().value("date").toString();
-                QString  review = reader.attributes().value("annotation").toString();
+                QString  review = reader.attributes().value("review").toString();
                 QString imageQString = reader.attributes().value("picture").toString();
 
 
-               QByteArray textByte =  imageQString.toLocal8Bit();
+               QByteArray textByte =  QByteArray::fromBase64(imageQString.toLocal8Bit());
 
-//                QByteArray text;
-//                text.fromBase64()
                 QPixmap pix;
                 pix.loadFromData(textByte, "png");
 
                 Data tmpData(assesment, authorName, bookTitle,
-                             date,  review, pix, imageQString);
+                             date,  review, pix);
 
                 dataList.append(tmpData);
                 dataStringList.append(tmpData.toString());
 
             }
         }
-
 
         reader.readNext();
 
@@ -136,6 +140,7 @@ bool MainWindow::readXml()
 
     updateDataList();
 
+    in.close();
 
    return true;
 
@@ -148,10 +153,31 @@ MainWindow::~MainWindow()
 
 void MainWindow::saveXml()
 {
-    QFile xmlFile("://books.xml");
-    if (!xmlFile.open(QIODevice::ReadWrite))
+    QFile xmlFile("C:\\Users\\Artyom\\Documents\\books\\resource\\books.xml");   //
+
+    if (xmlFile.exists())
     {
-        qDebug() << "file not open";
+        qDebug() << "file exists";
+    }
+    else
+    {
+        qDebug() << "file doesn't exist";
+    }
+
+
+    if (xmlFile.isOpen())
+    {
+        qDebug() << "file was open";
+        xmlFile.close();
+    }
+
+    QFileDevice::FileError err = QFileDevice::NoError;
+
+    if (!xmlFile.open(QIODevice::WriteOnly | QIODevice::Text))
+    {
+        qDebug() << xmlFile.errorString();
+        qDebug() << "file not open for save";
+
         return;
     }
 
@@ -160,42 +186,37 @@ void MainWindow::saveXml()
     xml.setAutoFormatting(true);
 
 
-    QString assessment = "ui->assesment->text()""";
-    QString authorName = "ui->author->text()";
-    QString bookName = "ui->name->text()";
-    QString date = "ui->date->text()";
-    QString annotation = "ui->annotation->toPlainText()";
-
     xml.writeStartDocument();
     xml.writeStartElement("books");
 
-    xml.writeStartElement("book");
-    xml.writeAttribute("assesment", assessment);
-    xml.writeAttribute("author", authorName);
-    xml.writeAttribute("name", bookName);
-    xml.writeAttribute("date", date);
-    xml.writeAttribute("annotation", annotation);
-    xml.writeCharacters ("Student 1");
-    xml.writeEndElement();
 
-    xml.writeStartElement("book");
-    xml.writeAttribute("assesment", "2");
-    xml.writeAttribute("author", authorName);
-    xml.writeAttribute("name", bookName);
-    xml.writeAttribute("date", date);
-    xml.writeAttribute("annotation", annotation);
-    xml.writeCharacters ("Student 1");
-    xml.writeEndElement();
+    QList <Data> datalst = tableModel->getList();
+
+    for(int i = 0; i < datalst.length(); i++)
+    {
+        Data data = datalst.at(i);
+
+        QString assessment = data.getAssessment();
+        QString authorName = data.getAuthorName();
+        QString bookTitle = data.getBookTitle();
+        QString date = data.getDate();
+        QString review = data.getReview();
+        QPixmap bookPic = data.getBookCoverPixmap();
+        QString bookCoverQString = convertQPixmapToQString(bookPic);
+        qint32  id = data.getId();
 
 
-    xml.writeStartElement("book");
-    xml.writeAttribute("assesment", "3");
-    xml.writeAttribute("author", authorName);
-    xml.writeAttribute("name", bookName);
-    xml.writeAttribute("date", date);
-    xml.writeAttribute("annotation", annotation);
-    xml.writeCharacters ("Student 1");
-    xml.writeEndElement();
+        xml.writeStartElement("book");
+        xml.writeAttribute("assesment", assessment);
+        xml.writeAttribute("author", authorName);
+        xml.writeAttribute("title", bookTitle);
+        xml.writeAttribute("date", date);
+        xml.writeAttribute("review", review);
+        xml.writeAttribute("picture", bookCoverQString);
+        xml.writeCharacters (QString::number(id));
+        xml.writeEndElement();
+    }
+
 
     xml.writeEndElement();
     xml.writeEndDocument();
@@ -209,7 +230,7 @@ void MainWindow::saveXml()
 
     qDebug() << "file is ok!";
 
-
+  xmlFile.close();
 
 }
 
@@ -228,6 +249,10 @@ void MainWindow::getNewItem(Data data)
 
     tableModel->setData(index, variant, Qt::EditRole);
 
+
+
+
+    saveXml();
 
 
 //    dataModel->insertRows(row, 1);
@@ -265,7 +290,7 @@ void MainWindow::chooseListIndex(QModelIndex index)
 
     QStringList list;
 
-    for(int i = 0; i < tableModel->columnCount(index); i++)
+    for(int i = 0; i < tableModel->columnCount(index) - 1; i++)
     {
         QModelIndex newIn  = tableModel->index(index.row(), i);
 
@@ -274,14 +299,23 @@ void MainWindow::chooseListIndex(QModelIndex index)
     }
 
     ui->reviewtextEdit->document()->setPlainText(list.at(3));
-    ui->additionalWin1->setText(list.at(4));
+    ui->additionalWin1->setText(list.at(5));
     ui->additionalWin2->setText(list.at(4));
 
-    QString picQString = list.at(6);
-    QByteArray textByte =  QByteArray::fromBase64(picQString.toLocal8Bit());
-    QPixmap pix;
-    pix.loadFromData(textByte, "png");
-    qDebug() <<"pix size "<< pix.size();
+
+    QModelIndex newIn  = tableModel->index(index.row(), 6);
+
+    QVariant QV = tableModel->data(newIn, Qt::DisplayRole);
+
+    QPixmap pix = qvariant_cast<QPixmap>(QV);
+
+    //QString picQString = list.at(6);
+//    QByteArray textByte =  QByteArray::fromBase64(picQString.toLocal8Bit());
+//    QPixmap pix;
+//    pix.loadFromData(textByte, "png");
+//    qDebug() <<"pix size "<< pix.size();
     pix = pix.scaled(200, 200);
     ui->labelPic->setPixmap(pix);
+    ui->labelPic->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
+
 }

@@ -15,6 +15,7 @@ class Dialog : public QDialog
 
 public:
     explicit Dialog(QWidget *parent = 0);
+    void clearAllFields();
     ~Dialog();
 
 private:

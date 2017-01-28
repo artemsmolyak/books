@@ -75,15 +75,9 @@ void Data::setId(int value)
 
 
 
-QString Data::getBookCoverQString() const
-{
-    return bookCoverQString;
-}
 
-void Data::setBookCoverQString(const QString &value)
-{
-    bookCoverQString = value;
-}
+
+
 
 QPixmap Data::getBookCoverPixmap() const
 {
@@ -97,15 +91,13 @@ void Data::setBookCoverPixmap(const QPixmap &value)
 
 Data::Data(QString assessment, QString authorName,
            QString bookTitle, QString date,
-           QString annotation, QPixmap bookCoverPixmap,
-           QString bookCoverQString):
+           QString annotation, QPixmap bookCoverPixmap):
       assessment(assessment),
       authorName(authorName),
       bookTitle(bookTitle),
       date(date),
       review(annotation),
-      bookCoverPixmap(bookCoverPixmap),
-      bookCoverQString(bookCoverQString)
+      bookCoverPixmap(bookCoverPixmap)
 {
     qDebug() <<" size "<< size;
     id = size;
