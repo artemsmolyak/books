@@ -237,6 +237,9 @@
                </spacer>
               </item>
               <item>
+               <widget class="assesment" name="assesmentWidget" native="true"/>
+              </item>
+              <item>
                <widget class="QPushButton" name="changeBookCoverButton">
                 <property name="minimumSize">
                  <size>
@@ -371,6 +374,14 @@
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>assesment</class>
+   <extends>QWidget</extends>
+   <header>assesment.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
  <resources>
   <include location="resource/rsc.qrc"/>
  </resources>
