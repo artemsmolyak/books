@@ -350,8 +350,33 @@ void MainWindow::editModeStart()
 {
     qDebug() << "edit mode";
 
-    QModelIndexList index = ui->tableView->selectionModel()->selectedIndexes();
 
-    qDebug() << index.at(0).row();
-    //dialog->setEditMode();
+
+   QModelIndexList indexLst = ui->tableView->selectionModel()->selectedIndexes();
+
+    QModelIndex index = indexLst.at(0);
+
+//    for(int i = 0; i < tableModel->columnCount(QModelIndex()) - 1; i++)
+//    {
+//        QModelIndex newIn  = tableModel->index(index.row(), i);
+
+//        qDebug() <<i  << " " << tableModel->data(newIn, Qt::DisplayRole);
+//        //list << QV.toString();
+//    }
+
+
+
+
+    Data data;
+    qint32 id = qvariant_cast<qint32>(tableModel->index(index.row(), 0))
+    //data.setId();
+    //data.setBookTitle(qvariant_cast<QString>(tableModel->index(index.row(), 1)));
+   //  data.setAuthorName(qvariant_cast<QString>(tableModel->index(index.row(), 2)));
+   //  data.setAnnotation(qvariant_cast<QString>(tableModel->index(index.row(), 3)));
+    // data.setDate(qvariant_cast<QString>(tableModel->index(index.row(), 4)));
+   //  data.setAssessment(qvariant_cast<QString>(tableModel->index(index.row(), 5)));
+
+   //  data.setBookCoverPixmap(qvariant_cast<QPixmap>(tableModel->index(index.row(), 6)));
+    //    qDebug() << index.at(0).row();
+  //  dialog->setEditMode(data);
 }

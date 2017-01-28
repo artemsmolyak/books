@@ -89,6 +89,11 @@ void Data::setBookCoverPixmap(const QPixmap &value)
     bookCoverPixmap = value;
 }
 
+void Data::setDate(const QString &value)
+{
+    date = value;
+}
+
 Data::Data(QString assessment, QString authorName,
            QString bookTitle, QString date,
            QString annotation, QPixmap bookCoverPixmap):

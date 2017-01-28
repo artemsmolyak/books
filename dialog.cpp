@@ -25,12 +25,14 @@ void Dialog::clearAllFields()
 
 void Dialog::setEditMode(Data data)
 {
-    mode = Mode::edit;
+    //mode = edit;
+
+    qDebug() << "!";
 
     ui->dateEdit->setText(data.getDate());
     ui->authorEdit->setText(data.getAuthorName());
     ui->assesEdit->setText(data.getAssessment());
-    ui->bookCoverLbl->setPixmap(data.getBookCoverPixmap());
+   // ui->bookCoverLbl->setPixmap(data.getBookCoverPixmap());
     ui->titleEdit->setText(data.getBookTitle());
     ui->reviewEdit->setText(data.getReview());
 }

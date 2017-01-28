@@ -48,12 +48,14 @@ public:
     QString getBookTitle() const;
     void setBookTitle(const QString &value);
     QString getDate() const;
+
     QString getReview() const;
     void setAnnotation(const QString &value);
     int getId() const;
     void setId(int value);
     QPixmap getBookCoverPixmap() const;
     void setBookCoverPixmap(const QPixmap &value);
+    void setDate(const QString &value);
 };
 Q_DECLARE_METATYPE(Data);
 
