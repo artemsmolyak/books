@@ -4,7 +4,6 @@
 #include <QDialog>
 #include "data.h"
 
-
 namespace Ui {
 class Dialog;
 }
@@ -18,20 +17,22 @@ public:
     void clearAllFields();
     ~Dialog();
 
-private:
-    Ui::Dialog *ui;
-    QPixmap bookCoverPixmap;
+    void reset();
 
 signals:
     void newItemIsReady(Data data);
     void testEmit(Data string);
 
 public slots:
-    void addNewItem();
     void savePicture();
 
 private slots:
     void on_cancelButton_released();
+    void on_okButton_released();
+
+private:
+    Ui::Dialog *ui;
+    QPixmap bookCoverPixmap;
 };
 
 #endif // DIALOG_H
