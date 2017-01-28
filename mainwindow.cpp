@@ -19,23 +19,20 @@ MainWindow::MainWindow(QWidget *parent) :
     Dialog * dialog = new Dialog();
 
     ui->setupUi(this);
+
+    qint32 widgetW = ui->labelPic->width();
+    qint32 widgetH = ui->labelPic->height();
+    qDebug() <<"!"<< widgetW << widgetH;
+
     guiSettings();
 
-    //connect(this->ui->,  SIGNAL(clicked(bool)), this, SLOT(saveXml()));
 
     connect(ui->addBtn, SIGNAL(clicked(bool)), dialog, SLOT(show()));    
     connect(dialog, SIGNAL(newItemIsReady(Data)), this, SLOT(getNewItem(Data)));
-
-
-    //connect(this, SIGNAL(hideDialog()), dialog, SLOT(hide()));
     connect(ui->tableView, SIGNAL(clicked(QModelIndex)), this, SLOT(chooseListIndex(QModelIndex)));
-
-//     connect(tableModel, SIGNAL(dataChanged(QModelIndex,QModelIndex,QVector<int>)),
-//             this,
 
 
     ui->labelPic->setPixmap(QPixmap("://empty.png"));
-
 
     readXml();
 
@@ -53,6 +50,15 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->tableView->setColumnHidden(4, true);
 
     ui->tableView->resizeRowsToContents();
+
+
+    QModelIndex index = tableModel->index(0, 1);
+     ui->tableView->setCurrentIndex(index);
+    ui->tableView->setFocus();
+
+
+    setChooseFirstColumn();
+
 }
 
 void MainWindow::guiSettings()
@@ -78,6 +84,41 @@ QPixmap MainWindow::convertQStringToQPixmap(QString pic)
     QPixmap pix;
     pix.loadFromData(textByte, "png");
     return pix;
+}
+
+void MainWindow::setChooseFirstColumn()
+{
+    QStringList list;
+
+    for(int i = 0; i < tableModel->columnCount(QModelIndex()) - 1; i++)
+    {
+        QModelIndex newIn  = tableModel->index(0, i);
+        QVariant QV = tableModel->data(newIn, Qt::DisplayRole);
+        list << QV.toString();
+    }
+
+    ui->reviewtextEdit->document()->setPlainText(list.at(3));
+    ui->additionalWin1->setText(list.at(5));
+    ui->additionalWin2->setText(list.at(4));
+
+    QModelIndex newIn  = tableModel->index(0, 6);
+    QVariant QV = tableModel->data(newIn, Qt::DisplayRole);
+    QPixmap pix = qvariant_cast<QPixmap>(QV);
+
+    if (pix.isNull())
+        ui->labelPic->setPixmap(QPixmap("://empty.png"));
+    else
+    {
+
+        qint32 widgetW = ui->labelPic->width();
+        qint32 widgetH = ui->labelPic->height();
+        qDebug() <<"!"<< widgetW << widgetH;
+
+        //pix = pix.scaled(widgetW, widgetH, Qt::KeepAspectRatio);
+        ui->labelPic->setPixmap(pix);
+        ui->labelPic->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
+    }
+
 }
 
 bool MainWindow::readXml()
@@ -309,13 +350,19 @@ void MainWindow::chooseListIndex(QModelIndex index)
 
     QPixmap pix = qvariant_cast<QPixmap>(QV);
 
-    //QString picQString = list.at(6);
-//    QByteArray textByte =  QByteArray::fromBase64(picQString.toLocal8Bit());
-//    QPixmap pix;
-//    pix.loadFromData(textByte, "png");
-//    qDebug() <<"pix size "<< pix.size();
-    pix = pix.scaled(200, 200);
-    ui->labelPic->setPixmap(pix);
-    ui->labelPic->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
+    if (pix.isNull())
+        ui->labelPic->setPixmap(QPixmap("://empty.png"));
+    else
+    {
+
+        qint32 widgetW = ui->labelPic->width();
+        qint32 widgetH = ui->labelPic->height();
+
+        qDebug() <<" !! "<< widgetW << widgetH;
+
+        pix = pix.scaled(widgetW, widgetH, Qt::KeepAspectRatio);
+        ui->labelPic->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
+        ui->labelPic->setPixmap(pix);
+    }
 
 }
