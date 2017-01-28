@@ -5,6 +5,13 @@
 #include "data.h"
 
 
+enum Mode
+{
+    add,
+    edit
+};
+
+
 namespace Ui {
 class Dialog;
 }
@@ -16,11 +23,13 @@ class Dialog : public QDialog
 public:
     explicit Dialog(QWidget *parent = 0);
     void clearAllFields();
+    void setEditMode(Data data);
     ~Dialog();
 
 private:
     Ui::Dialog *ui;
     QPixmap bookCoverPixmap;
+    Mode mode;
 
 signals:
     void newItemIsReady(Data data);

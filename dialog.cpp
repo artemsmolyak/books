@@ -9,13 +9,8 @@ Dialog::Dialog(QWidget *parent) :
     ui(new Ui::Dialog)
 {
     ui->setupUi(this);
-    //connect(ui->buttonBox, SIGNAL(clicked(QAbstractButton*)), this, SLOT(addNewItem()));
-    //connect(ui->okButton, SIGNAL(clicked(bool)), SLOT(close()));
     connect(ui->okButton, SIGNAL(clicked(bool)), this, SLOT(addNewItem()));
-
     connect(ui->changeBookCoverButton, SIGNAL(clicked(bool)), SLOT(savePicture()));
-
-
 }
 
 void Dialog::clearAllFields()
@@ -26,6 +21,18 @@ void Dialog::clearAllFields()
     ui->bookCoverLbl->clear();
     ui->titleEdit->clear();
     ui->reviewEdit->clear();
+}
+
+void Dialog::setEditMode(Data data)
+{
+    mode = Mode::edit;
+
+    ui->dateEdit->setText(data.getDate());
+    ui->authorEdit->setText(data.getAuthorName());
+    ui->assesEdit->setText(data.getAssessment());
+    ui->bookCoverLbl->setPixmap(data.getBookCoverPixmap());
+    ui->titleEdit->setText(data.getBookTitle());
+    ui->reviewEdit->setText(data.getReview());
 }
 
 Dialog::~Dialog()
@@ -48,20 +55,6 @@ void Dialog::addNewItem()
     QString  review = ui->reviewEdit->toPlainText();
 
     clearAllFields();
-
-    qDebug() << "bookCoverPixmap size " << bookCoverPixmap.size();
-
-//    QByteArray bArray;
-//    QBuffer buffer(&bArray);
-//    buffer.open(QIODevice::WriteOnly);
-//    bookCoverPixmap.save(&buffer, "PNG");
-
-//    qDebug() <<"buf "<< buffer.size();
-//    QString photoString(bArray.toBase64());
-
-//    qDebug() << "!!in add new Item ";
-//    qDebug() << "!in add new Item " << photoString.length();
-  //  qDebug() << "in add new Item " << photoString; //<< photoString.size();
 
     emit newItemIsReady(Data(assessment, author, title,
                              date, review, bookCoverPixmap));

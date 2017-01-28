@@ -15,24 +15,16 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::Window) //, dialog(new Dialog)
 {
-
     Dialog * dialog = new Dialog();
 
-    ui->setupUi(this);
-
-    qint32 widgetW = ui->labelPic->width();
-    qint32 widgetH = ui->labelPic->height();
-    qDebug() <<"!"<< widgetW << widgetH;
-
-    guiSettings();
-
+    ui->setupUi(this);    
 
     connect(ui->addBtn, SIGNAL(clicked(bool)), dialog, SLOT(show()));    
+    connect(ui->editBtn, SIGNAL(clicked(bool)),  dialog, SLOT(show()));
+    connect(ui->editBtn, SIGNAL(clicked(bool)), this, SLOT(editModeStart()));
+
     connect(dialog, SIGNAL(newItemIsReady(Data)), this, SLOT(getNewItem(Data)));
     connect(ui->tableView, SIGNAL(clicked(QModelIndex)), this, SLOT(chooseListIndex(QModelIndex)));
-
-
-    ui->labelPic->setPixmap(QPixmap("://empty.png"));
 
     readXml();
 
@@ -41,24 +33,14 @@ MainWindow::MainWindow(QWidget *parent) :
     QSortFilterProxyModel * sortModel = new QSortFilterProxyModel(this);
     sortModel->setSourceModel(tableModel);
     sortModel->setFilterKeyColumn(0);
-
     ui->tableView->setModel(sortModel);
-    ui->tableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
 
-    ui->tableView->setSelectionBehavior(QAbstractItemView::SelectRows);
-    ui->tableView->setColumnHidden(3, true);
-    ui->tableView->setColumnHidden(4, true);
-
-    ui->tableView->resizeRowsToContents();
-
-
-    QModelIndex index = tableModel->index(0, 1);
-     ui->tableView->setCurrentIndex(index);
-    ui->tableView->setFocus();
-
-
+    guiSettings();
     setChooseFirstColumn();
 
+    QModelIndex index = tableModel->index(0, 1);
+    ui->tableView->setCurrentIndex(index);
+    ui->tableView->setFocus();
 }
 
 void MainWindow::guiSettings()
@@ -66,6 +48,14 @@ void MainWindow::guiSettings()
     ui->sortComboBox->addItem("By author");
     ui->sortComboBox->addItem("By title");
     ui->sortComboBox->addItem("By id");
+
+    ui->tableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    ui->tableView->setSelectionBehavior(QAbstractItemView::SelectRows);
+
+    ui->tableView->setColumnHidden(3, true);
+    ui->tableView->setColumnHidden(4, true);
+    ui->tableView->setColumnHidden(5, true);
+    ui->tableView->setColumnHidden(6, true);
 }
 
 QString MainWindow::convertQPixmapToQString(QPixmap pic)
@@ -194,7 +184,9 @@ MainWindow::~MainWindow()
 
 void MainWindow::saveXml()
 {
-    QFile xmlFile(path);   //
+    qDebug() << "save xml";
+
+    QFile xmlFile(path);
 
     if (xmlFile.exists())
     {
@@ -291,22 +283,9 @@ void MainWindow::getNewItem(Data data)
     tableModel->setData(index, variant, Qt::EditRole);
 
 
-
-
     saveXml();
 
 
-//    dataModel->insertRows(row, 1);
-//    dataModel->insertRows(row, 1);
-
-//    QModelIndex index = dataModel->index(row);
-//    dataModel->setData(index, QVariant("!!!!"));
-
-
-//    for(QString str: dataStringList)
-//        qDebug() << str;
-
-    //updateDataList();
     emit hideDialog();
 }
 
@@ -365,4 +344,14 @@ void MainWindow::chooseListIndex(QModelIndex index)
         ui->labelPic->setPixmap(pix);
     }
 
+}
+
+void MainWindow::editModeStart()
+{
+    qDebug() << "edit mode";
+
+    QModelIndexList index = ui->tableView->selectionModel()->selectedIndexes();
+
+    qDebug() << index.at(0).row();
+    //dialog->setEditMode();
 }

@@ -36,6 +36,8 @@ public:
 
     bool readXml();
 
+    void editMode();
+
     ~MainWindow();
 
 private:
@@ -46,13 +48,14 @@ signals:
     void hideDialog();
 
 
+
 public  slots:
     void saveXml();
     void getNewItem(Data data);
     void updateDataList();
     void testSlot(Data);
     void chooseListIndex(QModelIndex index);
-
+    void editModeStart();
 };
 
 #endif // MAINWINDOW_H
