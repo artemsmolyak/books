@@ -9,7 +9,7 @@
 #include "QSortFilterProxyModel"
 #include "QStringListModel"
 #include "QBuffer"
-
+#include "QDesktopWidget"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -50,6 +50,11 @@ MainWindow::MainWindow(QWidget *parent) :
 
 void MainWindow::guiSettings()
 {
+
+    qint32 wDesk = QApplication::desktop()->screenGeometry().width();
+    qint32 hDesk = QApplication::desktop()->screenGeometry().height();
+    this->resize(wDesk, hDesk);
+
     ui->sortComboBox->addItem("By author");
     ui->sortComboBox->addItem("By title");
     ui->sortComboBox->addItem("By id");
@@ -61,6 +66,10 @@ void MainWindow::guiSettings()
     ui->tableView->setColumnHidden(4, true);
     ui->tableView->setColumnHidden(5, true);
     ui->tableView->setColumnHidden(6, true);
+
+    ui->tableView->resize(wDesk * 0.10, hDesk * 0.10);
+    QRect rect = ui->verticalLayout_2->geometry();
+    ui->reviewtextEdit->setGeometry(QRect(50, 50, 100, 100));
 }
 
 QString MainWindow::convertQPixmapToQString(QPixmap pic)
@@ -115,6 +124,7 @@ void MainWindow::setChooseFirstColumn()
     }
 
 }
+
 
 bool MainWindow::readXml()
 {

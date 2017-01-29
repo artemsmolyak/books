@@ -11,6 +11,8 @@ Dialog::Dialog(QWidget *parent) :
     ui->setupUi(this);
     connect(ui->okButton, SIGNAL(clicked(bool)), this, SLOT(workWithData()));
     connect(ui->changeBookCoverButton, SIGNAL(clicked(bool)), SLOT(savePicture()));
+    ui->okButton->setText("save");
+    ui->cancelButton->setText("cancel");
 }
 
 void Dialog::clearAllFields()

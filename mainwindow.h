@@ -22,7 +22,6 @@ private:
     QList <Data> dataList;
     QStringList dataStringList;
 
-
     TableModel * tableModel;
 
     //QStringListModel *dataModel;
@@ -33,7 +32,6 @@ public:
     QString convertQPixmapToQString(QPixmap pic);
     QPixmap convertQStringToQPixmap(QString pic);
     void setChooseFirstColumn();
-
     bool readXml();
 
     void editMode();
