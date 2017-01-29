@@ -4,36 +4,36 @@
 #include "QFileDialog"
 #include "QBuffer"
 
+
 Dialog::Dialog(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::Dialog)
 {
     ui->setupUi(this);
+<<<<<<< HEAD
     connect(ui->okButton, SIGNAL(clicked(bool)), this, SLOT(workWithData()));
     connect(ui->changeBookCoverButton, SIGNAL(clicked(bool)), SLOT(savePicture()));
-    ui->assesmentWidget->setUseMouse(true);
+    ui->okButton->setText("save");
+    ui->cancelButton->setText("cancel");
 }
 
 void Dialog::clearAllFields()
 {
     ui->dateEdit->clear();
     ui->authorEdit->clear();
-    //ui->assesEdit->clear();
+    ui->assesEdit->clear();
     ui->bookCoverLbl->clear();
     ui->titleEdit->clear();
     ui->reviewEdit->clear();
+=======
+    ui->assesmentWidget->setUseMouse(true);
+    connect(ui->changeBookCoverButton, SIGNAL(clicked(bool)), SLOT(savePicture()));
+>>>>>>> veo_rnd
 }
-
-Dialog::~Dialog()
-{
-    qDebug() << "delete dialog";
-
-    delete ui;
-}
-
 
 void Dialog::setEditMode(Data data)
 {
+<<<<<<< HEAD
     mode = edit;
     setWindowTitle("Edit mode");
 
@@ -41,7 +41,7 @@ void Dialog::setEditMode(Data data)
 
     ui->dateEdit->setText(data.getDate());
     ui->authorEdit->setText(data.getAuthorName());
-    //ui->assesEdit->setText(data.getAssessment());
+    ui->assesEdit->setText(data.getAssessment());
 
     QPixmap pix = data.getBookCoverPixmap();
     pix = pix.scaled(ui->bookCoverLbl->width(),
@@ -60,35 +60,11 @@ void Dialog::setAddMode()
     clearAllFields();
 }
 
-
-void Dialog::savePicture()
+Dialog::~Dialog()
 {
-    QString str = QFileDialog::getOpenFileName(0, "Open Dialog", "/", "*.png");
-    qDebug() << "выбран файл "<< str;
-    bookCoverPixmap = QPixmap(str).scaled(ui->bookCoverLbl->size(), Qt::KeepAspectRatio);
-    ui->bookCoverLbl->setPixmap(bookCoverPixmap);
+    qDebug() << "delete dialog";
+    delete ui;
 }
-
-
-
-void Dialog::on_cancelButton_released()
-{
-    this->hide();
-    this->reset();
-}
-void Dialog::on_okButton_released()
-{
-    QString assessment = QString::number(ui->assesmentWidget->getAssesment());
-    QString author = ui->authorEdit->text();
-    QString title  = ui->titleEdit->text();
-    QString date = ui->dateEdit->text();
-    QString review = ui->reviewEdit->toPlainText();
-
-    emit newItemIsReady(Data(assessment, author, title, date, review, bookCoverPixmap));
-    this->hide();
-    this->reset();
-}
-
 
 void Dialog::workWithData()
 {
@@ -100,7 +76,7 @@ void Dialog::workWithData()
     {
         setWindowTitle("Add mode");
 
-        QString assessment = "";//ui->assesEdit->text();
+        QString assessment = ui->assesEdit->text();
         QString  author = ui->authorEdit->text();
         QString  title  = ui->titleEdit->text();
         QString   date = ui->dateEdit->text();
@@ -113,7 +89,7 @@ void Dialog::workWithData()
     }
     else if (mode == edit)
     {
-        QString assessment = "";//ui->assesEdit->text();
+        QString assessment = ui->assesEdit->text();
         QString  author = ui->authorEdit->text();
         QString  title  = ui->titleEdit->text();
         QString   date = ui->dateEdit->text();
@@ -124,8 +100,9 @@ void Dialog::workWithData()
                                    date, review, *bookCoverPix));
     }
 
+=======
+    delete ui;
 }
-
 
 void Dialog::reset()
 {
@@ -135,4 +112,32 @@ void Dialog::reset()
     ui->assesmentWidget->setAssesment(0);
     ui->bookCoverLbl->setPixmap(QPixmap("://empty.png"));
     ui->reviewEdit->clear();
+>>>>>>> veo_rnd
+}
+
+void Dialog::savePicture()
+{
+    QString str = QFileDialog::getOpenFileName(0, "Open Dialog", "/", "*.png");
+    qDebug() << "выбран файл "<< str;
+    bookCoverPixmap = QPixmap(str).scaled(ui->bookCoverLbl->size(), Qt::KeepAspectRatio);
+    ui->bookCoverLbl->setPixmap(bookCoverPixmap);
+}
+
+void Dialog::on_cancelButton_released()
+{
+    this->hide();
+    this->reset();
+}
+
+void Dialog::on_okButton_released()
+{
+    QString assessment = QString::number(ui->assesmentWidget->getAssesment());
+    QString author = ui->authorEdit->text();
+    QString title  = ui->titleEdit->text();
+    QString date = ui->dateEdit->text();
+    QString review = ui->reviewEdit->toPlainText();
+
+    emit newItemIsReady(Data(assessment, author, title, date, review, bookCoverPixmap));
+    this->hide();
+    this->reset();
 }

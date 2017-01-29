@@ -2,7 +2,6 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include "dialog.h"
 #include "data.h"
 #include "qstringlistmodel.h"
 #include "tablemodel.h"
@@ -17,49 +16,69 @@ class MainWindow : public QMainWindow
 {
     Q_OBJECT
 
+<<<<<<< HEAD
 private:
     QString path = "://books.xml";
     Dialog * dialog;
     QList <Data> dataList;
     QStringList dataStringList;
 
-
     TableModel * tableModel;
-    QModelIndex indexEdit;
 
-
+=======
+>>>>>>> veo_rnd
 public:
     explicit MainWindow(QWidget *parent = 0);
+    ~MainWindow();
+
     void guiSettings();
     QString convertQPixmapToQString(QPixmap pic);
     QPixmap convertQStringToQPixmap(QString pic);
     void setChooseFirstColumn();
     bool readXml();
+
+<<<<<<< HEAD
     void editMode();
 
     ~MainWindow();
 
 private:
     Ui:: Window *ui;
-
+    QModelIndex indexEdit;
 
 signals:
     void hideDialog();
 
 
+
+=======
+>>>>>>> veo_rnd
 public  slots:
     void saveXml();
     void getNewItem(Data data);
     void updateDataList();
-    void testSlot(Data);
     void chooseListIndex(QModelIndex index);
+<<<<<<< HEAD
     void editModeStart();
     void addModeStart();
     void editItem(Data data);
+=======
 
+private slots:
     void on_addButton_released();
     void on_deleteButton_released();
     void on_updateButton_released();
+
+private:
+    Ui:: Window *ui;
+    QString path = "://books.xml";
+    Dialog * dialog;
+    QList <Data> dataList;
+    QStringList dataStringList;
+    TableModel * tableModel;
+
+    //QStringListModel *dataModel;
+>>>>>>> veo_rnd
 };
 
 #endif // MAINWINDOW_H

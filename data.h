@@ -17,7 +17,6 @@ private:
     QString date;
     QString review;
     QPixmap bookCoverPixmap;
-    //QString bookCoverQString;
     qint32 id;
 
 
