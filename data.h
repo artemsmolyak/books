@@ -30,15 +30,9 @@ public:
           QString bookTitle, QString date, QString annotation,
           QPixmap bookCoverPixmap);
 
-//    Data( QString assessment,  QString authorName,
-//          QString bookTitle, QString date, QString annotation);
-
     Data();
 
-
-
     QString toString();
-
 
     QStringList toQStringList();
 

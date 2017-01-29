@@ -8,7 +8,6 @@
 #include "tablemodel.h"
 
 namespace Ui {
-//class MainWindow;
 class Window;
 }
 
@@ -23,8 +22,6 @@ private:
     QStringList dataStringList;
 
     TableModel * tableModel;
-
-    //QStringListModel *dataModel;
 
 public:
     explicit MainWindow(QWidget *parent = 0);
@@ -51,7 +48,6 @@ public  slots:
     void saveXml();
     void getNewItem(Data data);
     void updateDataList();
-    void testSlot(Data);
     void chooseListIndex(QModelIndex index);
     void editModeStart();
     void addModeStart();

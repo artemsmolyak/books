@@ -56,7 +56,6 @@ void Dialog::setAddMode()
 Dialog::~Dialog()
 {
     qDebug() << "delete dialog";
-
     delete ui;
 }
 

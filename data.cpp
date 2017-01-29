@@ -59,25 +59,6 @@ void Data::setId(int value)
     id = value;
 }
 
-//Data::Data(QString assessment, QString authorName,
-//           QString bookTitle, QString date,
-//           QString annotation):
-//      assessment(assessment),
-//      authorName(authorName),
-//      bookTitle(bookTitle),
-//      date(date),
-//      review(annotation)
-//{
-//    qDebug() <<" size "<< size;
-//   id = size;
-//   size++;
-//}
-
-
-
-
-
-
 
 QPixmap Data::getBookCoverPixmap() const
 {
@@ -121,19 +102,6 @@ Data::Data(qint32 id, QString assessment,  QString authorName,
     review(annotation),
     bookCoverPixmap(bookCoverPixmap){}
 
-
-//Data::Data(QString assessment, QString authorName, QString bookTitle, QString date, QString annotation, QString bookCoverQString):
-//assessment(assessment),
-//authorName(authorName),
-//bookTitle(bookTitle),
-//date(date),
-//review(annotation),
-//bookCoverQString(bookCoverQString)
-//{
-//    qDebug() <<" size "<< size;
-//    id = size;
-//    size++;
-//}
 
 Data::Data()
 {

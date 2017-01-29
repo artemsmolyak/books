@@ -13,7 +13,7 @@
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
-    ui(new Ui::Window) //, dialog(new Dialog)
+    ui(new Ui::Window)
 {
     dialog = new Dialog();
 
@@ -139,7 +139,7 @@ bool MainWindow::readXml()
 
     QXmlStreamReader reader;
     reader.setDevice(&in);
-    //reader.readNext();
+
     while(!reader.atEnd() && !reader.error())
     {
         qDebug() <<"text start "<< reader.text().toString();
@@ -307,19 +307,9 @@ void MainWindow::getNewItem(Data data)
 
 void MainWindow::updateDataList()
 {
-   // emit tableModel->dataChanged(QModelIndex(), QModelIndex());
-//    ui->listWidget->clear();
 
-//    for(Data data : dataList)
-//    {
-//        ui->listWidget->addItem(data.toString());
-//    }
 }
 
-void MainWindow::testSlot(Data mes)
-{
-    qDebug() << "test Slot " << mes.toString();
-}
 
 void MainWindow::chooseListIndex(QModelIndex index)
 {

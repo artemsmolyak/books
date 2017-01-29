@@ -27,14 +27,12 @@ SOURCES += main.cpp\
         mainwindow.cpp \
     data.cpp \
     dialog.cpp \
-    test.cpp \
     tablemodel.cpp
 
 
 HEADERS  += mainwindow.h \
     data.h \
     dialog.h \
-    test.h \
     tablemodel.h
 
 
