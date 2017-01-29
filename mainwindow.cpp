@@ -249,7 +249,6 @@ void MainWindow::getNewItem(Data data)
 //        qDebug() << str;
 
     //updateDataList();
-    emit hideDialog();
 }
 
 void MainWindow::updateDataList()

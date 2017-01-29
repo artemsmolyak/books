@@ -13,20 +13,8 @@ Dialog::Dialog(QWidget *parent) :
     connect(ui->changeBookCoverButton, SIGNAL(clicked(bool)), SLOT(savePicture()));
 }
 
-void Dialog::clearAllFields()
-{
-    ui->dateEdit->clear();
-    ui->authorEdit->clear();
-    ui->assesEdit->clear();
-    ui->bookCoverLbl->clear();
-    ui->titleEdit->clear();
-    ui->reviewEdit->clear();
-}
-
 Dialog::~Dialog()
 {
-    qDebug() << "delete dialog";
-
     delete ui;
 }
 

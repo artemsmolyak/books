@@ -27,9 +27,6 @@ public:
 
     bool readXml();
 
-signals:
-    void hideDialog();
-
 public  slots:
     void saveXml();
     void getNewItem(Data data);
