@@ -18,7 +18,7 @@ private:
     QString review;
     QPixmap bookCoverPixmap;
     //QString bookCoverQString;
-    int id;
+    qint32 id;
 
 
 public:
@@ -26,8 +26,9 @@ public:
           QString bookTitle, QString date, QString annotation,
           QPixmap bookCoverPixmap);
 
-//    Data( QString assessment,  QString authorName,
-//          QString bookTitle, QString date, QString annotation, QString bookCoverQString);
+    Data(qint32 id, QString assessment,  QString authorName,
+          QString bookTitle, QString date, QString annotation,
+          QPixmap bookCoverPixmap);
 
 //    Data( QString assessment,  QString authorName,
 //          QString bookTitle, QString date, QString annotation);

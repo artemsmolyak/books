@@ -109,6 +109,19 @@ Data::Data(QString assessment, QString authorName,
     size++;
 }
 
+
+Data::Data(qint32 id, QString assessment,  QString authorName,
+      QString bookTitle, QString date, QString annotation,
+      QPixmap bookCoverPixmap):
+    id(id),
+    assessment(assessment),
+    authorName(authorName),
+    bookTitle(bookTitle),
+    date(date),
+    review(annotation),
+    bookCoverPixmap(bookCoverPixmap){}
+
+
 //Data::Data(QString assessment, QString authorName, QString bookTitle, QString date, QString annotation, QString bookCoverQString):
 //assessment(assessment),
 //authorName(authorName),

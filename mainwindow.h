@@ -42,7 +42,7 @@ public:
 
 private:
     Ui:: Window *ui;
-
+    QModelIndex indexEdit;
 
 signals:
     void hideDialog();
@@ -56,6 +56,8 @@ public  slots:
     void testSlot(Data);
     void chooseListIndex(QModelIndex index);
     void editModeStart();
+    void addModeStart();
+    void editItem(Data data);
 };
 
 #endif // MAINWINDOW_H

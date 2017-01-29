@@ -24,6 +24,7 @@ public:
     explicit Dialog(QWidget *parent = 0);
     void clearAllFields();
     void setEditMode(Data data);
+    void setAddMode();
     ~Dialog();
 
 private:
@@ -33,10 +34,11 @@ private:
 
 signals:
     void newItemIsReady(Data data);
+    void editItemIsReady(Data data);
     void testEmit(Data string);
 
 public slots:
-    void addNewItem();
+    void workWithData();
     void savePicture();
 
 private slots:

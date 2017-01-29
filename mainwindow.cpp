@@ -15,15 +15,20 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::Window) //, dialog(new Dialog)
 {
-    Dialog * dialog = new Dialog();
+    dialog = new Dialog();
 
     ui->setupUi(this);    
 
-    connect(ui->addBtn, SIGNAL(clicked(bool)), dialog, SLOT(show()));    
+    connect(ui->addBtn, SIGNAL(clicked(bool)), dialog, SLOT(show()));
+    connect(ui->addBtn, SIGNAL(clicked(bool)), this, SLOT(addModeStart()));
+
+
     connect(ui->editBtn, SIGNAL(clicked(bool)),  dialog, SLOT(show()));
     connect(ui->editBtn, SIGNAL(clicked(bool)), this, SLOT(editModeStart()));
 
     connect(dialog, SIGNAL(newItemIsReady(Data)), this, SLOT(getNewItem(Data)));
+    connect(dialog, SIGNAL(editItemIsReady(Data)), this, SLOT(editItem(Data)));
+
     connect(ui->tableView, SIGNAL(clicked(QModelIndex)), this, SLOT(chooseListIndex(QModelIndex)));
 
     readXml();
@@ -179,6 +184,7 @@ bool MainWindow::readXml()
 
 MainWindow::~MainWindow()
 {
+    qDebug() << "delete !!!!";
     delete ui;
 }
 
@@ -291,6 +297,7 @@ void MainWindow::getNewItem(Data data)
 
 void MainWindow::updateDataList()
 {
+   // emit tableModel->dataChanged(QModelIndex(), QModelIndex());
 //    ui->listWidget->clear();
 
 //    for(Data data : dataList)
@@ -354,7 +361,7 @@ void MainWindow::editModeStart()
 
    QModelIndexList indexLst = ui->tableView->selectionModel()->selectedIndexes();
 
-    QModelIndex index = indexLst.at(0);
+   indexEdit = indexLst.at(0);
 
 //    for(int i = 0; i < tableModel->columnCount(QModelIndex()) - 1; i++)
 //    {
@@ -366,17 +373,55 @@ void MainWindow::editModeStart()
 
 
 
-
+qDebug() <<" IND "<< indexLst.at(0).row();
     Data data;
-    qint32 id = qvariant_cast<qint32>(tableModel->index(index.row(), 0))
-    //data.setId();
-    //data.setBookTitle(qvariant_cast<QString>(tableModel->index(index.row(), 1)));
-   //  data.setAuthorName(qvariant_cast<QString>(tableModel->index(index.row(), 2)));
-   //  data.setAnnotation(qvariant_cast<QString>(tableModel->index(index.row(), 3)));
-    // data.setDate(qvariant_cast<QString>(tableModel->index(index.row(), 4)));
-   //  data.setAssessment(qvariant_cast<QString>(tableModel->index(index.row(), 5)));
 
-   //  data.setBookCoverPixmap(qvariant_cast<QPixmap>(tableModel->index(index.row(), 6)));
-    //    qDebug() << index.at(0).row();
-  //  dialog->setEditMode(data);
+    QModelIndex newIn  = tableModel->index(indexEdit.row(), 0);
+    QVariant QV = tableModel->data(newIn, Qt::DisplayRole);
+    data.setId(qvariant_cast<qint32>(QV));
+
+     newIn  = tableModel->index(indexEdit.row(), 1);
+     QV = tableModel->data(newIn, Qt::DisplayRole);
+     data.setBookTitle(qvariant_cast<QString>(QV));
+
+
+    newIn  = tableModel->index(indexEdit.row(), 2);
+    QV = tableModel->data(newIn, Qt::DisplayRole);
+     data.setAuthorName(qvariant_cast<QString>(QV));
+
+     newIn  = tableModel->index(indexEdit.row(), 3);
+     QV = tableModel->data(newIn, Qt::DisplayRole);
+      data.setAnnotation(qvariant_cast<QString>(QV));
+
+
+      newIn  = tableModel->index(indexEdit.row(), 4);
+      QV = tableModel->data(newIn, Qt::DisplayRole);
+     data.setDate(qvariant_cast<QString>(QV));
+
+
+     newIn  = tableModel->index(indexEdit.row(), 5);
+     QV = tableModel->data(newIn, Qt::DisplayRole);
+     data.setAssessment(qvariant_cast<QString>(QV));
+
+     newIn  = tableModel->index(indexEdit.row(), 6);
+     QV = tableModel->data(newIn, Qt::DisplayRole);
+     data.setBookCoverPixmap(qvariant_cast<QPixmap>(QV));
+
+     dialog->setEditMode(data);
+}
+
+void MainWindow::addModeStart()
+{
+    dialog->setAddMode();
+}
+
+void MainWindow::editItem(Data data)
+{
+    QVariant variant  = QVariant::fromValue(data);
+
+    tableModel->setData(indexEdit, variant, Qt::EditRole);
+
+    saveXml();
+
+    emit
 }
