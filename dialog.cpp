@@ -25,7 +25,7 @@ void Dialog::reset()
     ui->titleEdit->clear();
     ui->authorEdit->clear();
     ui->assesmentWidget->setAssesment(0);
-    ui->bookCoverLbl->setPixmap(QPixmap("://empty.png"));
+    ui->bookCoverLabel->setPixmap(QPixmap("://empty.png"));
     ui->reviewEdit->clear();
 }
 
@@ -33,8 +33,8 @@ void Dialog::savePicture()
 {
     QString str = QFileDialog::getOpenFileName(0, "Open Dialog", "/", "*.png");
     qDebug() << "выбран файл "<< str;
-    bookCoverPixmap = QPixmap(str).scaled(ui->bookCoverLbl->size(), Qt::KeepAspectRatio);
-    ui->bookCoverLbl->setPixmap(bookCoverPixmap);
+    bookCoverPixmap = QPixmap(str).scaled(ui->bookCoverLabel->size(), Qt::KeepAspectRatio);
+    ui->bookCoverLabel->setPixmap(bookCoverPixmap);
 }
 
 void Dialog::on_cancelButton_released()
