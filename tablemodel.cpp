@@ -133,9 +133,6 @@
      for (int row=0; row < rows; row++) {
          Data data;
          listofData.insert(position, data);
-//         QPair<QString, QString> pair(" ", " ");
-//         listofData.insert(position, pair);
-
      }
 
      endInsertRows();
@@ -161,36 +158,26 @@
      Q_UNUSED(value);
      Q_UNUSED(role);
 
- qDebug() << "setData " << index.isValid() << index.column() << index.row() << bool(role == Qt::EditRole);
+     qDebug() << "setData " << index.isValid() << index.column() << index.row() << bool(role == Qt::EditRole);
 
-         if (index.isValid() && role == Qt::EditRole) {
-                 int row = index.row();
-                 Data data = listofData.value(row);
-                 data = value.value<Data>();
+     if (index.isValid() && role == Qt::EditRole) {
+         int row = index.row();
+         Data data = listofData.value(row);
+         data = value.value<Data>();
 
-                 qDebug() << "setData";
-                 qDebug() << data.getAssessment();
-                 qDebug() << data.getAuthorName();
-                 qDebug() << data.getBookTitle();
-                 qDebug() << data.getBookCoverPixmap().size();
-
-
-//                 QPair<QString, QString> p = listOfPairs.value(row);
-
-//                 if (index.column() == 0)
-//                         p.first = value.toString();
-//                 else if (index.column() == 1)
-//                         p.second = value.toString();
-//         else
-//             return false;
+         qDebug() << "setData";
+         qDebug() << data.getAssessment();
+         qDebug() << data.getAuthorName();
+         qDebug() << data.getBookTitle();
+         qDebug() << data.getBookCoverPixmap().size();
 
          listofData.replace(row, data);
-                 emit(dataChanged(index, index));
+         emit(dataChanged(index, index));
 
          return true;
-         }
+     }
 
-         return false;
+     return false;
  }
 
  Qt::ItemFlags TableModel::flags(const QModelIndex &index) const

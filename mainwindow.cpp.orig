@@ -4,25 +4,28 @@
 #include "QXmlStreamWriter"
 #include "QDebug"
 #include "QFile"
-#include "dialog.h"
 #include "QPixmap"
 #include "QSortFilterProxyModel"
 #include "QStringListModel"
 #include "QBuffer"
-
+<<<<<<< HEAD
+#include "QDesktopWidget"
+=======
+#include "dialog.h"
+>>>>>>> veo_rnd
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::Window)
 {
+<<<<<<< HEAD
+    dialog = new Dialog();
 
-    ui->setupUi(this);
-    ui->assesmentWidget->setUseMouse(false);
-    dialog = new Dialog(this);
-    guiSettings();
+    ui->setupUi(this);    
 
     connect(ui->addBtn, SIGNAL(clicked(bool)), dialog, SLOT(show()));
     connect(ui->addBtn, SIGNAL(clicked(bool)), this, SLOT(addModeStart()));
+
 
     connect(ui->editBtn, SIGNAL(clicked(bool)),  dialog, SLOT(show()));
     connect(ui->editBtn, SIGNAL(clicked(bool)), this, SLOT(editModeStart()));
@@ -32,6 +35,15 @@ MainWindow::MainWindow(QWidget *parent) :
 
     connect(ui->tableView, SIGNAL(clicked(QModelIndex)), this, SLOT(chooseListIndex(QModelIndex)));
 
+=======
+    ui->setupUi(this);
+    ui->assesmentWidget->setUseMouse(false);
+    dialog = new Dialog(this);
+    guiSettings();
+    connect(dialog, SIGNAL(newItemIsReady(Data)), this, SLOT(getNewItem(Data)));
+    connect(ui->tableView, SIGNAL(clicked(QModelIndex)), this, SLOT(chooseListIndex(QModelIndex)));
+    ui->labelPic->setPixmap(QPixmap("://empty.png"));
+>>>>>>> veo_rnd
     readXml();
 
     tableModel = new TableModel(dataList);
@@ -42,18 +54,20 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->tableView->setModel(sortModel);
 
     guiSettings();
-
     setChooseFirstColumn();
 
     QModelIndex index = tableModel->index(0, 1);
     ui->tableView->setCurrentIndex(index);
     ui->tableView->setFocus();
-
-    //ui->tableView->resizeRowsToContents();
 }
 
 void MainWindow::guiSettings()
 {
+
+    qint32 wDesk = QApplication::desktop()->screenGeometry().width();
+    qint32 hDesk = QApplication::desktop()->screenGeometry().height();
+    this->resize(wDesk, hDesk);
+
     ui->sortComboBox->addItem("By author");
     ui->sortComboBox->addItem("By title");
     ui->sortComboBox->addItem("By id");
@@ -65,40 +79,10 @@ void MainWindow::guiSettings()
     ui->tableView->setColumnHidden(4, true);
     ui->tableView->setColumnHidden(5, true);
     ui->tableView->setColumnHidden(6, true);
-}
 
-void MainWindow::setChooseFirstColumn()
-{
-    QStringList list;
-
-    for(int i = 0; i < tableModel->columnCount(QModelIndex()) - 1; i++)
-    {
-        QModelIndex newIn  = tableModel->index(0, i);
-        QVariant QV = tableModel->data(newIn, Qt::DisplayRole);
-        list << QV.toString();
-    }
-
-    ui->reviewtextEdit->document()->setPlainText(list.at(3));
-    ui->additionalWin2->setText(list.at(4));
-    ui->assesmentWidget->setAssesment((list.at(5)).toInt());
-
-    QModelIndex newIn  = tableModel->index(0, 6);
-    QVariant QV = tableModel->data(newIn, Qt::DisplayRole);
-    QPixmap pix = qvariant_cast<QPixmap>(QV);
-
-    if (pix.isNull())
-        ui->labelPic->setPixmap(QPixmap("://empty.png"));
-    else
-    {
-
-        qint32 widgetW = ui->labelPic->width();
-        qint32 widgetH = ui->labelPic->height();
-        qDebug() <<"!"<< widgetW << widgetH;
-        //pix = pix.scaled(widgetW, widgetH, Qt::KeepAspectRatio);
-        ui->labelPic->setPixmap(pix);
-        ui->labelPic->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
-    }
-
+    ui->tableView->resize(wDesk * 0.10, hDesk * 0.10);
+    QRect rect = ui->verticalLayout_2->geometry();
+    ui->reviewtextEdit->setGeometry(QRect(50, 50, 100, 100));
 }
 
 QString MainWindow::convertQPixmapToQString(QPixmap pic)
@@ -118,6 +102,42 @@ QPixmap MainWindow::convertQStringToQPixmap(QString pic)
     pix.loadFromData(textByte, "png");
     return pix;
 }
+
+void MainWindow::setChooseFirstColumn()
+{
+    QStringList list;
+
+    for(int i = 0; i < tableModel->columnCount(QModelIndex()) - 1; i++)
+    {
+        QModelIndex newIn  = tableModel->index(0, i);
+        QVariant QV = tableModel->data(newIn, Qt::DisplayRole);
+        list << QV.toString();
+    }
+
+    ui->reviewtextEdit->document()->setPlainText(list.at(3));
+    ui->additionalWin1->setText(list.at(5));
+    ui->additionalWin2->setText(list.at(4));
+
+    QModelIndex newIn  = tableModel->index(0, 6);
+    QVariant QV = tableModel->data(newIn, Qt::DisplayRole);
+    QPixmap pix = qvariant_cast<QPixmap>(QV);
+
+    if (pix.isNull())
+        ui->labelPic->setPixmap(QPixmap("://empty.png"));
+    else
+    {
+
+        qint32 widgetW = ui->labelPic->width();
+        qint32 widgetH = ui->labelPic->height();
+        qDebug() <<"!"<< widgetW << widgetH;
+
+        //pix = pix.scaled(widgetW, widgetH, Qt::KeepAspectRatio);
+        ui->labelPic->setPixmap(pix);
+        ui->labelPic->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
+    }
+
+}
+
 
 bool MainWindow::readXml()
 {
@@ -187,11 +207,14 @@ bool MainWindow::readXml()
 
 MainWindow::~MainWindow()
 {
+    qDebug() << "delete !!!!";
     delete ui;
 }
 
 void MainWindow::saveXml()
 {
+    qDebug() << "save xml";
+
     QFile xmlFile(path);
 
     if (xmlFile.exists())
@@ -292,23 +315,28 @@ void MainWindow::getNewItem(Data data)
     saveXml();
 
 
+<<<<<<< HEAD
     emit hideDialog();
+=======
+//    dataModel->insertRows(row, 1);
+//    dataModel->insertRows(row, 1);
+
+//    QModelIndex index = dataModel->index(row);
+//    dataModel->setData(index, QVariant("!!!!"));
+
+
+//    for(QString str: dataStringList)
+//        qDebug() << str;
+
+    //updateDataList();
+>>>>>>> veo_rnd
 }
 
 void MainWindow::updateDataList()
 {
-//    ui->listWidget->clear();
 
-//    for(Data data : dataList)
-//    {
-//        ui->listWidget->addItem(data.toString());
-//    }
 }
 
-void MainWindow::testSlot(Data mes)
-{
-    qDebug() << "test Slot " << mes.toString();
-}
 
 void MainWindow::chooseListIndex(QModelIndex index)
 {
@@ -336,13 +364,15 @@ void MainWindow::chooseListIndex(QModelIndex index)
 
     QPixmap pix = qvariant_cast<QPixmap>(QV);
 
- if (pix.isNull())
+    if (pix.isNull())
         ui->labelPic->setPixmap(QPixmap("://empty.png"));
     else
     {
 
         qint32 widgetW = ui->labelPic->width();
         qint32 widgetH = ui->labelPic->height();
+
+        qDebug() <<" !! "<< widgetW << widgetH;
 
         pix = pix.scaled(widgetW, widgetH, Qt::KeepAspectRatio);
         ui->labelPic->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
@@ -351,65 +381,61 @@ void MainWindow::chooseListIndex(QModelIndex index)
 
 }
 
-
-void MainWindow::on_addButton_released()
-{
-    dialog->reset();
-    dialog->show();
-}
-
-void MainWindow::on_deleteButton_released()
-{
-
-}
-
-void MainWindow::on_updateButton_released()
-{
-
-}
-
-
 void MainWindow::editModeStart()
 {
     qDebug() << "edit mode";
 
-    QModelIndexList indexLst = ui->tableView->selectionModel()->selectedIndexes();
 
-    indexEdit = indexLst.at(0);
 
-    qDebug() <<" IND "<< indexLst.at(0).row();
+   QModelIndexList indexLst = ui->tableView->selectionModel()->selectedIndexes();
+
+   indexEdit = indexLst.at(0);
+
+//    for(int i = 0; i < tableModel->columnCount(QModelIndex()) - 1; i++)
+//    {
+//        QModelIndex newIn  = tableModel->index(index.row(), i);
+
+//        qDebug() <<i  << " " << tableModel->data(newIn, Qt::DisplayRole);
+//        //list << QV.toString();
+//    }
+
+
+
+qDebug() <<" IND "<< indexLst.at(0).row();
     Data data;
 
     QModelIndex newIn  = tableModel->index(indexEdit.row(), 0);
     QVariant QV = tableModel->data(newIn, Qt::DisplayRole);
     data.setId(qvariant_cast<qint32>(QV));
 
-    newIn  = tableModel->index(indexEdit.row(), 1);
-    QV = tableModel->data(newIn, Qt::DisplayRole);
-    data.setBookTitle(qvariant_cast<QString>(QV));
+     newIn  = tableModel->index(indexEdit.row(), 1);
+     QV = tableModel->data(newIn, Qt::DisplayRole);
+     data.setBookTitle(qvariant_cast<QString>(QV));
+
 
     newIn  = tableModel->index(indexEdit.row(), 2);
     QV = tableModel->data(newIn, Qt::DisplayRole);
-    data.setAuthorName(qvariant_cast<QString>(QV));
+     data.setAuthorName(qvariant_cast<QString>(QV));
 
-    newIn  = tableModel->index(indexEdit.row(), 3);
-    QV = tableModel->data(newIn, Qt::DisplayRole);
-    data.setAnnotation(qvariant_cast<QString>(QV));
+     newIn  = tableModel->index(indexEdit.row(), 3);
+     QV = tableModel->data(newIn, Qt::DisplayRole);
+      data.setAnnotation(qvariant_cast<QString>(QV));
 
 
-    newIn  = tableModel->index(indexEdit.row(), 4);
-    QV = tableModel->data(newIn, Qt::DisplayRole);
-    data.setDate(qvariant_cast<QString>(QV));
+      newIn  = tableModel->index(indexEdit.row(), 4);
+      QV = tableModel->data(newIn, Qt::DisplayRole);
+     data.setDate(qvariant_cast<QString>(QV));
 
-    newIn  = tableModel->index(indexEdit.row(), 5);
-    QV = tableModel->data(newIn, Qt::DisplayRole);
-    data.setAssessment(qvariant_cast<QString>(QV));
 
-    newIn  = tableModel->index(indexEdit.row(), 6);
-    QV = tableModel->data(newIn, Qt::DisplayRole);
-    data.setBookCoverPixmap(qvariant_cast<QPixmap>(QV));
+     newIn  = tableModel->index(indexEdit.row(), 5);
+     QV = tableModel->data(newIn, Qt::DisplayRole);
+     data.setAssessment(qvariant_cast<QString>(QV));
 
-    dialog->setEditMode(data);
+     newIn  = tableModel->index(indexEdit.row(), 6);
+     QV = tableModel->data(newIn, Qt::DisplayRole);
+     data.setBookCoverPixmap(qvariant_cast<QPixmap>(QV));
+
+     dialog->setEditMode(data);
 }
 
 void MainWindow::addModeStart()
@@ -425,5 +451,20 @@ void MainWindow::editItem(Data data)
 
     saveXml();
 
-    //emit
+    emit
+}
+void MainWindow::on_addButton_released()
+{
+    dialog->reset();
+    dialog->show();
+}
+
+void MainWindow::on_deleteButton_released()
+{
+
+}
+
+void MainWindow::on_updateButton_released()
+{
+
 }

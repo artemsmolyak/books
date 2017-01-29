@@ -4,6 +4,7 @@
 #include <QDialog>
 #include "data.h"
 
+<<<<<<< HEAD
 
 enum Mode
 {
@@ -12,6 +13,8 @@ enum Mode
 };
 
 
+=======
+>>>>>>> veo_rnd
 namespace Ui {
 class Dialog;
 }
@@ -22,16 +25,21 @@ class Dialog : public QDialog
 
 public:
     explicit Dialog(QWidget *parent = 0);
+<<<<<<< HEAD
+    void clearAllFields();
     void setEditMode(Data data);
     void setAddMode();
-    void reset();
     ~Dialog();
-
 
 private:
     Ui::Dialog *ui;
     QPixmap bookCoverPixmap;
     Mode mode;
+=======
+    ~Dialog();
+
+    void reset();
+>>>>>>> veo_rnd
 
 signals:
     void newItemIsReady(Data data);
@@ -39,12 +47,19 @@ signals:
     void testEmit(Data string);
 
 public slots:
+<<<<<<< HEAD
     void workWithData();
+=======
+>>>>>>> veo_rnd
     void savePicture();
 
 private slots:
     void on_cancelButton_released();
     void on_okButton_released();
+
+private:
+    Ui::Dialog *ui;
+    QPixmap bookCoverPixmap;
 };
 
 #endif // DIALOG_H

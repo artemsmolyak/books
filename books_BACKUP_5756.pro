@@ -27,15 +27,25 @@ SOURCES += main.cpp\
         mainwindow.cpp \
     data.cpp \
     dialog.cpp \
+<<<<<<< HEAD
+    tablemodel.cpp
+=======
+    test.cpp \
     tablemodel.cpp \
     assesment.cpp
+>>>>>>> veo_rnd
 
 
 HEADERS  += mainwindow.h \
     data.h \
     dialog.h \
+<<<<<<< HEAD
+    tablemodel.h
+=======
+    test.h \
     tablemodel.h \
     assesment.h
+>>>>>>> veo_rnd
 
 
 FORMS    += \

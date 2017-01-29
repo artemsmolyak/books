@@ -27,6 +27,7 @@ SOURCES += main.cpp\
         mainwindow.cpp \
     data.cpp \
     dialog.cpp \
+    test.cpp \
     tablemodel.cpp \
     assesment.cpp
 
@@ -34,6 +35,7 @@ SOURCES += main.cpp\
 HEADERS  += mainwindow.h \
     data.h \
     dialog.h \
+    test.h \
     tablemodel.h \
     assesment.h
 

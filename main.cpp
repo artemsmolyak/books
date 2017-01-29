@@ -1,7 +1,7 @@
 #include "mainwindow.h"
 #include <QApplication>
 #include "dialog.h"
-#include "test.h"
+#include "QDebug"
 
 
 

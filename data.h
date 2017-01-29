@@ -17,8 +17,7 @@ private:
     QString date;
     QString review;
     QPixmap bookCoverPixmap;
-    //QString bookCoverQString;
-    int id;
+    qint32 id;
 
 
 public:
@@ -26,18 +25,13 @@ public:
           QString bookTitle, QString date, QString annotation,
           QPixmap bookCoverPixmap);
 
-//    Data( QString assessment,  QString authorName,
-//          QString bookTitle, QString date, QString annotation, QString bookCoverQString);
-
-//    Data( QString assessment,  QString authorName,
-//          QString bookTitle, QString date, QString annotation);
+    Data(qint32 id, QString assessment,  QString authorName,
+          QString bookTitle, QString date, QString annotation,
+          QPixmap bookCoverPixmap);
 
     Data();
 
-
-
     QString toString();
-
 
     QStringList toQStringList();
 
@@ -48,12 +42,14 @@ public:
     QString getBookTitle() const;
     void setBookTitle(const QString &value);
     QString getDate() const;
+
     QString getReview() const;
     void setAnnotation(const QString &value);
     int getId() const;
     void setId(int value);
     QPixmap getBookCoverPixmap() const;
     void setBookCoverPixmap(const QPixmap &value);
+    void setDate(const QString &value);
 };
 Q_DECLARE_METATYPE(Data);
 

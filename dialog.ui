@@ -22,7 +22,7 @@
    </font>
   </property>
   <property name="windowTitle">
-   <string>Add new book</string>
+   <string/>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_5">
    <item>
@@ -299,7 +299,7 @@
            </font>
           </property>
           <property name="text">
-           <string>OK</string>
+           <string>save</string>
           </property>
          </widget>
         </item>
@@ -317,7 +317,7 @@
            </font>
           </property>
           <property name="text">
-           <string>Cancel</string>
+           <string>cancel</string>
           </property>
          </widget>
         </item>

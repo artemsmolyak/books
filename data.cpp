@@ -59,25 +59,6 @@ void Data::setId(int value)
     id = value;
 }
 
-//Data::Data(QString assessment, QString authorName,
-//           QString bookTitle, QString date,
-//           QString annotation):
-//      assessment(assessment),
-//      authorName(authorName),
-//      bookTitle(bookTitle),
-//      date(date),
-//      review(annotation)
-//{
-//    qDebug() <<" size "<< size;
-//   id = size;
-//   size++;
-//}
-
-
-
-
-
-
 
 QPixmap Data::getBookCoverPixmap() const
 {
@@ -87,6 +68,11 @@ QPixmap Data::getBookCoverPixmap() const
 void Data::setBookCoverPixmap(const QPixmap &value)
 {
     bookCoverPixmap = value;
+}
+
+void Data::setDate(const QString &value)
+{
+    date = value;
 }
 
 Data::Data(QString assessment, QString authorName,
@@ -104,18 +90,18 @@ Data::Data(QString assessment, QString authorName,
     size++;
 }
 
-//Data::Data(QString assessment, QString authorName, QString bookTitle, QString date, QString annotation, QString bookCoverQString):
-//assessment(assessment),
-//authorName(authorName),
-//bookTitle(bookTitle),
-//date(date),
-//review(annotation),
-//bookCoverQString(bookCoverQString)
-//{
-//    qDebug() <<" size "<< size;
-//    id = size;
-//    size++;
-//}
+
+Data::Data(qint32 id, QString assessment,  QString authorName,
+      QString bookTitle, QString date, QString annotation,
+      QPixmap bookCoverPixmap):
+    id(id),
+    assessment(assessment),
+    authorName(authorName),
+    bookTitle(bookTitle),
+    date(date),
+    review(annotation),
+    bookCoverPixmap(bookCoverPixmap){}
+
 
 Data::Data()
 {
