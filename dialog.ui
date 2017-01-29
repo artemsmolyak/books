@@ -174,52 +174,6 @@
            </layout>
           </item>
           <item>
-           <layout class="QHBoxLayout" name="horizontalLayout">
-            <item>
-             <widget class="QLabel" name="label">
-              <property name="minimumSize">
-               <size>
-                <width>110</width>
-                <height>0</height>
-               </size>
-              </property>
-              <property name="font">
-               <font>
-                <pointsize>12</pointsize>
-               </font>
-              </property>
-              <property name="text">
-               <string>Assessment:</string>
-              </property>
-              <property name="alignment">
-               <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLineEdit" name="assesEdit">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="minimumSize">
-               <size>
-                <width>200</width>
-                <height>30</height>
-               </size>
-              </property>
-              <property name="font">
-               <font>
-                <pointsize>12</pointsize>
-               </font>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </item>
-          <item>
            <layout class="QHBoxLayout" name="horizontalLayout_5">
             <item>
              <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -237,7 +191,7 @@
                </spacer>
               </item>
               <item>
-               <widget class="assesment" name="assesmentWidget" native="true"/>
+               <widget class="Assesment" name="assesmentWidget" native="true"/>
               </item>
               <item>
                <widget class="QPushButton" name="changeBookCoverButton">
@@ -376,7 +330,7 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>assesment</class>
+   <class>Assesment</class>
    <extends>QWidget</extends>
    <header>assesment.h</header>
    <container>1</container>

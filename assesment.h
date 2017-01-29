@@ -4,22 +4,34 @@
 #include <QWidget>
 
 namespace Ui {
-class assesment;
+class Assesment;
 }
 
-class assesment : public QWidget
+class Assesment : public QWidget
 {
     Q_OBJECT
 
 public:
-    explicit assesment(QWidget *parent = 0);
-    ~assesment();
+    explicit Assesment(QWidget *parent = 0);
+    ~Assesment();
+
+    void setAssesment(int assesment);
+    void setUseMouse(bool isUse);
+
+    int getAssesment();
 
 protected:
     void mouseMoveEvent(QMouseEvent * me);
+    void mousePressEvent(QMouseEvent * me);
 
 private:
-    Ui::assesment *ui;
+    void fillStars(bool isFillFirstStar, bool isFillSecondStar, bool isFillThirdStar, bool isFillFourthStar, bool isFillFifthStar);
+
+private:
+    Ui::Assesment *ui;
+    bool _isUseMouse;
+    bool _isEstimating;
+    int _assesment;
 };
 
 #endif // ASSESMENT_H

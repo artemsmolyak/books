@@ -4,12 +4,13 @@
 #include "QFileDialog"
 #include "QBuffer"
 
+
 Dialog::Dialog(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::Dialog)
 {
     ui->setupUi(this);
-    //connect(ui->buttonBox, SIGNAL(clicked(QAbstractButton*)), this, SLOT(addNewItem()));
+    ui->assesmentWidget->setUseMouse(true);
     connect(ui->changeBookCoverButton, SIGNAL(clicked(bool)), SLOT(savePicture()));
 }
 
@@ -23,7 +24,7 @@ void Dialog::reset()
     ui->dateEdit->clear();
     ui->titleEdit->clear();
     ui->authorEdit->clear();
-    ui->assesEdit->clear();
+    ui->assesmentWidget->setAssesment(0);
     ui->bookCoverLbl->setPixmap(QPixmap("://empty.png"));
     ui->reviewEdit->clear();
 }
@@ -39,15 +40,18 @@ void Dialog::savePicture()
 void Dialog::on_cancelButton_released()
 {
     this->hide();
+    this->reset();
 }
 
 void Dialog::on_okButton_released()
 {
-    QString assessment = ui->assesEdit->text();
+    QString assessment = QString::number(ui->assesmentWidget->getAssesment());
     QString author = ui->authorEdit->text();
     QString title  = ui->titleEdit->text();
     QString date = ui->dateEdit->text();
     QString review = ui->reviewEdit->toPlainText();
 
     emit newItemIsReady(Data(assessment, author, title, date, review, bookCoverPixmap));
+    this->hide();
+    this->reset();
 }

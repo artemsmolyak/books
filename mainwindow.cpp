@@ -15,7 +15,8 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::Window) //, dialog(new Dialog)
 {
     ui->setupUi(this);
-    dialog = new Dialog();
+    ui->assesmentWidget->setUseMouse(false);
+    dialog = new Dialog(this);
     guiSettings();
     connect(dialog, SIGNAL(newItemIsReady(Data)), this, SLOT(getNewItem(Data)));
     connect(ui->tableView, SIGNAL(clicked(QModelIndex)), this, SLOT(chooseListIndex(QModelIndex)));
@@ -281,7 +282,8 @@ void MainWindow::chooseListIndex(QModelIndex index)
     }
 
     ui->reviewtextEdit->document()->setPlainText(list.at(3));
-    ui->additionalWin1->setText(list.at(5));
+    QString digit = list.at(5);
+    ui->assesmentWidget->setAssesment(digit.toInt());
     ui->additionalWin2->setText(list.at(4));
 
 
