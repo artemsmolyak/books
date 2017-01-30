@@ -9,8 +9,6 @@ Dialog::Dialog(QWidget *parent) :
     ui(new Ui::Dialog)
 {
     ui->setupUi(this);
-    connect(ui->okButton, SIGNAL(clicked(bool)), this, SLOT(workWithData()));
-    connect(ui->changeBookCoverButton, SIGNAL(clicked(bool)), SLOT(savePicture()));
     ui->assesmentWidget->setUseMouse(true);
 }
 
@@ -18,7 +16,6 @@ Dialog::~Dialog()
 {
     delete ui;
 }
-
 
 void Dialog::setEditMode(Data data)
 {
@@ -29,7 +26,7 @@ void Dialog::setEditMode(Data data)
 
     ui->dateEdit->setText(data.getDate());
     ui->authorEdit->setText(data.getAuthorName());
-    //ui->assesEdit->setText(data.getAssessment());
+    ui->assesmentWidget->setAssesment(data.getAssessment().toInt());
 
     QPixmap pix = data.getBookCoverPixmap();
     pix = pix.scaled(ui->bookCoverLabel->width(),
@@ -48,17 +45,6 @@ void Dialog::setAddMode()
     reset();
 }
 
-
-void Dialog::savePicture()
-{
-    QString str = QFileDialog::getOpenFileName(0, "Open Dialog", "/", "*.png");
-    qDebug() << "выбран файл "<< str;
-    bookCoverPixmap = QPixmap(str).scaled(ui->bookCoverLabel->size(), Qt::KeepAspectRatio);
-    ui->bookCoverLabel->setPixmap(bookCoverPixmap);
-}
-
-
-
 void Dialog::on_cancelButton_released()
 {
     this->hide();
@@ -66,54 +52,27 @@ void Dialog::on_cancelButton_released()
 }
 void Dialog::on_okButton_released()
 {
-    QString assessment = QString::number(ui->assesmentWidget->getAssesment());
-    QString author = ui->authorEdit->text();
-    QString title  = ui->titleEdit->text();
-    QString date = ui->dateEdit->text();
-    QString review = ui->reviewEdit->toPlainText();
-
-    emit newItemIsReady(Data(assessment, author, title, date, review, bookCoverPixmap));
-    this->hide();
-    this->reset();
-}
-
-
-void Dialog::workWithData()
-{
-    qDebug() << "click";
-
-    close();
-
-    if (mode == add)
-    {
+    if (mode == add) {
         setWindowTitle("Add mode");
-
-        QString assessment = "";//ui->assesEdit->text();
+        QString assessment = QString::number(ui->assesmentWidget->getAssesment());
         QString  author = ui->authorEdit->text();
         QString  title  = ui->titleEdit->text();
         QString   date = ui->dateEdit->text();
         QString  review = ui->reviewEdit->toPlainText();
-
-        reset();
-
-        emit newItemIsReady(Data(assessment, author, title,
-                                 date, review, bookCoverPixmap));
+        emit newItemIsReady(Data(assessment, author, title, date, review, bookCoverPixmap));
     }
-    else if (mode == edit)
-    {
-        QString assessment = "";//ui->assesEdit->text();
+    else if (mode == edit) {
+        QString assessment = QString::number(ui->assesmentWidget->getAssesment());
         QString  author = ui->authorEdit->text();
         QString  title  = ui->titleEdit->text();
         QString   date = ui->dateEdit->text();
         QString  review = ui->reviewEdit->toPlainText();
         const QPixmap *bookCoverPix = ui->bookCoverLabel->pixmap();
-
-         emit editItemIsReady(Data(assessment, author, title,
-                                   date, review, *bookCoverPix));
+        emit editItemIsReady(Data(assessment, author, title, date, review, *bookCoverPix));
     }
-
+    this->hide();
+    this->reset();
 }
-
 
 void Dialog::reset()
 {
@@ -123,4 +82,12 @@ void Dialog::reset()
     ui->assesmentWidget->setAssesment(0);
     ui->bookCoverLabel->setPixmap(QPixmap("://empty.png"));
     ui->reviewEdit->clear();
+}
+
+void Dialog::on_changeBookCoverButton_released()
+{
+    QString str = QFileDialog::getOpenFileName(0, "Open Dialog", "/", "*.png");
+    qDebug() << "выбран файл "<< str;
+    bookCoverPixmap = QPixmap(str).scaled(ui->bookCoverLabel->size(), Qt::KeepAspectRatio);
+    ui->bookCoverLabel->setPixmap(bookCoverPixmap);
 }
