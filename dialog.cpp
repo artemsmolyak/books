@@ -30,7 +30,7 @@ void Dialog::setEditMode(Data data)
 
     QPixmap pix = data.getBookCoverPixmap();
     pix = pix.scaled(ui->bookCoverLabel->width(),
-                                ui->bookCoverLabel->height(), Qt::IgnoreAspectRatio);
+                               ui->bookCoverLabel->height(),  Qt::KeepAspectRatio);
     ui->bookCoverLabel->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
     ui->bookCoverLabel->setPixmap(pix);
 

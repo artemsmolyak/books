@@ -9,6 +9,7 @@
 #include "QSortFilterProxyModel"
 #include "QStringListModel"
 #include "QBuffer"
+#include "QMessageBox"
 
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -29,6 +30,9 @@ MainWindow::MainWindow(QWidget *parent) :
 
     connect(dialog, SIGNAL(newItemIsReady(Data)), this, SLOT(getNewItem(Data)));
     connect(dialog, SIGNAL(editItemIsReady(Data)), this, SLOT(editItem(Data)));
+
+    connect(ui->deleteButton, SIGNAL(clicked(bool)), this, SLOT(deleteItem()));
+
 
     connect(ui->tableView, SIGNAL(clicked(QModelIndex)), this, SLOT(chooseListIndex(QModelIndex)));
 
@@ -144,6 +148,8 @@ bool MainWindow::readXml()
             continue;
         }
 
+
+
         if(token == QXmlStreamReader::StartElement) {
             qDebug() << "StartReader";
             if(reader.name() == "book") {
@@ -152,18 +158,26 @@ bool MainWindow::readXml()
                 QString assesment = reader.attributes().value("assesment").toString();
                 QString authorName = reader.attributes().value("author").toString();
                 QString bookTitle =  reader.attributes().value("title").toString();
-                QString date = reader.attributes().value("date").toString();
                 QString  review = reader.attributes().value("review").toString();
+                QString date = reader.attributes().value("date").toString();
                 QString imageQString = reader.attributes().value("picture").toString();
 
 
-               QByteArray textByte =  QByteArray::fromBase64(imageQString.toLocal8Bit());
+                QByteArray textByte =  QByteArray::fromBase64(imageQString.toLocal8Bit());
 
                 QPixmap pix;
                 pix.loadFromData(textByte, "png");
 
                 Data tmpData(assesment, authorName, bookTitle,
                              date,  review, pix);
+
+
+                qDebug() << "assesment "<< assesment
+                         <<" authorName "<< authorName
+                        <<" bookTitle "<< bookTitle
+                         <<" date "<< date
+                         << " review "<<  review;
+
 
                 dataList.append(tmpData);
                 dataStringList.append(tmpData.toString());
@@ -235,7 +249,7 @@ void MainWindow::saveXml()
     {
         Data data = datalst.at(i);
 
-        QString assessment = data.getAssessment();
+        QString assesment = data.getAssessment();
         QString authorName = data.getAuthorName();
         QString bookTitle = data.getBookTitle();
         QString date = data.getDate();
@@ -246,13 +260,23 @@ void MainWindow::saveXml()
 
 
         xml.writeStartElement("book");
-        xml.writeAttribute("assesment", assessment);
+        xml.writeAttribute("assesment", assesment);
         xml.writeAttribute("author", authorName);
         xml.writeAttribute("title", bookTitle);
         xml.writeAttribute("date", date);
         xml.writeAttribute("review", review);
         xml.writeAttribute("picture", bookCoverQString);
         xml.writeCharacters (QString::number(id));
+
+
+        qDebug() << "assesment "<< assesment
+                 <<" authorName "<< authorName
+                <<" bookTitle "<< bookTitle
+                 <<" date "<< date
+                 << " review "<<  review;
+
+
+
         xml.writeEndElement();
     }
 
@@ -426,4 +450,30 @@ void MainWindow::editItem(Data data)
     saveXml();
 
     //emit
+}
+
+void MainWindow::deleteItem()
+{
+    QModelIndexList indexLst = ui->tableView->selectionModel()->selectedIndexes();
+    QModelIndex indexEdit = indexLst.at(0);
+
+    QMessageBox msgBox;
+    msgBox.setText("Warning! You are going to delete line " + QString::number(indexEdit.row()));
+    msgBox.setInformativeText("Do you really want it?");
+    msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::Cancel);
+    int ret = msgBox.exec();
+
+    switch (ret) {
+    case QMessageBox::Yes:
+        qDebug()<< "index for delete " << indexEdit;
+        tableModel->removeRows(indexEdit.row(), 1, indexEdit);
+        saveXml();
+        break;
+    case QMessageBox::Cancel:
+        break;
+    default:
+        break;
+    }
+
+
 }

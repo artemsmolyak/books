@@ -6,6 +6,8 @@
 #include "data.h"
 #include "qstringlistmodel.h"
 #include "tablemodel.h"
+#include "QDir"
+
 
 class Dialog;
 
@@ -18,7 +20,7 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 private:
-    QString path = "://books.xml";
+    QString path = QDir::homePath() + "//books.xml";
     Dialog * dialog;
     QList <Data> dataList;
     QStringList dataStringList;
@@ -56,6 +58,7 @@ public  slots:
     void editModeStart();
     void addModeStart();
     void editItem(Data data);
+    void deleteItem();
 
     void on_addButton_released();
     void on_deleteButton_released();
