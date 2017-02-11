@@ -20,7 +20,7 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 private:
-    QString path = QDir::homePath() + "//books.xml";
+    QString path = QDir::homePath() + "/books.xml";
     Dialog * dialog;
     QList <Data> dataList;
     QStringList dataStringList;

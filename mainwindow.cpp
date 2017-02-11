@@ -54,21 +54,30 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->tableView->setFocus();
 
     //ui->tableView->resizeRowsToContents();
+    setWindowIcon(QIcon("://bookPic.jpg"));
+
 }
 
 void MainWindow::guiSettings()
 {
-    ui->sortComboBox->addItem("By author");
     ui->sortComboBox->addItem("By title");
-    ui->sortComboBox->addItem("By id");
+    ui->sortComboBox->addItem("By date read");
+
 
     ui->tableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
     ui->tableView->setSelectionBehavior(QAbstractItemView::SelectRows);
 
+    ui->tableView->setColumnHidden(0, true);
+    ui->tableView->setColumnHidden(2, true);
     ui->tableView->setColumnHidden(3, true);
     ui->tableView->setColumnHidden(4, true);
     ui->tableView->setColumnHidden(5, true);
     ui->tableView->setColumnHidden(6, true);
+
+    ui->tableView->resizeColumnsToContents();
+    ui->tableView->resizeRowsToContents();
+
+    //ui->tableView->setColumnWidth(0, 20);
 }
 
 void MainWindow::setChooseFirstColumn()
@@ -154,14 +163,12 @@ bool MainWindow::readXml()
             qDebug() << "StartReader";
             if(reader.name() == "book") {
                 qDebug() << "Book";
-
                 QString assesment = reader.attributes().value("assesment").toString();
                 QString authorName = reader.attributes().value("author").toString();
                 QString bookTitle =  reader.attributes().value("title").toString();
-                QString  review = reader.attributes().value("review").toString();
                 QString date = reader.attributes().value("date").toString();
+                QString  review = reader.attributes().value("review").toString();
                 QString imageQString = reader.attributes().value("picture").toString();
-
 
                 QByteArray textByte =  QByteArray::fromBase64(imageQString.toLocal8Bit());
 
@@ -458,7 +465,7 @@ void MainWindow::deleteItem()
     QModelIndex indexEdit = indexLst.at(0);
 
     QMessageBox msgBox;
-    msgBox.setText("Warning! You are going to delete line " + QString::number(indexEdit.row()));
+    msgBox.setText("Warning! You are going to delete line " + QString::number(indexEdit.row() - 1));
     msgBox.setInformativeText("Do you really want it?");
     msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::Cancel);
     int ret = msgBox.exec();
