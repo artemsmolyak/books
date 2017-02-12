@@ -7,6 +7,7 @@
 #include "qstringlistmodel.h"
 #include "tablemodel.h"
 #include "QDir"
+#include "QSqlError"
 
 
 class Dialog;
@@ -29,6 +30,7 @@ private:
     TableModel * tableModel;
     QModelIndex indexEdit;
 
+     //QSqlRelationalTableModel *model;
 
 public:
     explicit MainWindow(QWidget *parent = 0);
@@ -38,6 +40,16 @@ public:
     void setChooseFirstColumn();
     bool readXml();
     void editMode();
+    void showMainInformation();
+
+
+   //DataBase
+    bool dbConnect();
+    void getInfFromDb();
+
+    QSqlError createGenresTable();
+    QSqlError createBookMainsTable();
+
 
     ~MainWindow();
 

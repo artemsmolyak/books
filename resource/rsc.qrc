@@ -5,5 +5,7 @@
         <file>star_fill.png</file>
         <file>star_no_fill.png</file>
         <file>bookPic.jpg</file>
+        <file>db/books.sqlite</file>
+        <file>qml/main.qml</file>
     </qresource>
 </RCC>

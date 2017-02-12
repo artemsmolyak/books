@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui xml
+QT       += core gui xml qml quick sql
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -35,7 +35,8 @@ HEADERS  += mainwindow.h \
     data.h \
     dialog.h \
     tablemodel.h \
-    assesment.h
+    assesment.h \
+    initdb.h
 
 
 FORMS    += \

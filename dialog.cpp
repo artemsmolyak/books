@@ -3,10 +3,20 @@
 #include "QDebug"
 #include "QFileDialog"
 #include "QBuffer"
+#include "QTextCursor"
+
+bool Dialog::bold() const
+{
+    QTextCursor cursor = textCursor();
+    if (cursor.isNull())
+        return false;
+    return textCursor().charFormat().fontWeight() == QFont::Bold;
+}
 
 Dialog::Dialog(QWidget *parent) :
     QDialog(parent),
-    ui(new Ui::Dialog)
+    ui(new Ui::Dialog),
+    m_doc(0)
 {
     ui->setupUi(this);
     ui->assesmentWidget->setUseMouse(true);
@@ -90,4 +100,19 @@ void Dialog::on_changeBookCoverButton_released()
     qDebug() << "выбран файл "<< str;
     bookCoverPixmap = QPixmap(str).scaled(ui->bookCoverLabel->size(), Qt::KeepAspectRatio);
     ui->bookCoverLabel->setPixmap(bookCoverPixmap);
+}
+
+QTextCursor Dialog::textCursor() const
+{
+    if (!m_doc)
+        return QTextCursor();
+
+    QTextCursor cursor = QTextCursor(m_doc);
+    if (m_selectionStart != m_selectionEnd) {
+        cursor.setPosition(m_selectionStart);
+        cursor.setPosition(m_selectionEnd, QTextCursor::KeepAnchor);
+    } else {
+        cursor.setPosition(m_cursorPosition);
+    }
+    return cursor;
 }

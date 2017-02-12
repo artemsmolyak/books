@@ -10,7 +10,9 @@
 #include "QStringListModel"
 #include "QBuffer"
 #include "QMessageBox"
-
+#include "QSqlDatabase"
+#include "QSqlError"
+#include "initdb.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -21,6 +23,9 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->assesmentWidget->setUseMouse(false);
     dialog = new Dialog(this);
     guiSettings();
+
+    dbConnect();
+    getInfFromDb();
 
     connect(ui->addBtn, SIGNAL(clicked(bool)), dialog, SLOT(show()));
     connect(ui->addBtn, SIGNAL(clicked(bool)), this, SLOT(addModeStart()));
@@ -48,10 +53,9 @@ MainWindow::MainWindow(QWidget *parent) :
     guiSettings();
 
     setChooseFirstColumn();
+    //showMainInformation();
 
-    QModelIndex index = tableModel->index(0, 1);
-    ui->tableView->setCurrentIndex(index);
-    ui->tableView->setFocus();
+
 
     //ui->tableView->resizeRowsToContents();
     setWindowIcon(QIcon("://bookPic.jpg"));
@@ -111,6 +115,10 @@ void MainWindow::setChooseFirstColumn()
         ui->labelPic->setPixmap(pix);
         ui->labelPic->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
     }
+
+    QModelIndex index = tableModel->index(0, 1);
+    ui->tableView->setCurrentIndex(index);
+    ui->tableView->setFocus();
 
 }
 
@@ -204,6 +212,134 @@ bool MainWindow::readXml()
 
    return true;
 
+}
+
+void MainWindow::showMainInformation()
+{
+     ui->reviewtextEdit->setPlainText("read:" +
+                                      QString::number(dataStringList.length())
+                                      +" books"
+                                      + "\n average read speed:");
+}
+
+bool MainWindow::dbConnect()
+{
+
+    // initialize the database
+     QSqlError err = initDb();
+
+
+     createGenresTable();
+     createBookMainsTable();
+
+
+qDebug() << "err " << err.text();
+
+//    if (err.type() != QSqlError::NoError) {
+//        showError(err);
+//        return;
+//    }
+
+//    model->setEditStrategy(QSqlTableModel::OnManualSubmit);
+//    model->setTable("books");
+}
+
+void MainWindow::getInfFromDb()
+{
+    QSqlQuery query;
+    query.exec("SELECT * FROM books");
+    qDebug() << "from db " <<query.size();
+
+    while (query.next()) {
+        QString name = query.value(0).toString();
+        QString value2 = query.value(1).toString();
+        qDebug() << name << value2;
+    }
+
+    query.exec("SELECT * FROM authors");
+    qDebug() << "from db " <<query.size();
+
+    while (query.next()) {
+        QString name = query.value(0).toString();
+        QString value2 = query.value(1).toString();
+        qDebug() << name << value2;
+    }
+
+    query.exec("SELECT * FROM genres");
+    qDebug() << "from db " <<query.size();
+
+    while (query.next()) {
+        QString name = query.value(0).toString();
+        QString value2 = query.value(1).toString();
+        qDebug() << name << value2;
+    }
+
+
+    //ui->verticalLayout_3->
+
+}
+
+QSqlError MainWindow::createGenresTable()
+{
+    QSqlQuery q;
+
+    if (!q.exec(QLatin1String("create table if not exists genres"
+                              "(id integer primary key,"
+                              " name varchar)")))
+        return q.lastError();
+
+
+    if (!q.prepare(QLatin1String("insert into genres"
+                                 " (name) "
+                                 "values(?)")))
+        return q.lastError();
+
+    QVariant sfictionID = addGenre(q, QLatin1String("Science Fiction"));
+    QVariant comedyID = addGenre(q, QLatin1String("Comedy"));
+    QVariant fictionID = addGenre(q, QLatin1String("Fiction"));
+    QVariant fantasyID = addGenre(q, QLatin1String("Fantasy"));
+    QVariant dramaID = addGenre(q, QLatin1String("Drama"));
+    QVariant horrorID = addGenre(q, QLatin1String("Horror"));
+    QVariant nonfictionID = addGenre(q, QLatin1String("Non-fiction"));
+    QVariant realisticFictionID = addGenre(q, QLatin1String("Realistic fiction"));
+    QVariant romanceID = addGenre(q, QLatin1String("Romance novel"));
+    QVariant satireID = addGenre(q, QLatin1String("Satire"));
+    QVariant tragedyID = addGenre(q, QLatin1String("Tragedy"));
+    QVariant tragicomedyID = addGenre(q, QLatin1String("Tragicomedy"));
+
+    return q.lastError();
+}
+
+QSqlError MainWindow::createBookMainsTable()
+{
+     QSqlQuery q;
+
+    if (!q.exec(QLatin1String("create table IF not EXISTS books"
+                              "(id integer primary key, "
+                               "title varchar, "
+                               "author varchar,"
+                               "genreId integer, "
+                               "date date, "
+                               "review varchar, "
+                               "assesment integer)")))
+        return q.lastError();
+
+
+    q.prepare(QLatin1String("insert into books "
+                         "(title, author, genreId, date, review, assesment)"
+                         "values(?, ?, ?, ?, ?, ?)"));
+
+
+
+    QVariant id = addItem(q,
+            QLatin1String("Foundation"),                //title
+            QLatin1String("author"),                    //author
+            1,                                          // "genre,"
+            QDate(2012, 12, 12),                        //"data,"
+            QLatin1String("review sdfsd sdfsdfsdf"),    //"review, "
+            5);                                         // "assesment, ) "
+
+     return q.lastError();
 }
 
 MainWindow::~MainWindow()
