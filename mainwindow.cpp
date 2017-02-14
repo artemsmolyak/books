@@ -229,9 +229,9 @@ bool MainWindow::dbConnect()
      QSqlError err = initDb();
 
 
-     createGenresTable();
-     createBookMainsTable();
-
+     qDebug() <<(createGenresTable()).text();
+     qDebug() << (createBookMainsTable()).text();
+     qDebug() << (createQuotesTable()).text();
 
 qDebug() << "err " << err.text();
 
@@ -312,34 +312,59 @@ QSqlError MainWindow::createGenresTable()
 
 QSqlError MainWindow::createBookMainsTable()
 {
-     QSqlQuery q;
+    QSqlQuery q;
 
     if (!q.exec(QLatin1String("create table IF not EXISTS books"
                               "(id integer primary key, "
-                               "title varchar, "
-                               "author varchar,"
-                               "genreId integer, "
-                               "date date, "
-                               "review varchar, "
-                               "assesment integer)")))
+                              "title varchar, "
+                              "author varchar,"
+                              "genreId integer, "
+                              "date date, "
+                              "review TEXT, "
+                              "assesment integer, "
+                              "FOREIGN KEY(genreId) REFERENCES genres(id))")))
         return q.lastError();
 
-
-    q.prepare(QLatin1String("insert into books "
-                         "(title, author, genreId, date, review, assesment)"
-                         "values(?, ?, ?, ?, ?, ?)"));
-
+     q.prepare(QLatin1String("insert into books "
+                            "(title, author, genreId, date, review, assesment)"
+                            "values(?, ?, ?, ?, ?, ?)"));
 
 
     QVariant id = addItem(q,
-            QLatin1String("Foundation"),                //title
-            QLatin1String("author"),                    //author
-            1,                                          // "genre,"
-            QDate(2012, 12, 12),                        //"data,"
-            QLatin1String("review sdfsd sdfsdfsdf"),    //"review, "
-            5);                                         // "assesment, ) "
+                          QLatin1String("Foundation"),                //title
+                          QLatin1String("author"),                    //author
+                          1,                                          // "genre,"
+                          QDate(2012, 12, 12),                        //"data,"
+                          QLatin1String("review sdfsd sdfsdfsdf"),    //"review, "
+                          5);                                          // "assesment, ) "
 
-     return q.lastError();
+    return q.lastError();
+}
+
+QSqlError MainWindow::createQuotesTable()
+{
+    QSqlQuery q;
+
+    if (!q.exec(QLatin1String("create table if not exists quotes"
+                              "(id integer primary key,"
+                              "text varchar,"
+                              "idBooks integer, "
+                              "FOREIGN KEY(idBooks) REFERENCES books(id))")))
+        return q.lastError();
+
+
+        q.prepare(QLatin1String("insert into quotes "
+                               "(text, idBooks)"
+                               "values(?, ?)"));
+
+
+       QVariant id = addQuotes(q,
+                             QLatin1String("quotes gsdfklgj dkl"),
+                             1);
+
+       return q.lastError();
+
+
 }
 
 MainWindow::~MainWindow()
@@ -458,8 +483,27 @@ void MainWindow::getNewItem(Data data)
 
     saveXml();
 
-
     emit hideDialog();
+
+
+    //db
+
+
+    QSqlQuery q;
+    q.prepare(QLatin1String("insert into books "
+                            "(title, author, genreId, date, review, assesment)"
+                            "values(?, ?, ?, ?, ?, ?)"));
+
+
+    QVariant id = addItem(q,
+                          data.getBookTitle(),                //title
+                          data.getAuthorName(),                    //author
+                          1,                                          // "genre,"
+                          QDate(2012, 12, 12),                        //"data,"
+                          data.getReview(),    //"review, "
+                          data.getAssessment().toInt());                                          // "assesment, ) "
+
+    //return q.lastError();
 }
 
 void MainWindow::updateDataList()

@@ -42,6 +42,17 @@ QVariant addAuthor(QSqlQuery &q, const QString &name, const QDate &birthdate)
     return q.lastInsertId();
 }
 
+
+QVariant addQuotes(QSqlQuery &q, const QString &quote, const int &idBooks)
+{
+    q.addBindValue(quote);
+    q.addBindValue(idBooks);
+    q.exec();
+    return q.lastInsertId();
+}
+
+
+
 QSqlError initDb()
 {
     QSqlDatabase db;
@@ -57,6 +68,8 @@ QSqlError initDb()
     }
 
      db.setDatabaseName(QDir::homePath()+"/books.sqlite");
+
+
 
     if (!db.open())
        {

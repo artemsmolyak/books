@@ -49,7 +49,7 @@ public:
 
     QSqlError createGenresTable();
     QSqlError createBookMainsTable();
-
+    QSqlError createQuotesTable();
 
     ~MainWindow();
 
