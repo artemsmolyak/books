@@ -13,6 +13,8 @@
 #include "QSqlDatabase"
 #include "QSqlError"
 #include "initdb.h"
+#include "editdialog.h"
+
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -22,13 +24,18 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
     ui->assesmentWidget->setUseMouse(false);
     dialog = new Dialog(this);
+    dialogAddEdit = new EditDialog;
     guiSettings();
 
     dbConnect();
     getInfFromDb();
 
-    connect(ui->addBtn, SIGNAL(clicked(bool)), dialog, SLOT(show()));
+//    connect(ui->addBtn, SIGNAL(clicked(bool)), dialog, SLOT(show()));
+//    connect(ui->addBtn, SIGNAL(clicked(bool)), this, SLOT(addModeStart()));
+
+    connect(ui->addBtn, SIGNAL(clicked(bool)), dialogAddEdit, SLOT(show()));
     connect(ui->addBtn, SIGNAL(clicked(bool)), this, SLOT(addModeStart()));
+
 
     connect(ui->editBtn, SIGNAL(clicked(bool)),  dialog, SLOT(show()));
     connect(ui->editBtn, SIGNAL(clicked(bool)), this, SLOT(editModeStart()));
@@ -59,6 +66,9 @@ MainWindow::MainWindow(QWidget *parent) :
 
     //ui->tableView->resizeRowsToContents();
     setWindowIcon(QIcon("://bookPic.jpg"));
+
+//    EditDialog * eDialog = new EditDialog;
+//    eDialog->show();
 
 }
 
@@ -232,6 +242,7 @@ bool MainWindow::dbConnect()
      qDebug() <<(createGenresTable()).text();
      qDebug() << (createBookMainsTable()).text();
      qDebug() << (createQuotesTable()).text();
+     qDebug() << (createTagsTable()).text();
 
 qDebug() << "err " << err.text();
 
@@ -365,6 +376,32 @@ QSqlError MainWindow::createQuotesTable()
        return q.lastError();
 
 
+}
+
+QSqlError MainWindow::createTagsTable()
+{
+    QSqlQuery q;
+
+    if (!q.exec(QLatin1String("create table if not exists tags"
+                              "(id integer primary key,"
+                              "text varchar,"
+                              "idBooks integer, "
+                              "FOREIGN KEY(idBooks) REFERENCES books(id))")))
+        return q.lastError();
+
+
+        q.prepare(QLatin1String("insert into tags "
+                               "(text, idBooks)"
+                               "values(?, ?)"));
+
+
+       QVariant id = addQuotes(q,
+                             "Человеку не нужно трех сосен, "
+                              "чтобы заблудиться, — "
+                              "ему достаточно двух существительных.",
+                             1);
+
+       return q.lastError();
 }
 
 MainWindow::~MainWindow()

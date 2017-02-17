@@ -8,6 +8,7 @@
 #include "tablemodel.h"
 #include "QDir"
 #include "QSqlError"
+#include "editdialog.h"
 
 
 class Dialog;
@@ -23,6 +24,8 @@ class MainWindow : public QMainWindow
 private:
     QString path = QDir::homePath() + "/books.xml";
     Dialog * dialog;
+    EditDialog * dialogAddEdit;
+
     QList <Data> dataList;
     QStringList dataStringList;
 
@@ -50,6 +53,7 @@ public:
     QSqlError createGenresTable();
     QSqlError createBookMainsTable();
     QSqlError createQuotesTable();
+    QSqlError createTagsTable();
 
     ~MainWindow();
 

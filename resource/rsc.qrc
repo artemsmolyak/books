@@ -7,5 +7,12 @@
         <file>bookPic.jpg</file>
         <file>db/books.sqlite</file>
         <file>qml/main.qml</file>
+        <file>picButtons/textbold.png</file>
+        <file>picButtons/textcenter.png</file>
+        <file>picButtons/textitalic.png</file>
+        <file>picButtons/textjustify.png</file>
+        <file>picButtons/textleft.png</file>
+        <file>picButtons/textright.png</file>
+        <file>picButtons/textunder.png</file>
     </qresource>
 </RCC>

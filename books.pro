@@ -28,7 +28,8 @@ SOURCES += main.cpp\
     data.cpp \
     dialog.cpp \
     tablemodel.cpp \
-    assesment.cpp
+    assesment.cpp \
+    editdialog.cpp
 
 
 HEADERS  += mainwindow.h \
@@ -36,13 +37,15 @@ HEADERS  += mainwindow.h \
     dialog.h \
     tablemodel.h \
     assesment.h \
-    initdb.h
+    initdb.h \
+    editdialog.h
 
 
 FORMS    += \
     mainwindow.ui \
     dialog.ui \
-    assesment.ui
+    assesment.ui \
+    form.ui
 
 
 
