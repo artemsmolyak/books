@@ -12,7 +12,6 @@ class Data
 
 private:
     QString bookTitle;
-    QString assessment;
     QString authorsName;
     QString mainIdea;
     QStringList tagsList;
@@ -21,6 +20,7 @@ private:
     QDate dateF;
     QString review;
     QPixmap bookCoverPixmap;
+
     int rateInt;
     int genre;
     int pages;
@@ -29,16 +29,9 @@ private:
 
 public:
 
-    Data(QString title, QString authors, QString mainIdea,  int rateInt, int genre,
-         int pages, QDate dateS, QDate dateF, QStringList tagsList, QString  review);
-
-    Data(QString assessment,  QString authorName,
-          QString bookTitle, QString date, QString annotation,
-          QPixmap bookCoverPixmap);
-
-    Data(qint32 id, QString assessment,  QString authorName,
-          QString bookTitle, QString date, QString annotation,
-          QPixmap bookCoverPixmap);
+    Data(QString title, QString authors, QString mainIdea,  int rateInt,
+         int genre, int pages, QDate dateS, QDate dateF, QStringList tagsList,
+         QString  review, QPixmap bookCoverPixmap);
 
     Data();
 
@@ -52,6 +45,7 @@ public:
     void setAuthorsName(const QString &value);
     QString getBookTitle() const;
     void setBookTitle(const QString &value);
+
     QDate getDateS() const;
     QDate getDateF() const;
 
@@ -61,8 +55,20 @@ public:
     void setId(int value);
     QPixmap getBookCoverPixmap() const;
     void setBookCoverPixmap(const QPixmap &value);
+
     void setDateS(const QDate &value);
     void setDateF(const QDate &value);
+
+    QString getMainIdea() const;
+    void setMainIdea(const QString &value);
+    int getRateInt() const;
+    void setRateInt(int value);
+    int getGenre() const;
+    void setGenre(int value);
+    int getPages() const;
+    void setPages(int value);
+    QStringList getTagsList() const;
+    void setTagsList(const QStringList &value);
 };
 Q_DECLARE_METATYPE(Data);
 

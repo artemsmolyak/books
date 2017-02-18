@@ -40,9 +40,10 @@ public:
     void guiSettings();
     QString convertQPixmapToQString(QPixmap pic);
     QPixmap convertQStringToQPixmap(QString pic);
+
     void setChooseFirstColumn();
     bool readXml();
-    void editMode();
+    void editMode();    
     void showMainInformation();
 
 
@@ -54,6 +55,8 @@ public:
     QSqlError createBookMainsTable();
     QSqlError createQuotesTable();
     QSqlError createTagsTable();
+
+    QSqlError saveItemInDatabase(Data data);
 
     ~MainWindow();
 

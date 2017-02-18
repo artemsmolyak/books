@@ -14,18 +14,28 @@
 #include "QFileDialog"
 #include "QDebug"
 
+QLineEdit *EditDialog::getMainIdeaText() const
+{
+    return mainIdeaText;
+}
+
+void EditDialog::setMainIdeaText(QLineEdit *value)
+{
+    mainIdeaText = value;
+}
+
 EditDialog::EditDialog()
 {
     //setSizePolicy(QSizePolicy::Minimum);
-      resize(700, 700);
+    resize(700, 700);
 
 
 
-      QLabel * titleLable = new QLabel("title: ");
-      titleText = new QLineEdit();
+    QLabel * titleLable = new QLabel("title: ");
+    titleText = new QLineEdit();
 
       QLabel * authorLable = new QLabel("authors: ");
-      authorText = new QLineEdit();
+      authorsText = new QLineEdit();
 
       QLabel * mainIdeaLable = new QLabel("main idea: ");
       mainIdeaText = new QLineEdit();
@@ -98,7 +108,7 @@ EditDialog::EditDialog()
       layout->addWidget(titleText, 0,  1, 1, 7  );
 
       layout->addWidget(authorLable, 1,  0, 1, 1  );
-      layout->addWidget(authorText, 1,  1, 1, 7  );
+      layout->addWidget(authorsText, 1,  1, 1, 7  );
 
       layout->addWidget(mainIdeaLable, 2,  0, 1, 1  );
       layout->addWidget(mainIdeaText, 2,  1, 1, 7  );
@@ -250,12 +260,12 @@ void EditDialog::editItem(Data data)
 
 void EditDialog::on_SaveButton_released()
 {
-    if (mode == add)
+    //if (mode == add)
     {
         setWindowTitle("Add book");
 
         QString title = titleText->text();
-        QString  author = authorText->text();
+        QString  authors = authorsText->text();
         QString mainIdea = mainIdeaText->text();
 
         int rateInt = rate->getAssesment();
@@ -272,7 +282,14 @@ void EditDialog::on_SaveButton_released()
 
         QString  review = reviewText->toPlainText();
 
-        emit newItemIsReady(Data(assessment, author, title, date, review, bookCoverPixmap));
+        QIcon icon = picButton->icon();
+        QPixmap bookCoverPixmap = icon.pixmap(minSizePic);
+
+        emit newItemIsReady(
+                    Data(title, authors, mainIdea, rateInt, genre,
+                         pages, dateS, dateF, tagsList,
+                         review,  bookCoverPixmap)
+                    );
     }
     //else if (mode == edit)
 //    {

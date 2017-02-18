@@ -30,22 +30,22 @@ Dialog::~Dialog()
 void Dialog::setEditMode(Data data)
 {
     //mode = edit;
-    setWindowTitle("Edit mode");
+//    setWindowTitle("Edit mode");
 
-    qDebug() << "!" << data.getDate();
+//    qDebug() << "!" << data.getDate();
 
-    ui->dateEdit->setText(data.getDate());
-    ui->authorEdit->setText(data.getAuthorName());
-    ui->assesmentWidget->setAssesment(data.getAssessment().toInt());
+//    ui->dateEdit->setText(data.getDate());
+//    ui->authorEdit->setText(data.getAuthorName());
+//    ui->assesmentWidget->setAssesment(data.getAssessment().toInt());
 
-    QPixmap pix = data.getBookCoverPixmap();
-    pix = pix.scaled(ui->bookCoverLabel->width(),
-                               ui->bookCoverLabel->height(),  Qt::KeepAspectRatio);
-    ui->bookCoverLabel->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
-    ui->bookCoverLabel->setPixmap(pix);
+//    QPixmap pix = data.getBookCoverPixmap();
+//    pix = pix.scaled(ui->bookCoverLabel->width(),
+//                               ui->bookCoverLabel->height(),  Qt::KeepAspectRatio);
+//    ui->bookCoverLabel->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
+//    ui->bookCoverLabel->setPixmap(pix);
 
-    ui->titleEdit->setText(data.getBookTitle());
-    ui->reviewEdit->setText(data.getReview());
+//    ui->titleEdit->setText(data.getBookTitle());
+//    ui->reviewEdit->setText(data.getReview());
 }
 
 void Dialog::setAddMode()
@@ -63,27 +63,35 @@ void Dialog::on_cancelButton_released()
 void Dialog::on_okButton_released()
 {
     //if (mode == add)
-    {
-        setWindowTitle("Add mode");
-        QString assessment = QString::number(ui->assesmentWidget->getAssesment());
-        QString  author = ui->authorEdit->text();
-        QString  title  = ui->titleEdit->text();
-        QString   date = ui->dateEdit->text();
-        QString  review = ui->reviewEdit->toPlainText();
-        emit newItemIsReady(Data(assessment, author, title, date, review, bookCoverPixmap));
-    }
+//    {
+//        setWindowTitle("Add mode");
+//        int rate =
+//        QString  author = ui->authorEdit->text();
+//        QString  title  = ui->titleEdit->text();
+//        QString   date = ui->dateEdit->text();
+//        QString  review = ui->reviewEdit->toPlainText();
+
+
+
+//        emit newItemIsReady
+//                   (
+//                    Data(QString title, QString authors, QString mainIdea,  int rateInt, int genre,
+//                         int pages, QDate dateS, QDate dateF, QStringList tagsList, QString  review);
+//                    Data(assessment, author, title, date, review, bookCoverPixmap)
+//                   );
+//    }
     //else if (mode == edit)
-    {
-        QString assessment = QString::number(ui->assesmentWidget->getAssesment());
-        QString  author = ui->authorEdit->text();
-        QString  title  = ui->titleEdit->text();
-        QString   date = ui->dateEdit->text();
-        QString  review = ui->reviewEdit->toPlainText();
-        const QPixmap *bookCoverPix = ui->bookCoverLabel->pixmap();
-        emit editItemIsReady(Data(assessment, author, title, date, review, *bookCoverPix));
-    }
-    this->hide();
-    this->reset();
+//    {
+//        QString assessment = QString::number(ui->assesmentWidget->getAssesment());
+//        QString  author = ui->authorEdit->text();
+//        QString  title  = ui->titleEdit->text();
+//        QString   date = ui->dateEdit->text();
+//        QString  review = ui->reviewEdit->toPlainText();
+//        const QPixmap *bookCoverPix = ui->bookCoverLabel->pixmap();
+//        emit editItemIsReady(Data(assessment, author, title, date, review, *bookCoverPix));
+//    }
+//    this->hide();
+//    this->reset();
 }
 
 void Dialog::reset()

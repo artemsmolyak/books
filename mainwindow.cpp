@@ -14,13 +14,14 @@
 #include "QSqlError"
 #include "initdb.h"
 #include "editdialog.h"
+#include "QImageReader"
+
 
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::Window)
 {
-
     ui->setupUi(this);
     ui->assesmentWidget->setUseMouse(false);
     dialog = new Dialog(this);
@@ -156,73 +157,73 @@ QPixmap MainWindow::convertQStringToQPixmap(QString pic)
 
 bool MainWindow::readXml()
 {
-    qDebug() << "reading";
+//    qDebug() << "reading";
 
-    QFile in(path);
-    if(!in.open(QFile::ReadOnly | QFile::Text))
-    {
-      qDebug() << "file not open for read!";
-      return false;
-    }
+//    QFile in(path);
+//    if(!in.open(QFile::ReadOnly | QFile::Text))
+//    {
+//      qDebug() << "file not open for read!";
+//      return false;
+//    }
 
-    QXmlStreamReader reader;
-    reader.setDevice(&in);
+//    QXmlStreamReader reader;
+//    reader.setDevice(&in);
 
-    while(!reader.atEnd() && !reader.error())
-    {
-        qDebug() <<"text start "<< reader.text().toString();
+//    while(!reader.atEnd() && !reader.error())
+//    {
+//        qDebug() <<"text start "<< reader.text().toString();
 
-        QXmlStreamReader::TokenType token = reader.readNext();
+//        QXmlStreamReader::TokenType token = reader.readNext();
 
-        if(token == QXmlStreamReader::StartDocument) {
-            qDebug() << "StartDoc";
-            continue;
-        }
-
-
-
-        if(token == QXmlStreamReader::StartElement) {
-            qDebug() << "StartReader";
-            if(reader.name() == "book") {
-                qDebug() << "Book";
-                QString assesment = reader.attributes().value("assesment").toString();
-                QString authorName = reader.attributes().value("author").toString();
-                QString bookTitle =  reader.attributes().value("title").toString();
-                QString date = reader.attributes().value("date").toString();
-                QString  review = reader.attributes().value("review").toString();
-                QString imageQString = reader.attributes().value("picture").toString();
-
-                QByteArray textByte =  QByteArray::fromBase64(imageQString.toLocal8Bit());
-
-                QPixmap pix;
-                pix.loadFromData(textByte, "png");
-
-                Data tmpData(assesment, authorName, bookTitle,
-                             date,  review, pix);
+//        if(token == QXmlStreamReader::StartDocument) {
+//            qDebug() << "StartDoc";
+//            continue;
+//        }
 
 
-                qDebug() << "assesment "<< assesment
-                         <<" authorName "<< authorName
-                        <<" bookTitle "<< bookTitle
-                         <<" date "<< date
-                         << " review "<<  review;
+
+//        if(token == QXmlStreamReader::StartElement) {
+//            qDebug() << "StartReader";
+//            if(reader.name() == "book") {
+//                qDebug() << "Book";
+//                QString assesment = reader.attributes().value("assesment").toString();
+//                QString authorName = reader.attributes().value("author").toString();
+//                QString bookTitle =  reader.attributes().value("title").toString();
+//                QString date = reader.attributes().value("date").toString();
+//                QString  review = reader.attributes().value("review").toString();
+//                QString imageQString = reader.attributes().value("picture").toString();
+
+//                QByteArray textByte =  QByteArray::fromBase64(imageQString.toLocal8Bit());
+
+//                QPixmap pix;
+//                pix.loadFromData(textByte, "png");
+
+//                Data tmpData(assesment, authorName, bookTitle,
+//                             date,  review, pix);
 
 
-                dataList.append(tmpData);
-                dataStringList.append(tmpData.toString());
-
-            }
-        }
-
-        reader.readNext();
-
-        qDebug() <<"text end "<< reader.text().toString();
-    }
+//                qDebug() << "assesment "<< assesment
+//                         <<" authorName "<< authorName
+//                        <<" bookTitle "<< bookTitle
+//                         <<" date "<< date
+//                         << " review "<<  review;
 
 
-    updateDataList();
+//                dataList.append(tmpData);
+//                dataStringList.append(tmpData.toString());
 
-    in.close();
+//            }
+//        }
+
+//        reader.readNext();
+
+//        qDebug() <<"text end "<< reader.text().toString();
+//    }
+
+
+//    updateDataList();
+
+//    in.close();
 
    return true;
 
@@ -243,10 +244,12 @@ bool MainWindow::dbConnect()
      QSqlError err = initDb();
 
 
-     qDebug() <<(createGenresTable()).text();
-     qDebug() << (createBookMainsTable()).text();
-     qDebug() << (createQuotesTable()).text();
-     qDebug() << (createTagsTable()).text();
+     //qDebug() << (createGenresTable()).text();
+     //qDebug() << (createBookMainsTable()).text();
+     //qDebug() << (createQuotesTable()).text();
+     //qDebug() << (createTagsTable()).text();
+
+
 
 qDebug() << "err " << err.text();
 
@@ -336,31 +339,36 @@ QSqlError MainWindow::createBookMainsTable()
 {
     QSqlQuery q;
 
+
+//    QString title = data.getBookTitle();
+//    QString authors = data.getAuthorsName();
+//    QString mainIdea = data.getMainIdea();
+//    int rateInt = data.getRateInt();
+//    int genre = data.getGenre();
+//    int pages = data.getPages();
+//    QDate dateS = data.getDateS();
+//    QDate dateF = data.getDateF();
+//    QStringList tagsList = data.getTagsList();
+//    QString  review = data.getReview();
+//    QPixmap bookCoverPixmap = data.getBookCoverPixmap();
+
+
+
     if (!q.exec(QLatin1String("create table IF not EXISTS books"
                               "(id integer primary key, "
                               "title varchar, "
-                              "author varchar,"
+                              "authors varchar,"
+                              "mainIdea TEXT, "
+                              "rateInt integer, "
                               "genreId integer, "
-                              "date date, "
+                              "pages integer, "
+                              "dateS date, "
+                              "dateF date, "
+                              "tagsList TEXT, "
                               "review TEXT, "
-                              "assesment integer, "
+                              "bookCoverPixmap BLOB, "
                               "FOREIGN KEY(genreId) REFERENCES genres(id))")))
         return q.lastError();
-
-     q.prepare(QLatin1String("insert into books "
-                            "(title, author, genreId, date, review, assesment)"
-                            "values(?, ?, ?, ?, ?, ?)"));
-
-
-    QVariant id = addItem(q,
-                          QLatin1String("Foundation"),                //title
-                          QLatin1String("author"),                    //author
-                          1,                                          // "genre,"
-                          QDate(2012, 12, 12),                        //"data,"
-                          QLatin1String("review sdfsd sdfsdfsdf"),    //"review, "
-                          5);                                          // "assesment, ) "
-
-    return q.lastError();
 }
 
 QSqlError MainWindow::createQuotesTable()
@@ -415,6 +423,74 @@ QSqlError MainWindow::createTagsTable()
        return q.lastError();
 }
 
+QSqlError MainWindow::saveItemInDatabase(Data data)
+{
+    QString title = data.getBookTitle();
+    QString authors = data.getAuthorsName();
+    QString mainIdea = data.getMainIdea();
+    int rateInt = data.getRateInt();
+    int genre = data.getGenre();
+    int pages = data.getPages();
+    QDate dateS = data.getDateS();
+    QDate dateF = data.getDateF();
+    QStringList tagsList = data.getTagsList();
+    QString tags = tagsList.join(", ");
+    QString  review = data.getReview();
+    QPixmap bookCoverPixmap = data.getBookCoverPixmap();
+
+
+//    ("create table IF not EXISTS books"
+//                                  "(id integer primary key, "
+//                                  "title varchar, "
+//                                  "authors varchar,"
+//                                  "mainIdea TEXT, "
+//                                  "rateInt integer, "
+//                                  "genreId integer, "
+//                                  "pages integer, "
+//                                  "dateS date, "
+//                                  "dateF date, "
+//                                  "tagsList TEXT, "
+//                                  "review TEXT, "
+//                                  "bookCoverPixmap BLOB, "
+//                                  "FOREIGN KEY(genreId) REFERENCES genres(id))")))
+
+
+    QSqlQuery q;
+    q.prepare(QLatin1String("insert into books "
+                            "(title, authors, mainIdea, "
+                            "rateInt, genreId, pages, "
+                            "dateS, dateF, tagsList, "
+                            "review, bookCoverPixmap)"
+                            "values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"));
+
+
+    QByteArray inByteArrayBookCover;
+    QBuffer inBuffer(&inByteArrayBookCover);
+    inBuffer.open(QIODevice::WriteOnly);
+    bookCoverPixmap.save(&inBuffer);
+
+
+//QImageReader reader;
+//QByteArray nameArray = reader.format();
+//QString picFormat = QString::fromLatin1(nameArray.data());
+
+
+   QVariant id = addItem(q,
+                         title,
+                         authors,
+                         mainIdea,
+                         rateInt,
+                         genre,
+                         pages,
+                         dateS,
+                         dateF,
+                         tags,
+                         review,
+                         inByteArrayBookCover);
+
+   return q.lastError();
+}
+
 MainWindow::~MainWindow()
 {
     delete ui;
@@ -422,94 +498,94 @@ MainWindow::~MainWindow()
 
 void MainWindow::saveXml()
 {
-    QFile xmlFile(path);
+//    QFile xmlFile(path);
 
-    if (xmlFile.exists())
-    {
-        qDebug() << "file exists";
-    }
-    else
-    {
-        qDebug() << "file doesn't exist";
-    }
-
-
-    if (xmlFile.isOpen())
-    {
-        qDebug() << "file was open";
-        xmlFile.close();
-    }
-
-    QFileDevice::FileError err = QFileDevice::NoError;
-
-    if (!xmlFile.open(QIODevice::WriteOnly | QIODevice::Text))
-    {
-        qDebug() << xmlFile.errorString();
-        qDebug() << "file not open for save";
-
-        return;
-    }
+//    if (xmlFile.exists())
+//    {
+//        qDebug() << "file exists";
+//    }
+//    else
+//    {
+//        qDebug() << "file doesn't exist";
+//    }
 
 
-    QXmlStreamWriter xml(&xmlFile);
-    xml.setAutoFormatting(true);
+//    if (xmlFile.isOpen())
+//    {
+//        qDebug() << "file was open";
+//        xmlFile.close();
+//    }
+
+//    QFileDevice::FileError err = QFileDevice::NoError;
+
+//    if (!xmlFile.open(QIODevice::WriteOnly | QIODevice::Text))
+//    {
+//        qDebug() << xmlFile.errorString();
+//        qDebug() << "file not open for save";
+
+//        return;
+//    }
 
 
-    xml.writeStartDocument();
-    xml.writeStartElement("books");
+//    QXmlStreamWriter xml(&xmlFile);
+//    xml.setAutoFormatting(true);
 
 
-    QList <Data> datalst = tableModel->getList();
-
-    for(int i = 0; i < datalst.length(); i++)
-    {
-        Data data = datalst.at(i);
-
-        QString assesment = data.getAssessment();
-        QString authorName = data.getAuthorName();
-        QString bookTitle = data.getBookTitle();
-        QString date = data.getDate();
-        QString review = data.getReview();
-        QPixmap bookPic = data.getBookCoverPixmap();
-        QString bookCoverQString = convertQPixmapToQString(bookPic);
-        qint32  id = data.getId();
+//    xml.writeStartDocument();
+//    xml.writeStartElement("books");
 
 
-        xml.writeStartElement("book");
-        xml.writeAttribute("assesment", assesment);
-        xml.writeAttribute("author", authorName);
-        xml.writeAttribute("title", bookTitle);
-        xml.writeAttribute("date", date);
-        xml.writeAttribute("review", review);
-        xml.writeAttribute("picture", bookCoverQString);
-        xml.writeCharacters (QString::number(id));
+//    QList <Data> datalst = tableModel->getList();
+
+//    for(int i = 0; i < datalst.length(); i++)
+//    {
+//        Data data = datalst.at(i);
+
+//        QString assesment = data.getAssessment();
+//        QString authorName = data.getAuthorName();
+//        QString bookTitle = data.getBookTitle();
+//        QString date = data.getDate();
+//        QString review = data.getReview();
+//        QPixmap bookPic = data.getBookCoverPixmap();
+//        QString bookCoverQString = convertQPixmapToQString(bookPic);
+//        qint32  id = data.getId();
 
 
-        qDebug() << "assesment "<< assesment
-                 <<" authorName "<< authorName
-                <<" bookTitle "<< bookTitle
-                 <<" date "<< date
-                 << " review "<<  review;
+//        xml.writeStartElement("book");
+//        xml.writeAttribute("assesment", assesment);
+//        xml.writeAttribute("author", authorName);
+//        xml.writeAttribute("title", bookTitle);
+//        xml.writeAttribute("date", date);
+//        xml.writeAttribute("review", review);
+//        xml.writeAttribute("picture", bookCoverQString);
+//        xml.writeCharacters (QString::number(id));
+
+
+//        qDebug() << "assesment "<< assesment
+//                 <<" authorName "<< authorName
+//                <<" bookTitle "<< bookTitle
+//                 <<" date "<< date
+//                 << " review "<<  review;
 
 
 
-        xml.writeEndElement();
-    }
+//        xml.writeEndElement();
+//    }
 
 
-    xml.writeEndElement();
-    xml.writeEndDocument();
+//    xml.writeEndElement();
+//    xml.writeEndDocument();
 
-    xmlFile.close();
-    if (xmlFile.error())
-    {
-        qDebug() << "file error!";
-        return;
-    }
+//    xmlFile.close();
+//    if (xmlFile.error())
+//    {
+//        qDebug() << "file error!";
+//        return;
+//    }
 
-    qDebug() << "file is ok!";
+//    qDebug() << "file is ok!";
 
-  xmlFile.close();
+//  xmlFile.close();
 
 }
 
@@ -517,8 +593,12 @@ void MainWindow::getNewItem(Data data)
 {
     qDebug() << " getNewItem !!! " <<data.toString();
 
+    saveItemInDatabase(data);
 
-    int row = tableModel->rowCount(QModelIndex());
+
+
+
+  /*  int row = tableModel->rowCount(QModelIndex());
     tableModel->insertRows(row, 1);
 
 
@@ -549,7 +629,7 @@ void MainWindow::getNewItem(Data data)
                           1,                                          // "genre,"
                           QDate(2012, 12, 12),                        //"data,"
                           data.getReview(),    //"review, "
-                          data.getAssessment().toInt());                                          // "assesment, ) "
+                          data.getAssessment().toInt());      */                                    // "assesment, ) "
 
     //return q.lastError();
 }
@@ -632,43 +712,43 @@ void MainWindow::editModeStart()
 {
     qDebug() << "edit mode";
 
-    QModelIndexList indexLst = ui->tableView->selectionModel()->selectedIndexes();
+//    QModelIndexList indexLst = ui->tableView->selectionModel()->selectedIndexes();
 
-    indexEdit = indexLst.at(0);
+//    indexEdit = indexLst.at(0);
 
-    qDebug() <<" IND "<< indexLst.at(0).row();
-    Data data;
+//    qDebug() <<" IND "<< indexLst.at(0).row();
+//    Data data;
 
-    QModelIndex newIn  = tableModel->index(indexEdit.row(), 0);
-    QVariant QV = tableModel->data(newIn, Qt::DisplayRole);
-    data.setId(qvariant_cast<qint32>(QV));
+//    QModelIndex newIn  = tableModel->index(indexEdit.row(), 0);
+//    QVariant QV = tableModel->data(newIn, Qt::DisplayRole);
+//    data.setId(qvariant_cast<qint32>(QV));
 
-    newIn  = tableModel->index(indexEdit.row(), 1);
-    QV = tableModel->data(newIn, Qt::DisplayRole);
-    data.setBookTitle(qvariant_cast<QString>(QV));
+//    newIn  = tableModel->index(indexEdit.row(), 1);
+//    QV = tableModel->data(newIn, Qt::DisplayRole);
+//    data.setBookTitle(qvariant_cast<QString>(QV));
 
-    newIn  = tableModel->index(indexEdit.row(), 2);
-    QV = tableModel->data(newIn, Qt::DisplayRole);
-    data.setAuthorName(qvariant_cast<QString>(QV));
+//    newIn  = tableModel->index(indexEdit.row(), 2);
+//    QV = tableModel->data(newIn, Qt::DisplayRole);
+//    data.setAuthorName(qvariant_cast<QString>(QV));
 
-    newIn  = tableModel->index(indexEdit.row(), 3);
-    QV = tableModel->data(newIn, Qt::DisplayRole);
-    data.setAnnotation(qvariant_cast<QString>(QV));
+//    newIn  = tableModel->index(indexEdit.row(), 3);
+//    QV = tableModel->data(newIn, Qt::DisplayRole);
+//    data.setAnnotation(qvariant_cast<QString>(QV));
 
 
-    newIn  = tableModel->index(indexEdit.row(), 4);
-    QV = tableModel->data(newIn, Qt::DisplayRole);
-    data.setDate(qvariant_cast<QString>(QV));
+//    newIn  = tableModel->index(indexEdit.row(), 4);
+//    QV = tableModel->data(newIn, Qt::DisplayRole);
+//    data.setDate(qvariant_cast<QString>(QV));
 
-    newIn  = tableModel->index(indexEdit.row(), 5);
-    QV = tableModel->data(newIn, Qt::DisplayRole);
-    data.setAssessment(qvariant_cast<QString>(QV));
+//    newIn  = tableModel->index(indexEdit.row(), 5);
+//    QV = tableModel->data(newIn, Qt::DisplayRole);
+//    data.setAssessment(qvariant_cast<QString>(QV));
 
-    newIn  = tableModel->index(indexEdit.row(), 6);
-    QV = tableModel->data(newIn, Qt::DisplayRole);
-    data.setBookCoverPixmap(qvariant_cast<QPixmap>(QV));
+//    newIn  = tableModel->index(indexEdit.row(), 6);
+//    QV = tableModel->data(newIn, Qt::DisplayRole);
+//    data.setBookCoverPixmap(qvariant_cast<QPixmap>(QV));
 
-    dialog->setEditMode(data);
+//    dialog->setEditMode(data);
 }
 
 void MainWindow::addModeStart()

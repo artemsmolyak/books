@@ -67,39 +67,39 @@
 
  QVariant TableModel::data(const QModelIndex &index, int role) const
  {
-     if (!index.isValid())
-         return QVariant();
+//     if (!index.isValid())
+//         return QVariant();
 
-     if (index.row() >= listofData.size() || index.row() < 0)
-         return QVariant();
+//     if (index.row() >= listofData.size() || index.row() < 0)
+//         return QVariant();
 
-     if (role == Qt::DisplayRole) {
-         Data data = listofData.at(index.row());
-
-
-         switch (index.column()) {
-         case 0:
-             return data.getId();
-         case 1:
-            return data.getBookTitle();
-         case 2:
-            return data.getAuthorName();
-         case 3:
-            return data.getReview();
-         case 4:
-            return data.getDate();
-         case 5:
-            return data.getAssessment();
-         case 6:
-            return data.getBookCoverPixmap();
+//     if (role == Qt::DisplayRole) {
+//         Data data = listofData.at(index.row());
 
 
-         default:
-             break;
-         }
+//         switch (index.column()) {
+//         case 0:
+//             return data.getId();
+//         case 1:
+//            return data.getBookTitle();
+//         case 2:
+//            return data.getAuthorName();
+//         case 3:
+//            return data.getReview();
+//         case 4:
+//            return data.getDate();
+//         case 5:
+//            return data.getAssessment();
+//         case 6:
+//            return data.getBookCoverPixmap();
 
-     }
-     return QVariant();
+
+//         default:
+//             break;
+//         }
+
+//     }
+//     return QVariant();
  }
 
  QVariant TableModel::headerData(int section, Qt::Orientation orientation, int role) const
@@ -158,24 +158,24 @@
      Q_UNUSED(value);
      Q_UNUSED(role);
 
-     qDebug() << "setData " << index.isValid() << index.column() << index.row() << bool(role == Qt::EditRole);
+//     qDebug() << "setData " << index.isValid() << index.column() << index.row() << bool(role == Qt::EditRole);
 
-     if (index.isValid() && role == Qt::EditRole) {
-         int row = index.row();
-         Data data = listofData.value(row);
-         data = value.value<Data>();
+//     if (index.isValid() && role == Qt::EditRole) {
+//         int row = index.row();
+//         Data data = listofData.value(row);
+//         data = value.value<Data>();
 
-         qDebug() << "setData";
-         qDebug() << data.getAssessment();
-         qDebug() << data.getAuthorName();
-         qDebug() << data.getBookTitle();
-         qDebug() << data.getBookCoverPixmap().size();
+//         qDebug() << "setData";
+//         qDebug() << data.getAssessment();
+//         qDebug() << data.getAuthorName();
+//         qDebug() << data.getBookTitle();
+//         qDebug() << data.getBookCoverPixmap().size();
 
-         listofData.replace(row, data);
-         emit(dataChanged(index, index));
+//         listofData.replace(row, data);
+//         emit(dataChanged(index, index));
 
-         return true;
-     }
+//         return true;
+//     }
 
      return false;
  }

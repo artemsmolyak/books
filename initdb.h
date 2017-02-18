@@ -5,25 +5,52 @@
 
 
 
+//    ("create table IF not EXISTS books"
+//                                  "(id integer primary key, "
+//                                  "title varchar, "
+//                                  "authors varchar,"
+//                                  "mainIdea TEXT, "
+//                                  "rateInt integer, "
+//                                  "genreId integer, "
+//                                  "pages integer, "
+//                                  "dateS date, "
+//                                  "dateF date, "
+//                                  "tagsList TEXT, "
+//                                  "review TEXT, "
+//                                  "bookCoverPixmap BLOB, "
+
+
+
 
 QVariant addItem(QSqlQuery &q,
                            const QString &title,
-                           const QString &author,
+                           const QString &authors,
+                           const QString &mainIdea,
+                           const int &rateInt,
                            const int &genreId,
-                           const QDate &data,
+                           const int &pages,
+                           const QDate &dataS,
+                           const QDate &dataF,
+                           const QString &tagsList,
                            const QString &review,
-                           const int &assesment)
+                           const QByteArray &bookPicBuffer)
 {
     qDebug() << q.lastError().text();
 
     q.addBindValue(title);
-    q.addBindValue(author);
+    q.addBindValue(authors);
+    q.addBindValue(mainIdea);
+    q.addBindValue(rateInt);
     q.addBindValue(genreId);
-    q.addBindValue(data);
+    q.addBindValue(pages);
+    q.addBindValue(dataS);
+    q.addBindValue(dataF);
+    q.addBindValue(tagsList);
     q.addBindValue(review);
-    q.addBindValue(assesment);
+    q.addBindValue(bookPicBuffer);
+
     q.exec();
-    qDebug() << q.lastError().text();
+    qDebug() <<"E: "<< q.lastError().text();
     return q.lastInsertId();
 }
 
@@ -92,14 +119,14 @@ QSqlError initDb()
 //        && tables.contains("authors", Qt::CaseInsensitive))
 //        return QSqlError();
 
-    QSqlQuery q;
+//    QSqlQuery q;
 
 
-    q.exec("drop table IF EXISTS books");
-    q.exec("drop table IF EXISTS authors");
-    q.exec("drop table IF EXISTS genres");
+//    q.exec("drop table IF EXISTS books");
+//    q.exec("drop table IF EXISTS authors");
+//    q.exec("drop table IF EXISTS genres");
 
-    tables = db.tables();
+//    tables = db.tables();
 
 
     //  "pic BLOB, "
@@ -115,7 +142,7 @@ QSqlError initDb()
 
 
 
-   tables = db.tables();
+//   tables = db.tables();
 
 
 //    if (!q.prepare(QLatin1String("insert into authors "

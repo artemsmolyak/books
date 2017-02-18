@@ -4,22 +4,13 @@
 
 int Data::size = 0;
 
-QString Data::getAssessment() const
-{
-    return assessment;
-}
 
-void Data::setAssessment(const QString &value)
-{
-    assessment = value;
-}
-
-QString Data::getAuthorName() const
+QString Data::getAuthorsName() const
 {
     return authorsName;
 }
 
-void Data::setAuthorName(const QString &value)
+void Data::setAuthorsName(const QString &value)
 {
     authorsName = value;
 }
@@ -34,10 +25,16 @@ void Data::setBookTitle(const QString &value)
     bookTitle = value;
 }
 
-QString Data::getDate() const
+QDate Data::getDateS() const
 {
-    return date;
+    return dateS;
 }
+
+QDate Data::getDateF() const
+{
+    return dateF;
+}
+
 
 QString Data::getReview() const
 {
@@ -70,62 +67,93 @@ void Data::setBookCoverPixmap(const QPixmap &value)
     bookCoverPixmap = value;
 }
 
-void Data::setDate(const QString &value)
+void Data::setDateS(const QDate &value)
 {
-    date = value;
+    dateS = value;
 }
 
-QString bookTitle;
-QString authorsName;
-QString mainIdea;
-QStringList tagsList;
+void Data::setDateF(const QDate &value)
+{
+    dateF = value;
+}
 
-QDate dateS;
-QDate dateF;
-QString review;
-QPixmap bookCoverPixmap;
-int rateInt;
-int genre;
-int pages;
-qint32 id;
+//QString bookTitle;
+//QString authorsName;
+//QString mainIdea;
+//QStringList tagsList;
+
+//QDate dateS;
+//QDate dateF;
+//QString review;
+//QPixmap bookCoverPixmap;
+//int rateInt;
+//int genre;
+//int pages;
+//qint32 id;
 
 
-Data::Data(QString title, QString authors, QString mainIdea, int rateInt, int genre,
-           int pages, QDate dateS, QDate dateF, QStringList tagsList, QString review):
-bookTitle(title), authorsName(authors), mainIdea(mainIdea), rateInt(rateInt),
-  genre(genre), pages(pages), dateS(dateS), dateF(dateF), tagsList(tagsList), review(review)
+QString Data::getMainIdea() const
+{
+    return mainIdea;
+}
+
+void Data::setMainIdea(const QString &value)
+{
+    mainIdea = value;
+}
+
+int Data::getRateInt() const
+{
+    return rateInt;
+}
+
+void Data::setRateInt(int value)
+{
+    rateInt = value;
+}
+
+int Data::getGenre() const
+{
+    return genre;
+}
+
+void Data::setGenre(int value)
+{
+    genre = value;
+}
+
+int Data::getPages() const
+{
+    return pages;
+}
+
+void Data::setPages(int value)
+{
+    pages = value;
+}
+
+QStringList Data::getTagsList() const
+{
+    return tagsList;
+}
+
+void Data::setTagsList(const QStringList &value)
+{
+    tagsList = value;
+}
+
+Data::Data(QString title, QString authors, QString mainIdea, int rateInt,
+           int genre, int pages, QDate dateS, QDate dateF, QStringList tagsList,
+           QString review, QPixmap bookCoverPixmap):
+  bookTitle(title), authorsName(authors), mainIdea(mainIdea), rateInt(rateInt),
+  genre(genre), pages(pages), dateS(dateS), dateF(dateF), tagsList(tagsList),
+  review(review), bookCoverPixmap(bookCoverPixmap)
 {
     qDebug() <<" size "<< size;
     id = size;
     size++;
 }
 
-Data::Data(QString assessment, QString authorName,
-           QString bookTitle, QString date,
-           QString annotation, QPixmap bookCoverPixmap):
-      assessment(assessment),
-      authorName(authorName),
-      bookTitle(bookTitle),
-      date(date),
-      review(annotation),
-      bookCoverPixmap(bookCoverPixmap)
-{
-    qDebug() <<" size "<< size;
-    id = size;
-    size++;
-}
-
-
-Data::Data(qint32 id, QString assessment,  QString authorName,
-      QString bookTitle, QString date, QString annotation,
-      QPixmap bookCoverPixmap):
-    id(id),
-    assessment(assessment),
-    authorName(authorName),
-    bookTitle(bookTitle),
-    date(date),
-    review(annotation),
-    bookCoverPixmap(bookCoverPixmap){}
 
 
 Data::Data()
@@ -134,12 +162,20 @@ Data::Data()
    size++;
 }
 
+
+
+
 QString Data::toString()
 {
-    return QString(assessment + " " +
-                   authorName + " " +
+    return QString(authorsName + " " +
                    bookTitle + " " +
-                   date + " +" +
+                   mainIdea  + " " +
+                   rateInt + " " +
+                   genre + " " +
+                   pages + " " +
+                   dateS.toString("dd.MM.yyyy") + " " +
+                   dateF.toString("dd.MM.yyyy") + " " +
+                   //tagsList.toStdList() + " " +
                    review);
 }
 

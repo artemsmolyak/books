@@ -27,7 +27,7 @@ private:
     QDateEdit * dateFinish;
     QSize minSizePic;
     Assesment * rate;
-    QLineEdit * authorText;
+    QLineEdit * authorsText;
     QLineEdit * mainIdeaText;
     QLineEdit * titleText;
     QLineEdit * numberOfPagesText;
@@ -42,6 +42,9 @@ public:
     void setFinishDate();
     void setPicDefault();
     void reset();
+
+    QLineEdit *getMainIdeaText() const;
+    void setMainIdeaText(QLineEdit *value);
 
 public slots:
     void actionBold();
