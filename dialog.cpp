@@ -29,7 +29,7 @@ Dialog::~Dialog()
 
 void Dialog::setEditMode(Data data)
 {
-    mode = edit;
+    //mode = edit;
     setWindowTitle("Edit mode");
 
     qDebug() << "!" << data.getDate();
@@ -50,7 +50,7 @@ void Dialog::setEditMode(Data data)
 
 void Dialog::setAddMode()
 {
-    mode = add;
+    //mode = add;
     setWindowTitle("add new book");
     reset();
 }
@@ -62,7 +62,8 @@ void Dialog::on_cancelButton_released()
 }
 void Dialog::on_okButton_released()
 {
-    if (mode == add) {
+    //if (mode == add)
+    {
         setWindowTitle("Add mode");
         QString assessment = QString::number(ui->assesmentWidget->getAssesment());
         QString  author = ui->authorEdit->text();
@@ -71,7 +72,8 @@ void Dialog::on_okButton_released()
         QString  review = ui->reviewEdit->toPlainText();
         emit newItemIsReady(Data(assessment, author, title, date, review, bookCoverPixmap));
     }
-    else if (mode == edit) {
+    //else if (mode == edit)
+    {
         QString assessment = QString::number(ui->assesmentWidget->getAssesment());
         QString  author = ui->authorEdit->text();
         QString  title  = ui->titleEdit->text();

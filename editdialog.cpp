@@ -22,46 +22,39 @@ EditDialog::EditDialog()
 
 
       QLabel * titleLable = new QLabel("title: ");
-      QLineEdit * titleText = new QLineEdit();
+      titleText = new QLineEdit();
 
       QLabel * authorLable = new QLabel("authors: ");
-      QLineEdit * authorText = new QLineEdit();
+      authorText = new QLineEdit();
 
       QLabel * mainIdeaLable = new QLabel("main idea: ");
-      QLineEdit * mainIdeaText = new QLineEdit();
+      mainIdeaText = new QLineEdit();
 
 
       picButton = new QPushButton;
-      QSize minSize(150, 150);
-      picButton->setMinimumSize(minSize);
+      minSizePic.setWidth(150);
+      minSizePic.setHeight(150);
+      picButton->setMinimumSize(minSizePic);
 
-      QPixmap * pixmap = new QPixmap(":/empty");
-      if (pixmap->size().width() > minSize.width() ||
-         pixmap->size().height() > minSize.height())
-          *pixmap = pixmap->scaled(minSize.width(), minSize.height(), Qt::KeepAspectRatio);
-
-      QIcon buttonIcon(*pixmap);
-      picButton->setIcon(buttonIcon);
-      picButton->setIconSize(pixmap->rect().size());
       connect(picButton, SIGNAL(clicked(bool)), this, SLOT(addBookPic()));
 
       QLabel * genreLable = new QLabel("genre: ");
-      QComboBox * genreCombobox = new QComboBox;
+      genreCombobox = new QComboBox;
 
       QLabel * numPagesLable = new QLabel("number of pages: ");
-      QLineEdit * numberOfPagesText = new QLineEdit();
+      numberOfPagesText = new QLineEdit();
 
       QLabel * startReadLable = new QLabel("start: ");
-      QDateEdit * dateStartText = new QDateEdit;
+      dateStart = new QDateEdit;
 
       QLabel * finishReadLable = new QLabel("finish: ");      
       finishReadLable->setAlignment(Qt::AlignRight);
-      QDateEdit * dateFinishText = new QDateEdit;
+      dateFinish = new QDateEdit;
 
-      Assesment * rate = new Assesment;
+      rate = new Assesment;
 
       QLabel * tagsLable = new QLabel("tags: ");
-      QLineEdit * tagsText = new QLineEdit();
+      tagsText = new QLineEdit();
 
       //Toolbar
 
@@ -93,7 +86,7 @@ EditDialog::EditDialog()
 
 
       //review
-      QPlainTextEdit * reviewText = new QPlainTextEdit;
+      reviewText = new QPlainTextEdit;
 
 
       QPushButton * saveBtn =new QPushButton("save");
@@ -118,10 +111,10 @@ EditDialog::EditDialog()
       layout->addWidget(numberOfPagesText, 3,  3, 1, 1  );
 
       layout->addWidget(startReadLable, 4,  0, 1, 1  );
-      layout->addWidget(dateStartText, 4,  1, 1, 1  );
+      layout->addWidget(dateStart, 4,  1, 1, 1  );
 
       layout->addWidget(finishReadLable, 4,  2, 1, 1  );
-      layout->addWidget(dateFinishText, 4,  3, 1, 1  );
+      layout->addWidget(dateFinish, 4,  3, 1, 1  );
 
       layout->addWidget(rate, 5,  1, 1, 4  );
 
@@ -142,6 +135,51 @@ EditDialog::EditDialog()
 
 
       setLayout(layout);
+
+      connect(saveBtn, SIGNAL(clicked(bool)), this, SLOT(on_SaveButton_released()));
+}
+
+void EditDialog::setGenre(QList <QString> listGenre)
+{
+    int i = 0;
+    for(QString item : listGenre)
+        genreCombobox->addItem(item);
+}
+
+void EditDialog::setStartDate()
+{
+    QDateTime dateTime = QDateTime::currentDateTime();
+    QDate dateToday = dateTime.date();
+    dateStart->setDate(dateToday);
+}
+
+void EditDialog::setFinishDate()
+{
+    QDateTime dateTime = QDateTime::currentDateTime();
+    QDate dateToday = dateTime.date();
+    dateFinish->setDate(dateToday);
+}
+
+void EditDialog::setPicDefault()
+{
+    QPixmap * pixmap = new QPixmap(":/empty");
+    if (pixmap->size().width() > minSizePic.width() ||
+       pixmap->size().height() > minSizePic.height())
+        *pixmap = pixmap->scaled(minSizePic.width(), minSizePic.height(), Qt::KeepAspectRatio);
+
+    QIcon buttonIcon(*pixmap);
+    picButton->setIcon(buttonIcon);
+    picButton->setIconSize(pixmap->rect().size());
+}
+
+void EditDialog::reset()
+{
+//        ui->dateEdit->clear();
+//        ui->titleEdit->clear();
+//        ui->authorEdit->clear();
+//        ui->assesmentWidget->setAssesment(0);
+//        ui->bookCoverLabel->setPixmap(QPixmap("://empty.png"));
+//        ui->reviewEdit->clear();
 }
 
 void EditDialog::actionBold()
@@ -198,4 +236,54 @@ void EditDialog::addBookPic()
 
 
 
+}
+
+void EditDialog::getNewItem(Data data)
+{
+
+}
+
+void EditDialog::editItem(Data data)
+{
+
+}
+
+void EditDialog::on_SaveButton_released()
+{
+    if (mode == add)
+    {
+        setWindowTitle("Add book");
+
+        QString title = titleText->text();
+        QString  author = authorText->text();
+        QString mainIdea = mainIdeaText->text();
+
+        int rateInt = rate->getAssesment();
+
+        int genre = genreCombobox->currentIndex();
+
+        int pages = numberOfPagesText->text().toInt();
+
+        QDate dateS = dateStart->date();
+        QDate dateF = dateFinish->date();
+
+        QString tags = tagsText->text();
+        QStringList tagsList = tags.split(",");
+
+        QString  review = reviewText->toPlainText();
+
+        emit newItemIsReady(Data(assessment, author, title, date, review, bookCoverPixmap));
+    }
+    //else if (mode == edit)
+//    {
+//        QString assessment = QString::number(ui->assesmentWidget->getAssesment());
+//        QString  author = ui->authorEdit->text();
+//        QString  title  = ui->titleEdit->text();
+//        QString   date = ui->dateEdit->text();
+//        QString  review = ui->reviewEdit->toPlainText();
+//        const QPixmap *bookCoverPix = ui->bookCoverLabel->pixmap();
+//        emit editItemIsReady(Data(assessment, author, title, date, review, *bookCoverPix));
+//    }
+    this->hide();
+    this->reset();
 }

@@ -6,10 +6,10 @@
 #include "QTextCursor"
 
 
-enum Mode {
-    add,
-    edit
-};
+//enum Mode {
+//    add,
+//    edit
+//};
 
 namespace Ui {
 class Dialog;
@@ -54,7 +54,7 @@ private slots:
 private:
     Ui::Dialog *ui;
     QPixmap bookCoverPixmap;
-    Mode mode;
+    //Mode mode;
 
     //QQuickItem *m_target;
     QTextCursor textCursor() const;

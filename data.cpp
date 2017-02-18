@@ -16,12 +16,12 @@ void Data::setAssessment(const QString &value)
 
 QString Data::getAuthorName() const
 {
-    return authorName;
+    return authorsName;
 }
 
 void Data::setAuthorName(const QString &value)
 {
-    authorName = value;
+    authorsName = value;
 }
 
 QString Data::getBookTitle() const
@@ -73,6 +73,31 @@ void Data::setBookCoverPixmap(const QPixmap &value)
 void Data::setDate(const QString &value)
 {
     date = value;
+}
+
+QString bookTitle;
+QString authorsName;
+QString mainIdea;
+QStringList tagsList;
+
+QDate dateS;
+QDate dateF;
+QString review;
+QPixmap bookCoverPixmap;
+int rateInt;
+int genre;
+int pages;
+qint32 id;
+
+
+Data::Data(QString title, QString authors, QString mainIdea, int rateInt, int genre,
+           int pages, QDate dateS, QDate dateF, QStringList tagsList, QString review):
+bookTitle(title), authorsName(authors), mainIdea(mainIdea), rateInt(rateInt),
+  genre(genre), pages(pages), dateS(dateS), dateF(dateF), tagsList(tagsList), review(review)
+{
+    qDebug() <<" size "<< size;
+    id = size;
+    size++;
 }
 
 Data::Data(QString assessment, QString authorName,

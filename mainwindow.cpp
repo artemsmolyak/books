@@ -40,8 +40,12 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->editBtn, SIGNAL(clicked(bool)),  dialog, SLOT(show()));
     connect(ui->editBtn, SIGNAL(clicked(bool)), this, SLOT(editModeStart()));
 
-    connect(dialog, SIGNAL(newItemIsReady(Data)), this, SLOT(getNewItem(Data)));
-    connect(dialog, SIGNAL(editItemIsReady(Data)), this, SLOT(editItem(Data)));
+//    connect(dialog, SIGNAL(newItemIsReady(Data)), this, SLOT(getNewItem(Data)));
+//    connect(dialog, SIGNAL(editItemIsReady(Data)), this, SLOT(editItem(Data)));
+
+    connect(dialogAddEdit, SIGNAL(newItemIsReady(Data)), this, SLOT(getNewItem(Data)));
+    connect(dialogAddEdit, SIGNAL(editItemIsReady(Data)), this, SLOT(editItem(Data)));
+
 
     connect(ui->deleteButton, SIGNAL(clicked(bool)), this, SLOT(deleteItem()));
 
@@ -258,33 +262,40 @@ qDebug() << "err " << err.text();
 void MainWindow::getInfFromDb()
 {
     QSqlQuery query;
-    query.exec("SELECT * FROM books");
-    qDebug() << "from db " <<query.size();
+//    query.exec("SELECT * FROM books");
+//    qDebug() << "from db " <<query.size();
 
-    while (query.next()) {
-        QString name = query.value(0).toString();
-        QString value2 = query.value(1).toString();
-        qDebug() << name << value2;
-    }
+//    while (query.next()) {
+//        QString name = query.value(0).toString();
+//        QString value2 = query.value(1).toString();
+//        qDebug() << name << value2;
+//    }
 
-    query.exec("SELECT * FROM authors");
-    qDebug() << "from db " <<query.size();
+//    query.exec("SELECT * FROM authors");
+//    qDebug() << "from db " <<query.size();
 
-    while (query.next()) {
-        QString name = query.value(0).toString();
-        QString value2 = query.value(1).toString();
-        qDebug() << name << value2;
-    }
+//    while (query.next()) {
+//        QString name = query.value(0).toString();
+//        QString value2 = query.value(1).toString();
+//        qDebug() << name << value2;
+//    }
 
     query.exec("SELECT * FROM genres");
-    qDebug() << "from db " <<query.size();
 
+    QList <QString> listGenre;
     while (query.next()) {
         QString name = query.value(0).toString();
-        QString value2 = query.value(1).toString();
-        qDebug() << name << value2;
+        QString value = query.value(1).toString();
+        //qDebug() << name << value2;
+        listGenre.append(value);
     }
 
+    dialogAddEdit->setGenre(listGenre);
+
+    dialogAddEdit->setStartDate();
+    dialogAddEdit->setFinishDate();
+
+    dialogAddEdit->setPicDefault();
 
     //ui->verticalLayout_3->
 
