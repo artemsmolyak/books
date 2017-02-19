@@ -70,7 +70,7 @@ QVariant addAuthor(QSqlQuery &q, const QString &name, const QDate &birthdate)
 }
 
 
-QVariant addQuotes(QSqlQuery &q, const QString &quote, const int &idBooks)
+QVariant addQuote(QSqlQuery &q, const QString &quote, const int &idBooks)
 {
     q.addBindValue(quote);
     q.addBindValue(idBooks);
@@ -187,6 +187,9 @@ QSqlError initDb()
 
     return QSqlError();
 }
+
+
+
 
 
 #endif // INITDB_H

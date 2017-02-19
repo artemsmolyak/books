@@ -27,6 +27,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->assesmentWidget->setUseMouse(false);
     dialog = new Dialog(this);
     dialogAddEdit = new EditDialog;
+    addQuotesDialog = new AddQuotesDialog;
     guiSettings();
 
     dbConnect();
@@ -54,9 +55,11 @@ MainWindow::MainWindow(QWidget *parent) :
 
     connect(ui->deleteButton, SIGNAL(clicked(bool)), this, SLOT(deleteItem()));
 
-
     connect(ui->titlelistView, SIGNAL(clicked(QModelIndex)), this, SLOT(chooseListIndex(QModelIndex)));
     connect(ui->tabWidget, SIGNAL(tabBarClicked(int)), this, SLOT(on_changeTab_released(int)));
+
+    connect(addQuotesDialog, SIGNAL(saveQuoteSignal(QString)), this, SLOT(saveQuote(QString)));
+
 
     //connect(ui->tableView, SIGNAL(clicked(QModelIndex)), this, SLOT(chooseListIndex(QModelIndex)));
 
@@ -338,7 +341,14 @@ void MainWindow::getInfFromDb()
     }
 
 
+    getQuotes();
+}
 
+
+QSqlError MainWindow::getQuotes()
+{
+    quotesList.clear();
+    QSqlQuery query;
     query.exec("SELECT * FROM quotes");
     while (query.next()) {
         QPair <int, QString> quotesPair;
@@ -349,8 +359,10 @@ void MainWindow::getInfFromDb()
         quotesList.append(quotesPair);
     }
 
-
+   return QSqlError();
 }
+
+
 
 void MainWindow::fillMainWinFromDataBase(QList<Data> dataList)
 {
@@ -449,7 +461,7 @@ QSqlError MainWindow::createQuotesTable()
                                "values(?, ?)"));
 
 
-       QVariant id = addQuotes(q,
+       QVariant id = addQuote(q,
                              QLatin1String("quotes gsdfklgj dkl"),
                              1);
 
@@ -470,18 +482,18 @@ QSqlError MainWindow::createTagsTable()
         return q.lastError();
 
 
-        q.prepare(QLatin1String("insert into tags "
-                               "(text, idBooks)"
-                               "values(?, ?)"));
+//        q.prepare(QLatin1String("insert into tags "
+//                               "(text, idBooks)"
+//                               "values(?, ?)"));
 
 
-       QVariant id = addQuotes(q,
-                             "Человеку не нужно трех сосен, "
-                              "чтобы заблудиться, — "
-                              "ему достаточно двух существительных.",
-                             1);
+//       QVariant id = addQuote(q,
+//                             "Человеку не нужно трех сосен, "
+//                              "чтобы заблудиться, — "
+//                              "ему достаточно двух существительных.",
+//                             1);
 
-       return q.lastError();
+//       return q.lastError();
 }
 
 QSqlError MainWindow::saveItemInDatabase(Data data)
@@ -550,6 +562,26 @@ QSqlError MainWindow::saveItemInDatabase(Data data)
                          inByteArrayBookCover);
 
    return q.lastError();
+}
+
+void MainWindow::repaintQuoteView()
+{
+    model->removeRows(0, model->rowCount());
+
+    getQuotes();
+
+    QStringList quotesBook;
+
+    foreach(auto pair, quotesList)
+    {
+        int idBooks = pair.first;
+
+        if (idBooks == currentBook)
+            quotesBook << pair.second;
+    }
+
+
+    model->setStringList(quotesBook);
 }
 
 MainWindow::~MainWindow()
@@ -716,6 +748,9 @@ void MainWindow::chooseListIndex(QModelIndex index)
 
     currentBook = index.row();
 
+    if(tabNow == 0)
+    {
+
     Data currentData = dataListMain.at(index.row());
 
     ui->plainTextEdit->setPlainText("<b>" + currentData.getMainIdea() + "</b> "+
@@ -735,6 +770,12 @@ void MainWindow::chooseListIndex(QModelIndex index)
                                 "\n\n date: " + currentData.getDateF().toString("dd.MM.yyyy") +
                                 "\n\n genre: " + currentData.getGenre());
 
+
+    }
+    else if (tabNow == 1)
+    {
+        repaintQuoteView();
+    }
 
 //    QStringList list;
 
@@ -831,9 +872,24 @@ void MainWindow::showAddDialog()
     }
     else if (tabNow == 1)
     {
-        addQuotesDialog.show();
+        addQuotesDialog->show();
     }
 
+}
+
+void MainWindow::saveQuote(QString quote)
+{
+    QSqlQuery q;
+    q.prepare(QLatin1String("insert into quotes "
+                               "(text, idBooks)"
+                               "values(?, ?)"));
+
+
+       QVariant id = addQuote(q,
+                             quote,
+                             currentBook);
+
+       repaintQuoteView();
 }
 
 

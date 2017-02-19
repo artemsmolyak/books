@@ -39,7 +39,7 @@ private:
 
 
 public:
-    EditDialog();
+    explicit EditDialog();
     void setGenre(QHash<int, QString> genreHash);
     void setStartDate();
     void setFinishDate();

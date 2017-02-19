@@ -148,37 +148,42 @@
             <attribute name="title">
              <string>Review</string>
             </attribute>
-            <widget class="QPlainTextEdit" name="plainTextEdit">
-             <property name="geometry">
-              <rect>
-               <x>0</x>
-               <y>0</y>
-               <width>600</width>
-               <height>600</height>
-              </rect>
-             </property>
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-            </widget>
+            <layout class="QGridLayout" name="gridLayout_3">
+             <item row="0" column="0">
+              <layout class="QGridLayout" name="gridLayout">
+               <property name="sizeConstraint">
+                <enum>QLayout::SetNoConstraint</enum>
+               </property>
+               <item row="0" column="0">
+                <widget class="QPlainTextEdit" name="plainTextEdit">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+            </layout>
            </widget>
            <widget class="QWidget" name="Quotes">
             <attribute name="title">
              <string>Quotes</string>
             </attribute>
-            <widget class="QListView" name="quotesListView">
-             <property name="geometry">
-              <rect>
-               <x>-5</x>
-               <y>1</y>
-               <width>600</width>
-               <height>600</height>
-              </rect>
-             </property>
-            </widget>
+            <layout class="QGridLayout" name="gridLayout_4">
+             <item row="0" column="0">
+              <layout class="QGridLayout" name="gridLayout_2">
+               <property name="sizeConstraint">
+                <enum>QLayout::SetMinimumSize</enum>
+               </property>
+               <item row="0" column="0">
+                <widget class="QListView" name="quotesListView"/>
+               </item>
+              </layout>
+             </item>
+            </layout>
            </widget>
           </widget>
          </item>

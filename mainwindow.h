@@ -29,7 +29,7 @@ private:
     QStringListModel* model;
 
     EditDialog * dialogAddEdit;
-    AddQuotesDialog addQuotesDialog;
+    AddQuotesDialog * addQuotesDialog;
 
     QList <Data> dataListMain;
     //QStringList dataStringList;
@@ -56,6 +56,7 @@ public:
     bool readXml();
     void editMode();    
     void showMainInformation();
+    QSqlError getQuotes();
 
 
    //DataBase
@@ -70,6 +71,8 @@ public:
     QSqlError createTagsTable();
 
     QSqlError saveItemInDatabase(Data data);
+
+    void repaintQuoteView();
 
     ~MainWindow();
 
@@ -98,6 +101,7 @@ public  slots:
     void on_changeTab_released(int tab);
 
     void showAddDialog();
+    void saveQuote(QString quote);
 };
 
 #endif // MAINWINDOW_H
