@@ -142,12 +142,22 @@ void Data::setTagsList(const QStringList &value)
     tagsList = value;
 }
 
+QString Data::getTypePic() const
+{
+    return typePic;
+}
+
+void Data::setTypePic(const QString &value)
+{
+    typePic = value;
+}
+
 Data::Data(QString title, QString authors, QString mainIdea, int rateInt,
            int genre, int pages, QDate dateS, QDate dateF, QStringList tagsList,
-           QString review, QPixmap bookCoverPixmap):
+           QString review, QPixmap bookCoverPixmap, QString typePic):
   bookTitle(title), authorsName(authors), mainIdea(mainIdea), rateInt(rateInt),
   genre(genre), pages(pages), dateS(dateS), dateF(dateF), tagsList(tagsList),
-  review(review), bookCoverPixmap(bookCoverPixmap)
+  review(review), bookCoverPixmap(bookCoverPixmap), typePic(typePic)
 {
     qDebug() <<" size "<< size;
     id = size;

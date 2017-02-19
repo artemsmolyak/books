@@ -20,6 +20,7 @@ private:
     QDate dateF;
     QString review;
     QPixmap bookCoverPixmap;
+    QString typePic;
 
     int rateInt;
     int genre;
@@ -33,7 +34,7 @@ public:
          int rateInt, int genre, int pages,
          QDate dateS, QDate dateF,
          QStringList tagsList,
-         QString  review, QPixmap bookCoverPixmap);
+         QString  review, QPixmap bookCoverPixmap, QString typePic);
 
     Data();
 
@@ -69,6 +70,8 @@ public:
     void setPages(int value);
     QStringList getTagsList() const;
     void setTagsList(const QStringList &value);
+    QString getTypePic() const;
+    void setTypePic(const QString &value);
 };
 Q_DECLARE_METATYPE(Data);
 

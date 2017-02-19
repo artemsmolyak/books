@@ -24,9 +24,16 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 private:
-    QString path = QDir::homePath() + "/books.xml";
+    // recomended size of book's pic
+    int widthPic = 200;
+    int heightPic = 300;
+
+    QString pathXml = QDir::homePath() + "/books.xml";
+    QString pathDataBase = QDir::homePath() + "/books.sqlite";
+
     Dialog * dialog; //to delete
-    QStringListModel* model;
+    QStringListModel* modelTitle;
+    QStringListModel* modelQuotes;
 
     EditDialog * dialogAddEdit;
     AddQuotesDialog * addQuotesDialog;
@@ -56,7 +63,7 @@ public:
     bool readXml();
     void editMode();    
     void showMainInformation();
-    QSqlError getQuotes();
+    QSqlError getQuotes();   
 
 
    //DataBase
@@ -73,7 +80,9 @@ public:
     QSqlError saveItemInDatabase(Data data);
 
     void repaintQuoteView();
-
+    void repaintSecondaryWindows(int index); //it's rate-window and pic-windows
+    void updateListOfTitles();  //it needs after add new item
+    void repaintReview(int index);
     ~MainWindow();
 
 private:

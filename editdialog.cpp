@@ -13,6 +13,7 @@
 #include "QToolBar"
 #include "QFileDialog"
 #include "QDebug"
+#include "QImageReader"
 
 QLineEdit *EditDialog::getMainIdeaText() const
 {
@@ -237,18 +238,28 @@ void EditDialog::addBookPic()
                                                    tr("Open Image"), "/home", tr("Image Files (*.png *.jpg *.bmp)"));
 
 
-    QPixmap * pixmap = new QPixmap(fileName);
+    pixmapPic = new QPixmap(fileName);
+    QPixmap pixmapTmp(*pixmapPic);
+
     QSize minSize(150, 150);
-    if (pixmap->size().width() > minSize.width() ||
-       pixmap->size().height() > minSize.height())
-        *pixmap = pixmap->scaled(minSize.width(), minSize.height(), Qt::KeepAspectRatio);
+    if (pixmapTmp.size().width() > minSize.width() ||
+       pixmapTmp.size().height() > minSize.height())
+        pixmapTmp = pixmapTmp.scaled(minSize.width(), minSize.height(), Qt::KeepAspectRatio);
 
-    QIcon buttonIcon(*pixmap);
+    QIcon buttonIcon(pixmapTmp);
     picButton->setIcon(buttonIcon);
-    picButton->setIconSize(pixmap->rect().size());
+    picButton->setIconSize(pixmapTmp.rect().size());
 
+    //save type
+    typePic = getFileType(fileName);
 
+}
 
+QString EditDialog::getFileType(QString pathFilePic)
+{
+    QImageReader reader(pathFilePic);
+    QByteArray nameArray = reader.format();
+    return QString::fromLatin1(nameArray.data());
 }
 
 void EditDialog::getNewItem(Data data)
@@ -285,13 +296,13 @@ void EditDialog::on_SaveButton_released()
 
         QString  review = reviewText->toPlainText();
 
-        QIcon icon = picButton->icon();
-        QPixmap bookCoverPixmap = icon.pixmap(minSizePic);
+        qDebug() << "pic size " << pixmapPic->width() << pixmapPic->height()
+                 << typePic;
 
         emit newItemIsReady(
                     Data(title, authors, mainIdea, rateInt, genre,
                          pages, dateS, dateF, tagsList,
-                         review,  bookCoverPixmap)
+                         review,  *pixmapPic, typePic)
                     );
     }
     //else if (mode == edit)

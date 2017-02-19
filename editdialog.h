@@ -23,6 +23,9 @@ class EditDialog : public QDialog
 private:
     Mode mode;
 
+    QString typePic;
+    QPixmap *pixmapPic;
+
     QPushButton * picButton;
     QComboBox * genreCombobox;
     QDateEdit * dateStart;
@@ -60,6 +63,7 @@ public slots:
     void actionUnder();
 
     void addBookPic();
+    QString getFileType(QString pathFilePic);
 
     void getNewItem(Data data);
     void editItem(Data data);

@@ -18,6 +18,7 @@
 #include "addquotesdialog.h"
 #include "QPair"
 #include "QStandardItemModel"
+#include "string.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -28,20 +29,18 @@ MainWindow::MainWindow(QWidget *parent) :
     dialog = new Dialog(this);
     dialogAddEdit = new EditDialog;
     addQuotesDialog = new AddQuotesDialog;
+    modelTitle = new QStringListModel();
+    modelQuotes = new QStringListModel();
     guiSettings();
 
-    dbConnect();
-    getInfFromDb();
+
 
 //    connect(ui->addBtn, SIGNAL(clicked(bool)), dialog, SLOT(show()));
 //    connect(ui->addBtn, SIGNAL(clicked(bool)), this, SLOT(addModeStart()));
 
-     model = new QStringListModel();
-     ui->quotesListView->setModel(model);
+    ui->quotesListView->setModel(modelQuotes);
 
-    connect(ui->addBtn, SIGNAL(clicked(bool)), this, SLOT(showAddDialog()));
-
-
+    connect(ui->addBtn, SIGNAL(clicked(bool)), this, SLOT(showAddDialog()));   
 
     connect(ui->editBtn, SIGNAL(clicked(bool)),  dialog, SLOT(show()));
     connect(ui->editBtn, SIGNAL(clicked(bool)), this, SLOT(editModeStart()));
@@ -51,14 +50,13 @@ MainWindow::MainWindow(QWidget *parent) :
 
     connect(dialogAddEdit, SIGNAL(newItemIsReady(Data)), this, SLOT(getNewItem(Data)));
     connect(dialogAddEdit, SIGNAL(editItemIsReady(Data)), this, SLOT(editItem(Data)));
-
-
     connect(ui->deleteButton, SIGNAL(clicked(bool)), this, SLOT(deleteItem()));
-
-    connect(ui->titlelistView, SIGNAL(clicked(QModelIndex)), this, SLOT(chooseListIndex(QModelIndex)));
+    connect(ui->titlelistView, SIGNAL(clicked(QModelIndex)), this, SLOT(chooseListIndex(QModelIndex)));     
     connect(ui->tabWidget, SIGNAL(tabBarClicked(int)), this, SLOT(on_changeTab_released(int)));
-
     connect(addQuotesDialog, SIGNAL(saveQuoteSignal(QString)), this, SLOT(saveQuote(QString)));
+
+    dbConnect();
+    getInfFromDb();
 
 
     //connect(ui->tableView, SIGNAL(clicked(QModelIndex)), this, SLOT(chooseListIndex(QModelIndex)));
@@ -276,7 +274,7 @@ void MainWindow::getInfFromDb()
     QSqlQuery query;
 
     //get in from books
-    query.exec("SELECT * FROM books");
+   // query.exec("SELECT * FROM books");
     qDebug() << "from db " <<query.size();
 
     //    ("create table IF not EXISTS books"
@@ -294,41 +292,10 @@ void MainWindow::getInfFromDb()
     //                                  "bookCoverPixmap BLOB, "
 
 
-   QList <Data> dataList;
-
-    while (query.next()) {
-        QString title = query.value(1).toString();
-        QString authors = query.value(2).toString();
-        QString mainIdea = query.value(3).toString();
-
-        int rateInt = query.value(4).toInt();
-        int genreId = query.value(5).toInt();
-        int pages = query.value(6).toInt();
-
-        QDate dateS = query.value(7).toDate();
-        QDate dateF = query.value(8).toDate();
-
-        QString tagsString = query.value(9).toString();
-        QStringList tagsList = tagsString.split(", ");
-
-        QString review = query.value(10).toString();
-
-        QByteArray picArray = query.value(11).toByteArray();
-
-        QPixmap pic;
-        pic.loadFromData(picArray);
-
-        Data data(title, authors, mainIdea, rateInt, genreId, pages,
-                          dateS, dateF, tagsList, review, pic);
-
-        dataList.append(data);
-    }
-
-    fillMainWinFromDataBase(dataList);
-    dataListMain = dataList;
+   updateListOfTitles();
 
 
-    qDebug() << " lenght: " << dataList.length();
+    //qDebug() << " lenght: " << dataList.length();
 
 
 
@@ -359,8 +326,10 @@ QSqlError MainWindow::getQuotes()
         quotesList.append(quotesPair);
     }
 
-   return QSqlError();
+    return QSqlError();
 }
+
+
 
 
 
@@ -371,10 +340,9 @@ void MainWindow::fillMainWinFromDataBase(QList<Data> dataList)
         titleList << data.getBookTitle();
     }
 
-    QStringListModel* model = new QStringListModel();
-    model->setStringList(titleList);
+    modelTitle->setStringList(titleList);
 
-    ui->titlelistView->setModel(model);
+    ui->titlelistView->setModel(modelTitle);
 }
 
 QSqlError MainWindow::createGenresTable()
@@ -510,7 +478,7 @@ QSqlError MainWindow::saveItemInDatabase(Data data)
     QString tags = tagsList.join(", ");
     QString  review = data.getReview();
     QPixmap bookCoverPixmap = data.getBookCoverPixmap();
-
+    QString type = data.getTypePic();
 
 //    ("create table IF not EXISTS books"
 //                                  "(id integer primary key, "
@@ -540,12 +508,25 @@ QSqlError MainWindow::saveItemInDatabase(Data data)
     QByteArray inByteArrayBookCover;
     QBuffer inBuffer(&inByteArrayBookCover);
     inBuffer.open(QIODevice::WriteOnly);
-    bookCoverPixmap.save(&inBuffer);
+
+    std::string fname = type.toStdString();
+    char * cstrType = new char [fname.size() + 1];
+    strcpy( cstrType, fname.c_str() );
+    bookCoverPixmap.save(&inBuffer, cstrType);
 
 
-//QImageReader reader;
-//QByteArray nameArray = reader.format();
-//QString picFormat = QString::fromLatin1(nameArray.data());
+//    QPixmap pixmap;
+//    // Preparation of our QPixmap
+//    QByteArray bArray;
+//    QBuffer buffer(&bArray);
+//    buffer.open(QIODevice::WriteOnly);
+//    pixmap.save(&buffer, "PNG");
+
+
+
+   qDebug() << "size " << inBuffer.size();
+
+
 
 
    QVariant id = addItem(q,
@@ -566,7 +547,7 @@ QSqlError MainWindow::saveItemInDatabase(Data data)
 
 void MainWindow::repaintQuoteView()
 {
-    model->removeRows(0, model->rowCount());
+    modelQuotes->removeRows(0, modelQuotes->rowCount());
 
     getQuotes();
 
@@ -581,7 +562,82 @@ void MainWindow::repaintQuoteView()
     }
 
 
-    model->setStringList(quotesBook);
+    modelQuotes->setStringList(quotesBook);
+}
+
+void MainWindow::repaintSecondaryWindows(int index)
+{
+    Data currentData = dataListMain.at(index);
+    QPixmap pic = currentData.getBookCoverPixmap();
+    if (pic.isNull())
+             pic.load(":empty.png");
+
+    if (pic.width() > widthPic || pic.height() > heightPic)
+        pic = pic.scaled(QSize(widthPic, heightPic), Qt::KeepAspectRatio);
+
+    ui->labelPic->setAlignment(Qt::AlignCenter);
+    ui->labelPic->setPixmap(pic);
+
+
+    ui->assesmentWidget->setAssesment(currentData.getRateInt());
+
+    ui->additionalWin2->setText(currentData.getPages() + " pages "
+                                "\n\n authors: " + currentData.getAuthorsName() +
+                                "\n\n tags: " + currentData.getTagsList().join(",") +
+                                "\n\n date: " + currentData.getDateS().toString("dd.MM.yyyy") +
+                                "\n\n date: " + currentData.getDateF().toString("dd.MM.yyyy") +
+                                "\n\n genre: " + currentData.getGenre());
+}
+
+void MainWindow::updateListOfTitles()
+{
+    QSqlQuery query;
+
+    //get inf from books table
+    query.exec("SELECT * FROM books");
+
+    QList <Data> dataList;
+    dataListMain.clear();
+
+     while (query.next()) {
+         QString title = query.value(1).toString();
+         QString authors = query.value(2).toString();
+         QString mainIdea = query.value(3).toString();
+
+         int rateInt = query.value(4).toInt();
+         int genreId = query.value(5).toInt();
+         int pages = query.value(6).toInt();
+
+         QDate dateS = query.value(7).toDate();
+         QDate dateF = query.value(8).toDate();
+
+         QString tagsString = query.value(9).toString();
+         QStringList tagsList = tagsString.split(", ");
+
+         QString review = query.value(10).toString();
+
+         QByteArray picArray = query.value(11).toByteArray();
+
+         QPixmap pic;
+         pic.loadFromData(picArray);
+         QImageReader reader(picArray);
+         QString type = reader.format();
+
+
+         Data data(title, authors, mainIdea, rateInt, genreId, pages,
+                           dateS, dateF, tagsList, review, pic, type);
+
+         dataList.append(data);
+     }
+
+     fillMainWinFromDataBase(dataList);
+     dataListMain = dataList;
+}
+
+void MainWindow::repaintReview(int index)
+{
+    Data currentData = dataListMain.at(index);
+    ui->plainTextEdit->setPlainText(currentData.getReview());
 }
 
 MainWindow::~MainWindow()
@@ -684,12 +740,15 @@ void MainWindow::saveXml()
 
 void MainWindow::getNewItem(Data data)
 {
-    qDebug() << " getNewItem !!! " <<data.toString();
+    qDebug() << " getNewItem !!! " <<data.toString() << dataListMain.length();
 
     saveItemInDatabase(data);
+    updateListOfTitles();
 
+    ui->titlelistView->setCurrentIndex(modelTitle->index(dataListMain.length() - 1));
 
-
+    repaintSecondaryWindows(dataListMain.length() - 1);
+    repaintReview(dataListMain.length() - 1);  //focus on last added
 
   /*  int row = tableModel->rowCount(QModelIndex());
     tableModel->insertRows(row, 1);
@@ -747,34 +806,35 @@ void MainWindow::chooseListIndex(QModelIndex index)
     qDebug() << "here" <<index.row() << index.column();
 
     currentBook = index.row();
+    Data currentData = dataListMain.at(index.row());
 
     if(tabNow == 0)
     {
-
-    Data currentData = dataListMain.at(index.row());
-
     ui->plainTextEdit->setPlainText("<b>" + currentData.getMainIdea() + "</b> "+
                                          + "\n \n" + currentData.getReview());
 
-    QPixmap pic = currentData.getBookCoverPixmap();
-    if (pic.isNull())
-             pic.load(":empty.png");
-    ui->labelPic->setPixmap(pic);
+    repaintSecondaryWindows(currentBook);
 
-    ui->assesmentWidget->setAssesment(currentData.getRateInt());
+//    QPixmap pic = currentData.getBookCoverPixmap();
+//    if (pic.isNull())
+//             pic.load(":empty.png");
+//    ui->labelPic->setPixmap(pic);
 
-    ui->additionalWin2->setText(currentData.getPages() + " pages "
-                                "\n\n authors: " + currentData.getAuthorsName() +
-                                "\n\n tags: " + currentData.getTagsList().join(",") +
-                                "\n\n date: " + currentData.getDateS().toString("dd.MM.yyyy") +
-                                "\n\n date: " + currentData.getDateF().toString("dd.MM.yyyy") +
-                                "\n\n genre: " + currentData.getGenre());
+//    ui->assesmentWidget->setAssesment(currentData.getRateInt());
+
+//    ui->additionalWin2->setText(currentData.getPages() + " pages "
+//                                "\n\n authors: " + currentData.getAuthorsName() +
+//                                "\n\n tags: " + currentData.getTagsList().join(",") +
+//                                "\n\n date: " + currentData.getDateS().toString("dd.MM.yyyy") +
+//                                "\n\n date: " + currentData.getDateF().toString("dd.MM.yyyy") +
+//                                "\n\n genre: " + currentData.getGenre());
 
 
     }
     else if (tabNow == 1)
     {
         repaintQuoteView();
+        repaintSecondaryWindows(currentBook);
     }
 
 //    QStringList list;
@@ -842,7 +902,7 @@ void MainWindow::on_changeTab_released(int tab)
     {
        tabNow = 1;
 
-       model->removeRows(0, model->rowCount());
+       modelQuotes->removeRows(0, modelQuotes->rowCount());
 
        QStringList quotesBook;
 
@@ -855,7 +915,7 @@ void MainWindow::on_changeTab_released(int tab)
        }
 
 
-       model->setStringList(quotesBook);
+       modelQuotes->setStringList(quotesBook);
 
        //ui->quotesListView->repaint();
     }
