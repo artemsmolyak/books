@@ -139,7 +139,7 @@
             <enum>QTabWidget::Rounded</enum>
            </property>
            <property name="currentIndex">
-            <number>1</number>
+            <number>0</number>
            </property>
            <property name="elideMode">
             <enum>Qt::ElideNone</enum>
@@ -153,8 +153,8 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>2000</width>
-               <height>2000</height>
+               <width>600</width>
+               <height>600</height>
               </rect>
              </property>
              <property name="sizePolicy">
@@ -174,8 +174,8 @@
               <rect>
                <x>-5</x>
                <y>1</y>
-               <width>2000</width>
-               <height>2000</height>
+               <width>600</width>
+               <height>600</height>
               </rect>
              </property>
             </widget>
@@ -282,7 +282,7 @@
          </size>
         </property>
         <property name="text">
-         <string>&lt;&lt;</string>
+         <string>settings</string>
         </property>
        </widget>
       </item>
@@ -295,7 +295,7 @@
          </size>
         </property>
         <property name="text">
-         <string>&gt;&gt;</string>
+         <string>sync</string>
         </property>
        </widget>
       </item>

@@ -68,8 +68,6 @@ EditDialog::EditDialog()
       tagsText = new QLineEdit();
 
       //Toolbar
-
-
       QAction * actionBold = new QAction(QIcon(":/picButtons/textbold.png"), "bold", this);
       connect(actionBold, SIGNAL(triggered(bool)), this, SLOT(actionBold()));
       QAction * actionCenter = new QAction(QIcon(":/picButtons/textcenter.png"), "center", this);
@@ -152,10 +150,12 @@ EditDialog::EditDialog()
       connect(saveBtn, SIGNAL(clicked(bool)), this, SLOT(on_SaveButton_released()));
 }
 
-void EditDialog::setGenre(QList <QString> listGenre)
+void EditDialog::setGenre(QHash <int, QString> genreHash)
 {
+    qDebug() << "genre hash size" << genreHash.size();
+
     int i = 0;
-    for(QString item : listGenre)
+    for(QString item : genreHash)
         genreCombobox->addItem(item);
 }
 

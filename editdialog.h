@@ -40,7 +40,7 @@ private:
 
 public:
     EditDialog();
-    void setGenre(QList<QString> listGenre);
+    void setGenre(QHash<int, QString> genreHash);
     void setStartDate();
     void setFinishDate();
     void setPicDefault();

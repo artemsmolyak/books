@@ -29,7 +29,8 @@ SOURCES += main.cpp\
     dialog.cpp \
     tablemodel.cpp \
     assesment.cpp \
-    editdialog.cpp
+    editdialog.cpp \
+    addquotesdialog.cpp
 
 
 HEADERS  += mainwindow.h \
@@ -38,7 +39,8 @@ HEADERS  += mainwindow.h \
     tablemodel.h \
     assesment.h \
     initdb.h \
-    editdialog.h
+    editdialog.h \
+    addquotesdialog.h
 
 
 FORMS    += \

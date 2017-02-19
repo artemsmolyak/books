@@ -2,7 +2,7 @@
 #include <QApplication>
 #include "dialog.h"
 #include "QDebug"
-
+#include "addquotesdialog.h"
 
 
 

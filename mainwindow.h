@@ -9,7 +9,9 @@
 #include "QDir"
 #include "QSqlError"
 #include "editdialog.h"
-
+#include "addquotesdialog.h"
+#include "QPair"
+#include "QStringListModel"
 
 class Dialog;
 
@@ -23,11 +25,20 @@ class MainWindow : public QMainWindow
 
 private:
     QString path = QDir::homePath() + "/books.xml";
-    Dialog * dialog;
-    EditDialog * dialogAddEdit;
+    Dialog * dialog; //to delete
+    QStringListModel* model;
 
-    QList <Data> dataList;
-    QStringList dataStringList;
+    EditDialog * dialogAddEdit;
+    AddQuotesDialog addQuotesDialog;
+
+    QList <Data> dataListMain;
+    //QStringList dataStringList;
+
+    int currentBook;
+    int tabNow = 0;
+
+    QHash <int, QString> genreHash;
+    QList <QPair <int, QString>> quotesList;
 
 
     TableModel * tableModel;
@@ -84,6 +95,9 @@ public  slots:
     void on_addButton_released();
     void on_deleteButton_released();
     void on_updateButton_released();
+    void on_changeTab_released(int tab);
+
+    void showAddDialog();
 };
 
 #endif // MAINWINDOW_H

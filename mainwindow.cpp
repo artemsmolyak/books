@@ -15,8 +15,9 @@
 #include "initdb.h"
 #include "editdialog.h"
 #include "QImageReader"
-
-
+#include "addquotesdialog.h"
+#include "QPair"
+#include "QStandardItemModel"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -34,8 +35,11 @@ MainWindow::MainWindow(QWidget *parent) :
 //    connect(ui->addBtn, SIGNAL(clicked(bool)), dialog, SLOT(show()));
 //    connect(ui->addBtn, SIGNAL(clicked(bool)), this, SLOT(addModeStart()));
 
-    connect(ui->addBtn, SIGNAL(clicked(bool)), dialogAddEdit, SLOT(show()));
-    connect(ui->addBtn, SIGNAL(clicked(bool)), this, SLOT(addModeStart()));
+     model = new QStringListModel();
+     ui->quotesListView->setModel(model);
+
+    connect(ui->addBtn, SIGNAL(clicked(bool)), this, SLOT(showAddDialog()));
+
 
 
     connect(ui->editBtn, SIGNAL(clicked(bool)),  dialog, SLOT(show()));
@@ -52,6 +56,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 
     connect(ui->titlelistView, SIGNAL(clicked(QModelIndex)), this, SLOT(chooseListIndex(QModelIndex)));
+    connect(ui->tabWidget, SIGNAL(tabBarClicked(int)), this, SLOT(on_changeTab_released(int)));
 
     //connect(ui->tableView, SIGNAL(clicked(QModelIndex)), this, SLOT(chooseListIndex(QModelIndex)));
 
@@ -82,7 +87,7 @@ void MainWindow::guiSettings()
 {
     ui->sortComboBox->addItem("By title");
     ui->sortComboBox->addItem("By date read");
-
+ui->tabWidget->setCurrentIndex(0);
 
 //    ui->tableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
 //    ui->tableView->setSelectionBehavior(QAbstractItemView::SelectRows);
@@ -317,37 +322,33 @@ void MainWindow::getInfFromDb()
     }
 
     fillMainWinFromDataBase(dataList);
+    dataListMain = dataList;
 
 
     qDebug() << " lenght: " << dataList.length();
 
 
-//    query.exec("SELECT * FROM authors");
-//    qDebug() << "from db " <<query.size();
-
-//    while (query.next()) {
-//        QString name = query.value(0).toString();
-//        QString value2 = query.value(1).toString();
-//        qDebug() << name << value2;
-//    }
 
     query.exec("SELECT * FROM genres");
 
-    QList <QString> listGenre;
     while (query.next()) {
         QString name = query.value(0).toString();
         QString value = query.value(1).toString();
-             listGenre.append(value);
+        genreHash[name.toInt()] = value;
     }
 
-    dialogAddEdit->setGenre(listGenre);
 
-    dialogAddEdit->setStartDate();
-    dialogAddEdit->setFinishDate();
 
-    dialogAddEdit->setPicDefault();
+    query.exec("SELECT * FROM quotes");
+    while (query.next()) {
+        QPair <int, QString> quotesPair;
+        QString value = query.value(1).toString();
+        QString nameBookId = query.value(2).toString();
+        quotesPair.first = nameBookId.toInt();
+        quotesPair.second = value;
+        quotesList.append(quotesPair);
+    }
 
-    //ui->verticalLayout_3->
 
 }
 
@@ -362,7 +363,6 @@ void MainWindow::fillMainWinFromDataBase(QList<Data> dataList)
     model->setStringList(titleList);
 
     ui->titlelistView->setModel(model);
-    //ui->listView->
 }
 
 QSqlError MainWindow::createGenresTable()
@@ -714,6 +714,28 @@ void MainWindow::chooseListIndex(QModelIndex index)
 {
     qDebug() << "here" <<index.row() << index.column();
 
+    currentBook = index.row();
+
+    Data currentData = dataListMain.at(index.row());
+
+    ui->plainTextEdit->setPlainText("<b>" + currentData.getMainIdea() + "</b> "+
+                                         + "\n \n" + currentData.getReview());
+
+    QPixmap pic = currentData.getBookCoverPixmap();
+    if (pic.isNull())
+             pic.load(":empty.png");
+    ui->labelPic->setPixmap(pic);
+
+    ui->assesmentWidget->setAssesment(currentData.getRateInt());
+
+    ui->additionalWin2->setText(currentData.getPages() + " pages "
+                                "\n\n authors: " + currentData.getAuthorsName() +
+                                "\n\n tags: " + currentData.getTagsList().join(",") +
+                                "\n\n date: " + currentData.getDateS().toString("dd.MM.yyyy") +
+                                "\n\n date: " + currentData.getDateF().toString("dd.MM.yyyy") +
+                                "\n\n genre: " + currentData.getGenre());
+
+
 //    QStringList list;
 
 //    for(int i = 0; i < tableModel->columnCount(index) - 1; i++)
@@ -768,6 +790,52 @@ void MainWindow::on_updateButton_released()
 
 }
 
+void MainWindow::on_changeTab_released(int tab)
+{
+    qDebug() << "tab "<<tab;
+    if (tab == 0)
+    {
+       tabNow = 0;
+    }
+    else if (tab == 1)
+    {
+       tabNow = 1;
+
+       model->removeRows(0, model->rowCount());
+
+       QStringList quotesBook;
+
+       foreach(auto pair, quotesList)
+       {
+           int idBooks = pair.first;
+
+           if (idBooks == currentBook)
+               quotesBook << pair.second;
+       }
+
+
+       model->setStringList(quotesBook);
+
+       //ui->quotesListView->repaint();
+    }
+
+}
+
+void MainWindow::showAddDialog()
+{
+    qDebug() << "showAddDialog";
+    if (tabNow == 0)
+    {
+        addModeStart();
+        dialogAddEdit->show();
+    }
+    else if (tabNow == 1)
+    {
+        addQuotesDialog.show();
+    }
+
+}
+
 
 void MainWindow::editModeStart()
 {
@@ -814,7 +882,14 @@ void MainWindow::editModeStart()
 
 void MainWindow::addModeStart()
 {
-    dialog->setAddMode();
+    dialogAddEdit->setGenre(genreHash);
+
+    dialogAddEdit->setStartDate();
+    dialogAddEdit->setFinishDate();
+
+    dialogAddEdit->setPicDefault();
+
+    //dialogAddEdit->setAddMode();
 }
 
 void MainWindow::editItem(Data data)
