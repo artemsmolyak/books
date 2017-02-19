@@ -24,6 +24,7 @@ void EditDialog::setMainIdeaText(QLineEdit *value)
     mainIdeaText = value;
 }
 
+
 EditDialog::EditDialog()
 {
     //setSizePolicy(QSizePolicy::Minimum);
@@ -94,6 +95,7 @@ EditDialog::EditDialog()
       toolBar->addAction(actionRight);
       toolBar->addAction(actionUnder);
 
+      fontComboBox = new QFontComboBox;
 
       //review
       reviewText = new QPlainTextEdit;
@@ -136,9 +138,10 @@ EditDialog::EditDialog()
 
       //
 
-      layout->addWidget(toolBar, 7,  0, 1, 4  );
+      layout->addWidget(toolBar, 7,  0, 1, 3  );
+      layout->addWidget(fontComboBox, 7, 3, 1, 1);
 
-      layout->addWidget(reviewText, 8,  0, 1, 8   );
+      layout->addWidget(reviewText, 8,  0, 1, 8);
 
       layout->addWidget(saveBtn, 10,  6, 1, 1 );
       layout->addWidget(cancelBtn, 10,  7, 1, 1  );

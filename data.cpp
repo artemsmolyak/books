@@ -179,9 +179,3 @@ QString Data::toString()
                    review);
 }
 
-QStringList Data::toQStringList()
-{
-    QStringList h;
-
-   return h;
-}

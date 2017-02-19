@@ -7,6 +7,8 @@
 #include "data.h"
 #include "assesment.h"
 #include "QPlainTextEdit"
+#include "QFontComboBox"
+
 
 enum Mode {
     add,
@@ -33,6 +35,7 @@ private:
     QLineEdit * numberOfPagesText;
     QLineEdit * tagsText;
     QPlainTextEdit * reviewText;
+    QFontComboBox * fontComboBox;
 
 
 public:
@@ -45,6 +48,7 @@ public:
 
     QLineEdit *getMainIdeaText() const;
     void setMainIdeaText(QLineEdit *value);
+
 
 public slots:
     void actionBold();

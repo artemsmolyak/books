@@ -29,15 +29,15 @@ private:
 
 public:
 
-    Data(QString title, QString authors, QString mainIdea,  int rateInt,
-         int genre, int pages, QDate dateS, QDate dateF, QStringList tagsList,
+    Data(QString title, QString authors, QString mainIdea,
+         int rateInt, int genre, int pages,
+         QDate dateS, QDate dateF,
+         QStringList tagsList,
          QString  review, QPixmap bookCoverPixmap);
 
     Data();
 
     QString toString();
-
-    QStringList toQStringList();
 
     QString getAssessment() const;
     void setAssessment(const QString &value);

@@ -51,16 +51,17 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->deleteButton, SIGNAL(clicked(bool)), this, SLOT(deleteItem()));
 
 
-    connect(ui->tableView, SIGNAL(clicked(QModelIndex)), this, SLOT(chooseListIndex(QModelIndex)));
+    connect(ui->titlelistView, SIGNAL(clicked(QModelIndex)), this, SLOT(chooseListIndex(QModelIndex)));
 
-    readXml();
+    //connect(ui->tableView, SIGNAL(clicked(QModelIndex)), this, SLOT(chooseListIndex(QModelIndex)));
 
-    tableModel = new TableModel(dataList);
 
-    QSortFilterProxyModel * sortModel = new QSortFilterProxyModel(this);
-    sortModel->setSourceModel(tableModel);
-    sortModel->setFilterKeyColumn(0);
-    ui->tableView->setModel(sortModel);
+//    readXml();
+//    tableModel = new TableModel(dataList);
+//    QSortFilterProxyModel * sortModel = new QSortFilterProxyModel(this);
+//    sortModel->setSourceModel(tableModel);
+//    sortModel->setFilterKeyColumn(0);
+//    ui->tableView->setModel(sortModel);
 
     guiSettings();
 
@@ -83,57 +84,57 @@ void MainWindow::guiSettings()
     ui->sortComboBox->addItem("By date read");
 
 
-    ui->tableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
-    ui->tableView->setSelectionBehavior(QAbstractItemView::SelectRows);
+//    ui->tableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
+//    ui->tableView->setSelectionBehavior(QAbstractItemView::SelectRows);
 
-    ui->tableView->setColumnHidden(0, true);
-    ui->tableView->setColumnHidden(2, true);
-    ui->tableView->setColumnHidden(3, true);
-    ui->tableView->setColumnHidden(4, true);
-    ui->tableView->setColumnHidden(5, true);
-    ui->tableView->setColumnHidden(6, true);
+//    ui->tableView->setColumnHidden(0, true);
+//    ui->tableView->setColumnHidden(2, true);
+//    ui->tableView->setColumnHidden(3, true);
+//    ui->tableView->setColumnHidden(4, true);
+//    ui->tableView->setColumnHidden(5, true);
+//    ui->tableView->setColumnHidden(6, true);
 
-    ui->tableView->resizeColumnsToContents();
-    ui->tableView->resizeRowsToContents();
+//    ui->tableView->resizeColumnsToContents();
+//    ui->tableView->resizeRowsToContents();
 
     //ui->tableView->setColumnWidth(0, 20);
 }
 
 void MainWindow::setChooseFirstColumn()
 {
-    QStringList list;
+//    QStringList list;
 
-    for(int i = 0; i < tableModel->columnCount(QModelIndex()) - 1; i++)
-    {
-        QModelIndex newIn  = tableModel->index(0, i);
-        QVariant QV = tableModel->data(newIn, Qt::DisplayRole);
-        list << QV.toString();
-    }
+//    for(int i = 0; i < tableModel->columnCount(QModelIndex()) - 1; i++)
+//    {
+//        QModelIndex newIn  = tableModel->index(0, i);
+//        QVariant QV = tableModel->data(newIn, Qt::DisplayRole);
+//        list << QV.toString();
+//    }
 
-    ui->reviewtextEdit->document()->setPlainText(list.at(3));
-    ui->additionalWin2->setText(list.at(4));
-    ui->assesmentWidget->setAssesment((list.at(5)).toInt());
+//    ui->reviewtextEdit->document()->setPlainText(list.at(3));
+//    ui->additionalWin2->setText(list.at(4));
+//    ui->assesmentWidget->setAssesment((list.at(5)).toInt());
 
-    QModelIndex newIn  = tableModel->index(0, 6);
-    QVariant QV = tableModel->data(newIn, Qt::DisplayRole);
-    QPixmap pix = qvariant_cast<QPixmap>(QV);
+//    QModelIndex newIn  = tableModel->index(0, 6);
+//    QVariant QV = tableModel->data(newIn, Qt::DisplayRole);
+//    QPixmap pix = qvariant_cast<QPixmap>(QV);
 
-    if (pix.isNull())
-        ui->labelPic->setPixmap(QPixmap("://empty.png"));
-    else
-    {
+//    if (pix.isNull())
+//        ui->labelPic->setPixmap(QPixmap("://empty.png"));
+//    else
+//    {
 
-        qint32 widgetW = ui->labelPic->width();
-        qint32 widgetH = ui->labelPic->height();
-        qDebug() <<"!"<< widgetW << widgetH;
-        //pix = pix.scaled(widgetW, widgetH, Qt::KeepAspectRatio);
-        ui->labelPic->setPixmap(pix);
-        ui->labelPic->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
-    }
+//        qint32 widgetW = ui->labelPic->width();
+//        qint32 widgetH = ui->labelPic->height();
+//        qDebug() <<"!"<< widgetW << widgetH;
+//        //pix = pix.scaled(widgetW, widgetH, Qt::KeepAspectRatio);
+//        ui->labelPic->setPixmap(pix);
+//        ui->labelPic->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
+//    }
 
-    QModelIndex index = tableModel->index(0, 1);
-    ui->tableView->setCurrentIndex(index);
-    ui->tableView->setFocus();
+//    QModelIndex index = tableModel->index(0, 1);
+//    ui->tableView->setCurrentIndex(index);
+//    ui->tableView->setFocus();
 
 }
 
@@ -231,10 +232,10 @@ bool MainWindow::readXml()
 
 void MainWindow::showMainInformation()
 {
-     ui->reviewtextEdit->setPlainText("read:" +
-                                      QString::number(dataStringList.length())
-                                      +" books"
-                                      + "\n average read speed:");
+//     ui->reviewtextEdit->setPlainText("read:" +
+//                                      QString::number(dataStringList.length())
+//                                      +" books"
+//                                      + "\n average read speed:");
 }
 
 bool MainWindow::dbConnect()
@@ -265,14 +266,61 @@ qDebug() << "err " << err.text();
 void MainWindow::getInfFromDb()
 {
     QSqlQuery query;
-//    query.exec("SELECT * FROM books");
-//    qDebug() << "from db " <<query.size();
 
-//    while (query.next()) {
-//        QString name = query.value(0).toString();
-//        QString value2 = query.value(1).toString();
-//        qDebug() << name << value2;
-//    }
+    //get in from books
+    query.exec("SELECT * FROM books");
+    qDebug() << "from db " <<query.size();
+
+    //    ("create table IF not EXISTS books"
+    //                                  "(id integer primary key, "
+    //                                  "title varchar, "
+    //                                  "authors varchar,"
+    //                                  "mainIdea TEXT, "
+    //                                  "rateInt integer, "
+    //                                  "genreId integer, "
+    //                                  "pages integer, "
+    //                                  "dateS date, "
+    //                                  "dateF date, "
+    //                                  "tagsList TEXT, "
+    //                                  "review TEXT, "
+    //                                  "bookCoverPixmap BLOB, "
+
+
+   QList <Data> dataList;
+
+    while (query.next()) {
+        QString title = query.value(1).toString();
+        QString authors = query.value(2).toString();
+        QString mainIdea = query.value(3).toString();
+
+        int rateInt = query.value(4).toInt();
+        int genreId = query.value(5).toInt();
+        int pages = query.value(6).toInt();
+
+        QDate dateS = query.value(7).toDate();
+        QDate dateF = query.value(8).toDate();
+
+        QString tagsString = query.value(9).toString();
+        QStringList tagsList = tagsString.split(", ");
+
+        QString review = query.value(10).toString();
+
+        QByteArray picArray = query.value(11).toByteArray();
+
+        QPixmap pic;
+        pic.loadFromData(picArray);
+
+        Data data(title, authors, mainIdea, rateInt, genreId, pages,
+                          dateS, dateF, tagsList, review, pic);
+
+        dataList.append(data);
+    }
+
+    fillMainWinFromDataBase(dataList);
+
+
+    qDebug() << " lenght: " << dataList.length();
+
 
 //    query.exec("SELECT * FROM authors");
 //    qDebug() << "from db " <<query.size();
@@ -289,8 +337,7 @@ void MainWindow::getInfFromDb()
     while (query.next()) {
         QString name = query.value(0).toString();
         QString value = query.value(1).toString();
-        //qDebug() << name << value2;
-        listGenre.append(value);
+             listGenre.append(value);
     }
 
     dialogAddEdit->setGenre(listGenre);
@@ -302,6 +349,20 @@ void MainWindow::getInfFromDb()
 
     //ui->verticalLayout_3->
 
+}
+
+void MainWindow::fillMainWinFromDataBase(QList<Data> dataList)
+{
+    QStringList titleList;
+    foreach (Data data, dataList) {
+        titleList << data.getBookTitle();
+    }
+
+    QStringListModel* model = new QStringListModel();
+    model->setStringList(titleList);
+
+    ui->titlelistView->setModel(model);
+    //ui->listView->
 }
 
 QSqlError MainWindow::createGenresTable()
@@ -653,40 +714,40 @@ void MainWindow::chooseListIndex(QModelIndex index)
 {
     qDebug() << "here" <<index.row() << index.column();
 
-    QStringList list;
+//    QStringList list;
 
-    for(int i = 0; i < tableModel->columnCount(index) - 1; i++)
-    {
-        QModelIndex newIn  = tableModel->index(index.row(), i);
+//    for(int i = 0; i < tableModel->columnCount(index) - 1; i++)
+//    {
+//        QModelIndex newIn  = tableModel->index(index.row(), i);
 
-        QVariant QV = tableModel->data(newIn, Qt::DisplayRole);
-        list << QV.toString();
-    }
+//        QVariant QV = tableModel->data(newIn, Qt::DisplayRole);
+//        list << QV.toString();
+//    }
 
-    ui->reviewtextEdit->document()->setPlainText(list.at(3));
-    QString digit = list.at(5);
-    ui->assesmentWidget->setAssesment(digit.toInt());
-    ui->additionalWin2->setText(list.at(4));
+//    ui->reviewtextEdit->document()->setPlainText(list.at(3));
+//    QString digit = list.at(5);
+//    ui->assesmentWidget->setAssesment(digit.toInt());
+//    ui->additionalWin2->setText(list.at(4));
 
 
-    QModelIndex newIn  = tableModel->index(index.row(), 6);
+//    QModelIndex newIn  = tableModel->index(index.row(), 6);
 
-    QVariant QV = tableModel->data(newIn, Qt::DisplayRole);
+//    QVariant QV = tableModel->data(newIn, Qt::DisplayRole);
 
-    QPixmap pix = qvariant_cast<QPixmap>(QV);
+//    QPixmap pix = qvariant_cast<QPixmap>(QV);
 
- if (pix.isNull())
-        ui->labelPic->setPixmap(QPixmap("://empty.png"));
-    else
-    {
+// if (pix.isNull())
+//        ui->labelPic->setPixmap(QPixmap("://empty.png"));
+//    else
+//    {
 
-        qint32 widgetW = ui->labelPic->width();
-        qint32 widgetH = ui->labelPic->height();
+//        qint32 widgetW = ui->labelPic->width();
+//        qint32 widgetH = ui->labelPic->height();
 
-        pix = pix.scaled(widgetW, widgetH, Qt::KeepAspectRatio);
-        ui->labelPic->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
-        ui->labelPic->setPixmap(pix);
-    }
+//        pix = pix.scaled(widgetW, widgetH, Qt::KeepAspectRatio);
+//        ui->labelPic->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
+//        ui->labelPic->setPixmap(pix);
+//    }
 
 }
 
@@ -769,26 +830,26 @@ void MainWindow::editItem(Data data)
 
 void MainWindow::deleteItem()
 {
-    QModelIndexList indexLst = ui->tableView->selectionModel()->selectedIndexes();
-    QModelIndex indexEdit = indexLst.at(0);
+//    QModelIndexList indexLst = ui->tableView->selectionModel()->selectedIndexes();
+//    QModelIndex indexEdit = indexLst.at(0);
 
-    QMessageBox msgBox;
-    msgBox.setText("Warning! You are going to delete line " + QString::number(indexEdit.row() - 1));
-    msgBox.setInformativeText("Do you really want it?");
-    msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::Cancel);
-    int ret = msgBox.exec();
+//    QMessageBox msgBox;
+//    msgBox.setText("Warning! You are going to delete line " + QString::number(indexEdit.row() - 1));
+//    msgBox.setInformativeText("Do you really want it?");
+//    msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::Cancel);
+//    int ret = msgBox.exec();
 
-    switch (ret) {
-    case QMessageBox::Yes:
-        qDebug()<< "index for delete " << indexEdit;
-        tableModel->removeRows(indexEdit.row(), 1, indexEdit);
-        saveXml();
-        break;
-    case QMessageBox::Cancel:
-        break;
-    default:
-        break;
-    }
+//    switch (ret) {
+//    case QMessageBox::Yes:
+//        qDebug()<< "index for delete " << indexEdit;
+//        tableModel->removeRows(indexEdit.row(), 1, indexEdit);
+//        saveXml();
+//        break;
+//    case QMessageBox::Cancel:
+//        break;
+//    default:
+//        break;
+//    }
 
 
 }
