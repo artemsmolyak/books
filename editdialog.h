@@ -49,6 +49,8 @@ public:
     void setPicDefault();
     void reset();
 
+    void viewData(Data data);
+
     QLineEdit *getMainIdeaText() const;
     void setMainIdeaText(QLineEdit *value);
 

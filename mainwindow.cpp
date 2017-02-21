@@ -31,25 +31,30 @@ MainWindow::MainWindow(QWidget *parent) :
     addQuotesDialog = new AddQuotesDialog;
     modelTitle = new QStringListModel();
     modelQuotes = new QStringListModel();
+    currentTab = reviewTab;
+    currentMode = add;
     guiSettings();
 
-
+//
 
 //    connect(ui->addBtn, SIGNAL(clicked(bool)), dialog, SLOT(show()));
 //    connect(ui->addBtn, SIGNAL(clicked(bool)), this, SLOT(addModeStart()));
 
-    ui->quotesListView->setModel(modelQuotes);
+   // ui->quotesListView->setModel(modelQuotes);
 
-    connect(ui->addBtn, SIGNAL(clicked(bool)), this, SLOT(showAddDialog()));   
+    //connect(ui->addBtn, SIGNAL(clicked(bool)), this, SLOT(showAddDialog()));
 
-    connect(ui->editBtn, SIGNAL(clicked(bool)),  dialog, SLOT(show()));
+    connect(ui->addBtn, SIGNAL(clicked(bool)), this, SLOT(addModeStart()));
     connect(ui->editBtn, SIGNAL(clicked(bool)), this, SLOT(editModeStart()));
+    //connect(ui->editBtn, SIGNAL(clicked(bool)),  this, SLOT(showAddDialog()));
+
+
 
 //    connect(dialog, SIGNAL(newItemIsReady(Data)), this, SLOT(getNewItem(Data)));
 //    connect(dialog, SIGNAL(editItemIsReady(Data)), this, SLOT(editItem(Data)));
 
     connect(dialogAddEdit, SIGNAL(newItemIsReady(Data)), this, SLOT(getNewItem(Data)));
-    connect(dialogAddEdit, SIGNAL(editItemIsReady(Data)), this, SLOT(editItem(Data)));
+   // connect(dialogAddEdit, SIGNAL(editItemIsReady(Data)), this, SLOT(editItem(Data)));
     connect(ui->deleteButton, SIGNAL(clicked(bool)), this, SLOT(deleteItem()));
     connect(ui->titlelistView, SIGNAL(clicked(QModelIndex)), this, SLOT(chooseListIndex(QModelIndex)));     
     connect(ui->tabWidget, SIGNAL(tabBarClicked(int)), this, SLOT(on_changeTab_released(int)));
@@ -88,7 +93,11 @@ void MainWindow::guiSettings()
 {
     ui->sortComboBox->addItem("By title");
     ui->sortComboBox->addItem("By date read");
-ui->tabWidget->setCurrentIndex(0);
+    ui->tabWidget->setCurrentIndex(0);
+
+
+    ui->titlelistView->setModel(modelTitle);
+    ui->quotesListView->setModel(modelQuotes);
 
 //    ui->tableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
 //    ui->tableView->setSelectionBehavior(QAbstractItemView::SelectRows);
@@ -342,7 +351,7 @@ void MainWindow::fillMainWinFromDataBase(QList<Data> dataList)
 
     modelTitle->setStringList(titleList);
 
-    ui->titlelistView->setModel(modelTitle);
+   // ui->titlelistView->setModel(modelTitle);
 }
 
 QSqlError MainWindow::createGenresTable()
@@ -374,6 +383,89 @@ QSqlError MainWindow::createGenresTable()
     QVariant tragicomedyID = addGenre(q, QLatin1String("Tragicomedy"));
 
     return q.lastError();
+}
+
+QSqlError MainWindow::updateBookTable(Data data)
+{
+
+    QSqlQuery q;
+
+
+    //    ("create table IF not EXISTS books"
+    //                                  "(id integer primary key, "
+    //                                  "title varchar, "
+    //                                  "authors varchar,"
+    //                                  "mainIdea TEXT, "
+    //                                  "rateInt integer, "
+    //                                  "genreId integer, "
+    //                                  "pages integer, "
+    //                                  "dateS date, "
+    //                                  "dateF date, "
+    //                                  "tagsList TEXT, "
+    //                                  "review TEXT, "
+    //                                  "bookCoverPixmap BLOB, "
+
+
+
+    if (!q.prepare(QLatin1String("update books "
+                                 " SET "
+                                 " title = ? , "
+                                 " authors = ?, "
+                                 " mainIdea = ? , "
+                                 " rateInt = ? , "
+                                 " genreId = ? , "
+                                 " pages = ? , "
+                                 " dateS = ? , "
+                                 " dateF = ? , "
+                                 " tagsList = ? , "
+                                 " review = ? , "
+                                 " bookCoverPixmap = ? "
+                                 "WHERE id = ?")))
+        return q.lastError();
+
+
+
+    QString title = data.getBookTitle();
+    QString authors = data.getAuthorsName();
+    QString mainIdea = data.getMainIdea();
+    int rateInt = data.getRateInt();
+    int genre = data.getGenre();
+    int pages = data.getPages();
+    QDate dateS = data.getDateS();
+    QDate dateF = data.getDateF();
+    QStringList tagsList = data.getTagsList();
+    QString tags = tagsList.join(", ");
+    QString  review = data.getReview();
+    QPixmap bookCoverPixmap = data.getBookCoverPixmap();
+    QString type = data.getTypePic();
+    QByteArray inByteArrayBookCover;
+    QBuffer inBuffer(&inByteArrayBookCover);
+    inBuffer.open(QIODevice::WriteOnly);
+
+    std::string fname = type.toStdString();
+    char * cstrType = new char [fname.size() + 1];
+    strcpy( cstrType, fname.c_str() );
+    bookCoverPixmap.save(&inBuffer, cstrType);
+
+    int id = data.getId();
+
+
+    updateBook(q,
+               title,
+               authors,
+               mainIdea,
+               rateInt,
+               genre,
+               pages,
+               dateS,
+               dateF,
+               tags,
+               review,
+               inByteArrayBookCover,
+               id);
+
+    return q.lastError();
+
 }
 
 QSqlError MainWindow::createBookMainsTable()
@@ -740,6 +832,9 @@ void MainWindow::saveXml()
 
 void MainWindow::getNewItem(Data data)
 {
+    if (currentMode == add)
+    {
+
     qDebug() << " getNewItem !!! " <<data.toString() << dataListMain.length();
 
     saveItemInDatabase(data);
@@ -749,6 +844,15 @@ void MainWindow::getNewItem(Data data)
 
     repaintSecondaryWindows(dataListMain.length() - 1);
     repaintReview(dataListMain.length() - 1);  //focus on last added
+
+
+    }
+    else if (currentMode == edit)
+    {
+        QSqlError error =  updateBookTable(data);
+        qDebug() << error.text();
+        qDebug() <<"";
+    }
 
   /*  int row = tableModel->rowCount(QModelIndex());
     tableModel->insertRows(row, 1);
@@ -808,7 +912,7 @@ void MainWindow::chooseListIndex(QModelIndex index)
     currentBook = index.row();
     Data currentData = dataListMain.at(index.row());
 
-    if(tabNow == 0)
+    if(currentTab == reviewTab)
     {
     ui->plainTextEdit->setPlainText("<b>" + currentData.getMainIdea() + "</b> "+
                                          + "\n \n" + currentData.getReview());
@@ -831,7 +935,7 @@ void MainWindow::chooseListIndex(QModelIndex index)
 
 
     }
-    else if (tabNow == 1)
+    else if (currentTab == quotesTab)
     {
         repaintQuoteView();
         repaintSecondaryWindows(currentBook);
@@ -894,13 +998,13 @@ void MainWindow::on_updateButton_released()
 void MainWindow::on_changeTab_released(int tab)
 {
     qDebug() << "tab "<<tab;
-    if (tab == 0)
+    if (tab == reviewTab)
     {
-       tabNow = 0;
+       currentTab = reviewTab;
     }
-    else if (tab == 1)
+    else if (tab == quotesTab)
     {
-       tabNow = 1;
+       currentTab = quotesTab;
 
        modelQuotes->removeRows(0, modelQuotes->rowCount());
 
@@ -925,13 +1029,14 @@ void MainWindow::on_changeTab_released(int tab)
 void MainWindow::showAddDialog()
 {
     qDebug() << "showAddDialog";
-    if (tabNow == 0)
-    {
-        addModeStart();
-        dialogAddEdit->show();
+
+    if (currentTab == reviewTab)
+    {      
+            dialogAddEdit->show();
     }
-    else if (tabNow == 1)
+    else if (currentTab == quotesTab)
     {
+        editModeStart();
         addQuotesDialog->show();
     }
 
@@ -955,6 +1060,32 @@ void MainWindow::saveQuote(QString quote)
 
 void MainWindow::editModeStart()
 {
+     currentMode = edit;
+
+     if (currentTab == reviewTab)
+     {
+         Data currentData = dataListMain.at(currentBook);
+         dialogAddEdit->setGenre(genreHash);
+         dialogAddEdit->viewData(currentData);
+         dialogAddEdit->show();
+     }
+     else if (currentTab == quotesTab)
+     {
+         QModelIndexList currentQuoteIndexes = ui->quotesListView->selectionModel()->selectedIndexes();
+         QModelIndex currentIndex = currentQuoteIndexes.at(0);
+         qDebug() << "selected " << currentIndex.row();
+
+         auto quote = quotesList.at(currentIndex.row());
+
+
+         addQuotesDialog->viewData(quote.second);
+         addQuotesDialog->show();
+     }
+
+
+
+
+
     qDebug() << "edit mode";
 
 //    QModelIndexList indexLst = ui->tableView->selectionModel()->selectedIndexes();
@@ -998,12 +1129,22 @@ void MainWindow::editModeStart()
 
 void MainWindow::addModeStart()
 {
-    dialogAddEdit->setGenre(genreHash);
+    currentMode = add;
 
-    dialogAddEdit->setStartDate();
-    dialogAddEdit->setFinishDate();
+    if (currentTab == reviewTab)
+    {
+        dialogAddEdit->setGenre(genreHash);
+        dialogAddEdit->setStartDate();
+        dialogAddEdit->setFinishDate();
+        dialogAddEdit->setPicDefault();
 
-    dialogAddEdit->setPicDefault();
+        dialogAddEdit->show();
+    }
+    else if (currentTab == quotesTab)
+    {
+        addQuotesDialog->show();
+    }
+
 
     //dialogAddEdit->setAddMode();
 }

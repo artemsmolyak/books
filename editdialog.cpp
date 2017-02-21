@@ -193,7 +193,38 @@ void EditDialog::reset()
 //        ui->authorEdit->clear();
 //        ui->assesmentWidget->setAssesment(0);
 //        ui->bookCoverLabel->setPixmap(QPixmap("://empty.png"));
-//        ui->reviewEdit->clear();
+    //        ui->reviewEdit->clear();
+}
+
+void EditDialog::viewData(Data data)
+{
+    setWindowTitle("Edit book");
+
+    titleText->setText(data.getBookTitle());
+    authorsText->setText(data.getAuthorsName());
+    mainIdeaText->setText(data.getMainIdea());
+
+    rate->setAssesment(data.getRateInt());
+
+    genreCombobox->setCurrentIndex(data.getGenre());
+
+    numberOfPagesText->setText(QString::number(data.getPages()));
+
+    dateStart->setDate(data.getDateS());
+    dateFinish->setDate(data.getDateF());
+
+    tagsText->setText(data.getTagsList().join(", "));
+
+    reviewText->setPlainText(data.getReview());
+
+    QPixmap pic = data.getBookCoverPixmap();
+    QSize sizePic = pic.rect().size();
+    if (sizePic.width() > minSizePic.width() || sizePic.height() > minSizePic.height())
+        sizePic = minSizePic;
+
+    picButton->setIcon(pic);
+    picButton->setIconSize(sizePic);
+
 }
 
 void EditDialog::actionBold()

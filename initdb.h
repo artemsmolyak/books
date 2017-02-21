@@ -20,6 +20,39 @@
 //                                  "bookCoverPixmap BLOB, "
 
 
+QVariant updateBook(QSqlQuery &q,
+                    const QString &title,
+                    const QString &authors,
+                    const QString &mainIdea,
+                    const int &rateInt,
+                    const int &genreId,
+                    const int &pages,
+                    const QDate &dataS,
+                    const QDate &dataF,
+                    const QString &tagsList,
+                    const QString &review,
+                    const QByteArray &bookPicBuffer,
+                    const int id)
+{
+    q.addBindValue(title);
+    q.addBindValue(authors);
+    q.addBindValue(mainIdea);
+    q.addBindValue(rateInt);
+    q.addBindValue(genreId);
+    q.addBindValue(pages);
+    q.addBindValue(dataS);
+    q.addBindValue(dataF);
+    q.addBindValue(tagsList);
+    q.addBindValue(review);
+    q.addBindValue(bookPicBuffer);
+    q.addBindValue(id);
+
+    q.exec();
+    qDebug() <<"E: "<< q.lastError().text();
+    return q.lastInsertId();
+
+}
+
 
 
 QVariant addItem(QSqlQuery &q,

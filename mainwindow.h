@@ -19,6 +19,13 @@ namespace Ui {
 class Window;
 }
 
+enum TabWindow
+{
+    reviewTab,
+    quotesTab
+};
+
+
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
@@ -42,7 +49,8 @@ private:
     //QStringList dataStringList;
 
     int currentBook;
-    int tabNow = 0;
+    Mode currentMode;
+    TabWindow currentTab;
 
     QHash <int, QString> genreHash;
     QList <QPair <int, QString>> quotesList;
@@ -76,6 +84,7 @@ public:
     QSqlError createBookMainsTable();
     QSqlError createQuotesTable();
     QSqlError createTagsTable();
+    QSqlError updateBookTable(Data data);
 
     QSqlError saveItemInDatabase(Data data);
 

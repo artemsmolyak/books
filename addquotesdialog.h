@@ -10,10 +10,11 @@ class AddQuotesDialog : public QDialog
     Q_OBJECT
 
 private:
-     QTextEdit * quote;
+     QTextEdit * quoteTextEdit;
 
 public:
     explicit AddQuotesDialog();
+    void viewData(QString quote);
 
 
 signals:

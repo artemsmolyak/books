@@ -40,8 +40,6 @@ public:
 
     QString toString();
 
-    QString getAssessment() const;
-    void setAssessment(const QString &value);
     QString getAuthorsName() const;
     void setAuthorsName(const QString &value);
     QString getBookTitle() const;
