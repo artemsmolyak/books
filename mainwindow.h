@@ -12,6 +12,7 @@
 #include "addquotesdialog.h"
 #include "QPair"
 #include "QStringListModel"
+#include "quote.h"
 
 class Dialog;
 
@@ -48,12 +49,12 @@ private:
     QList <Data> dataListMain;
     //QStringList dataStringList;
 
-    int currentBook;
+    //int currentBook;
     Mode currentMode;
     TabWindow currentTab;
 
     QHash <int, QString> genreHash;
-    QList <QPair <int, QString>> quotesList;
+    QList <Quote> quotesList;
 
 
     TableModel * tableModel;
@@ -72,7 +73,16 @@ public:
     void editMode();    
     void showMainInformation();
     QSqlError getQuotes();   
+    void updateDataListMain();
+    int getCurrentQuoteCountFrom1();
+    int getCurrentBookCountFrom1();
+    int getIDFromBookNumber(int bookNumber);
+    int getIDFromQuoteNumber(int quoteNumber);
 
+
+    //Quote
+    QList <Quote> getListQuoteForBook(int idBook);
+    QStringList QListQuotesToQStringList(QList <Quote> list);
 
    //DataBase
     bool dbConnect();
@@ -85,13 +95,14 @@ public:
     QSqlError createQuotesTable();
     QSqlError createTagsTable();
     QSqlError updateBookTable(Data data);
+    QSqlError deleteBookFromDB(int id);
 
     QSqlError saveItemInDatabase(Data data);
 
     void repaintQuoteView();
-    void repaintSecondaryWindows(int index); //it's rate-window and pic-windows
-    void updateListOfTitles();  //it needs after add new item
-    void repaintReview(int index);
+    void updateSecondaryWindowsForCurrentBook(int index); //it's rate-window and pic-windows
+    void getALlBooksFromDB();  //it needs after add new item
+    void repaintReviewForCurrentBook(int index);
     ~MainWindow();
 
 private:
@@ -104,7 +115,7 @@ signals:
 
 public  slots:
     void saveXml();
-    void getNewItem(Data data);
+    void addEditNewItem(Data data);
     void updateDataList();
     void testSlot(Data);
     void chooseListIndex(QModelIndex index);

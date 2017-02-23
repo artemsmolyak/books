@@ -25,12 +25,30 @@ void EditDialog::setMainIdeaText(QLineEdit *value)
     mainIdeaText = value;
 }
 
+void EditDialog::clearAll()
+{
+    typePic = "";
+
+    picButton->setIcon(QPixmap(":/empty.png"));
+    genreCombobox->setCurrentIndex(0);
+    dateStart->setDate(QDate::currentDate());
+    dateFinish->setDate(QDate::currentDate());
+    rate->setAssesment(1);
+    authorsText->setText("");
+    mainIdeaText->setText("");
+    titleText->setText("");
+    numberOfPagesText->setText("");
+    tagsText->setText("");
+    reviewText->setPlainText("");
+
+}
+
 
 EditDialog::EditDialog()
 {
     //setSizePolicy(QSizePolicy::Minimum);
     resize(700, 700);
-
+     idData = -1;
 
 
     QLabel * titleLable = new QLabel("title: ");
@@ -196,10 +214,11 @@ void EditDialog::reset()
     //        ui->reviewEdit->clear();
 }
 
-void EditDialog::viewData(Data data)
+void EditDialog::viewDataForEdit(Data data)
 {
     setWindowTitle("Edit book");
 
+    idData = data.getId();
     titleText->setText(data.getBookTitle());
     authorsText->setText(data.getAuthorsName());
     mainIdeaText->setText(data.getMainIdea());
@@ -315,7 +334,7 @@ void EditDialog::on_SaveButton_released()
 
         int rateInt = rate->getAssesment();
 
-        int genre = genreCombobox->currentIndex();
+        int genre = genreCombobox->currentIndex() + 1;
 
         int pages = numberOfPagesText->text().toInt();
 
@@ -331,10 +350,11 @@ void EditDialog::on_SaveButton_released()
                  << typePic;
 
         emit newItemIsReady(
-                    Data(title, authors, mainIdea, rateInt, genre,
+                    Data(idData, title, authors, mainIdea, rateInt, genre,
                          pages, dateS, dateF, tagsList,
                          review,  *pixmapPic, typePic)
                     );
+        clearAll();
     }
     //else if (mode == edit)
 //    {

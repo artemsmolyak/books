@@ -2,8 +2,6 @@
 #include "qstringlist.h"
 #include "QDebug"
 
-int Data::size = 0;
-
 
 QString Data::getAuthorsName() const
 {
@@ -152,24 +150,24 @@ void Data::setTypePic(const QString &value)
     typePic = value;
 }
 
-Data::Data(QString title, QString authors, QString mainIdea, int rateInt,
+Data::Data(int id, QString title, QString authors, QString mainIdea, int rateInt,
            int genre, int pages, QDate dateS, QDate dateF, QStringList tagsList,
            QString review, QPixmap bookCoverPixmap, QString typePic):
-  bookTitle(title), authorsName(authors), mainIdea(mainIdea), rateInt(rateInt),
+  id(id), bookTitle(title), authorsName(authors), mainIdea(mainIdea), rateInt(rateInt),
   genre(genre), pages(pages), dateS(dateS), dateF(dateF), tagsList(tagsList),
   review(review), bookCoverPixmap(bookCoverPixmap), typePic(typePic)
 {
-    qDebug() <<" size "<< size;
-    id = size;
-    size++;
+//    qDebug() <<" size "<< size;
+//    id = size;
+//    size++;
 }
 
 
 
 Data::Data()
 {
-   id = size;
-   size++;
+//   id = size;
+//   size++;
 }
 
 

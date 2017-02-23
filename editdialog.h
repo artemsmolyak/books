@@ -22,6 +22,7 @@ class EditDialog : public QDialog
 
 private:
     Mode mode;
+    int idData;
 
     QString typePic;
     QPixmap *pixmapPic;
@@ -49,11 +50,11 @@ public:
     void setPicDefault();
     void reset();
 
-    void viewData(Data data);
+    void viewDataForEdit(Data data);
 
     QLineEdit *getMainIdeaText() const;
     void setMainIdeaText(QLineEdit *value);
-
+    void clearAll();
 
 public slots:
     void actionBold();

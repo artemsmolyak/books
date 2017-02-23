@@ -8,7 +8,7 @@
 
 class Data
 {
-    static int size;
+   // static int size;
 
 private:
     QString bookTitle;
@@ -25,12 +25,12 @@ private:
     int rateInt;
     int genre;
     int pages;
-    qint32 id;
+    int id;
 
 
 public:
 
-    Data(QString title, QString authors, QString mainIdea,
+    Data(int id, QString title, QString authors, QString mainIdea,
          int rateInt, int genre, int pages,
          QDate dateS, QDate dateF,
          QStringList tagsList,

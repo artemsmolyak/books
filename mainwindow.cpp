@@ -19,6 +19,7 @@
 #include "QPair"
 #include "QStandardItemModel"
 #include "string.h"
+#include "quote.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -53,7 +54,7 @@ MainWindow::MainWindow(QWidget *parent) :
 //    connect(dialog, SIGNAL(newItemIsReady(Data)), this, SLOT(getNewItem(Data)));
 //    connect(dialog, SIGNAL(editItemIsReady(Data)), this, SLOT(editItem(Data)));
 
-    connect(dialogAddEdit, SIGNAL(newItemIsReady(Data)), this, SLOT(getNewItem(Data)));
+    connect(dialogAddEdit, SIGNAL(newItemIsReady(Data)), this, SLOT(addEditNewItem(Data)));
    // connect(dialogAddEdit, SIGNAL(editItemIsReady(Data)), this, SLOT(editItem(Data)));
     connect(ui->deleteButton, SIGNAL(clicked(bool)), this, SLOT(deleteItem()));
     connect(ui->titlelistView, SIGNAL(clicked(QModelIndex)), this, SLOT(chooseListIndex(QModelIndex)));     
@@ -260,11 +261,12 @@ bool MainWindow::dbConnect()
      QSqlError err = initDb();
 
 
-     //qDebug() << (createGenresTable()).text();
-     //qDebug() << (createBookMainsTable()).text();
-     //qDebug() << (createQuotesTable()).text();
-     //qDebug() << (createTagsTable()).text();
-
+//     qDebug() << "**************************************";
+//     qDebug() << (createGenresTable()).text();
+//     qDebug() << (createBookMainsTable()).text();
+//     qDebug() << (createQuotesTable()).text();
+//    // qDebug() << (createTagsTable()).text();
+//     qDebug() << "**************************************";
 
 
 qDebug() << "err " << err.text();
@@ -301,7 +303,7 @@ void MainWindow::getInfFromDb()
     //                                  "bookCoverPixmap BLOB, "
 
 
-   updateListOfTitles();
+   getALlBooksFromDB();
 
 
     //qDebug() << " lenght: " << dataList.length();
@@ -326,16 +328,75 @@ QSqlError MainWindow::getQuotes()
     quotesList.clear();
     QSqlQuery query;
     query.exec("SELECT * FROM quotes");
-    while (query.next()) {
-        QPair <int, QString> quotesPair;
+    while (query.next()) {        
+        int idQuote = query.value(0).toInt();
         QString value = query.value(1).toString();
-        QString nameBookId = query.value(2).toString();
-        quotesPair.first = nameBookId.toInt();
-        quotesPair.second = value;
-        quotesList.append(quotesPair);
+        int nameBookId = query.value(2).toInt();
+
+        Quote quoteTmp(idQuote, value, nameBookId);
+        quotesList.append(quoteTmp);
     }
 
     return QSqlError();
+}
+
+void MainWindow::updateDataListMain()
+{
+    dataListMain.clear();
+
+}
+
+int MainWindow::getCurrentQuoteCountFrom1()
+{
+    QModelIndexList currentQuoteIndexes = ui->quotesListView->selectionModel()->selectedIndexes();
+    QModelIndex currentIndex = currentQuoteIndexes.at(0);
+    qDebug() << "selected " << currentIndex.row();
+
+    return currentIndex.row() + 1;
+}
+
+int MainWindow::getCurrentBookCountFrom1()
+{
+    QModelIndexList currentsBooksIndexList = ui->titlelistView->selectionModel()->selectedIndexes();
+    return currentsBooksIndexList.at(0).row() + 1;  //cause we count in db from 1,  NOT from 0!
+}
+
+int MainWindow::getIDFromBookNumber(int bookNumber)
+{
+    Data data =  dataListMain.at(bookNumber - 1);
+    return data.getId();
+}
+
+int MainWindow::getIDFromQuoteNumber(int quoteNumber)
+{
+    int currentBookNumber = getCurrentBookCountFrom1();
+    int idBook = getIDFromBookNumber(currentBookNumber);
+
+
+    QList <Quote> listOneQuote = getListQuoteForBook(idBook);
+
+    Quote quoteCurrent = listOneQuote.at(quoteNumber - 1);
+
+    return quoteCurrent.getIdQuote();
+}
+
+QList<Quote> MainWindow::getListQuoteForBook(int idBook)
+{
+    QList <Quote> lst;
+    foreach (auto quote, quotesList) {
+        if (quote.getIdBook() == idBook)
+            lst.append(quote);
+    }
+    return lst;
+}
+
+QStringList MainWindow::QListQuotesToQStringList(QList<Quote> list)
+{
+    QStringList stringList;
+    foreach (auto quote, list) {
+        stringList << quote.getQuoteString();
+    }
+    return stringList;
 }
 
 
@@ -355,7 +416,7 @@ void MainWindow::fillMainWinFromDataBase(QList<Data> dataList)
 }
 
 QSqlError MainWindow::createGenresTable()
-{
+{   
     QSqlQuery q;
 
     if (!q.exec(QLatin1String("create table if not exists genres"
@@ -381,6 +442,8 @@ QSqlError MainWindow::createGenresTable()
     QVariant satireID = addGenre(q, QLatin1String("Satire"));
     QVariant tragedyID = addGenre(q, QLatin1String("Tragedy"));
     QVariant tragicomedyID = addGenre(q, QLatin1String("Tragicomedy"));
+
+     qDebug() <<" createGenresTable ok";
 
     return q.lastError();
 }
@@ -468,10 +531,25 @@ QSqlError MainWindow::updateBookTable(Data data)
 
 }
 
+QSqlError MainWindow::deleteBookFromDB(int id)
+{
+     QSqlQuery q;
+
+     q.exec("PRAGMA foreign_keys = ON;");
+
+     if (!q.prepare(QLatin1String("DELETE FROM books WHERE id = ?")))
+         return q.lastError();
+
+
+      deleteBook(q, id);
+
+      return q.lastError();
+}
+
 QSqlError MainWindow::createBookMainsTable()
 {
     QSqlQuery q;
-
+    q.exec("PRAGMA foreign_keys = ON;");
 
 //    QString title = data.getBookTitle();
 //    QString authors = data.getAuthorsName();
@@ -500,33 +578,43 @@ QSqlError MainWindow::createBookMainsTable()
                               "tagsList TEXT, "
                               "review TEXT, "
                               "bookCoverPixmap BLOB, "
-                              "FOREIGN KEY(genreId) REFERENCES genres(id))")))
+                              "dateSaved date, "
+                              "FOREIGN KEY(genreId) REFERENCES genres(id)"
+                              ")")))
         return q.lastError();
+
+       qDebug() <<" createBookMainsTable ok";
+
+    return q.lastError();
 }
 
 QSqlError MainWindow::createQuotesTable()
 {
     QSqlQuery q;
 
+    q.exec("PRAGMA foreign_keys = ON;");
+
     if (!q.exec(QLatin1String("create table if not exists quotes"
                               "(id integer primary key,"
                               "text varchar,"
                               "idBooks integer, "
-                              "FOREIGN KEY(idBooks) REFERENCES books(id))")))
+                              "FOREIGN KEY(idBooks) REFERENCES books(id) "
+                              "ON DELETE CASCADE)")))
         return q.lastError();
 
 
-        q.prepare(QLatin1String("insert into quotes "
-                               "(text, idBooks)"
-                               "values(?, ?)"));
+//        q.prepare(QLatin1String("insert into quotes "
+//                               "(text, idBooks)"
+//                               "values(?, ?)"));
 
 
-       QVariant id = addQuote(q,
-                             QLatin1String("quotes gsdfklgj dkl"),
-                             1);
+//       QVariant id = addQuote(q,
+//                             QLatin1String("quotes gsdfklgj dkl"),
+//                             1);
+
+       qDebug() << "createQuotesTable ok";
 
        return q.lastError();
-
 
 }
 
@@ -643,23 +731,20 @@ void MainWindow::repaintQuoteView()
 
     getQuotes();
 
-    QStringList quotesBook;
+    int currentBookNumber = getCurrentBookCountFrom1();
 
-    foreach(auto pair, quotesList)
-    {
-        int idBooks = pair.first;
+    int currentBookID = getIDFromBookNumber(currentBookNumber);
 
-        if (idBooks == currentBook)
-            quotesBook << pair.second;
-    }
+    QList <Quote> lst = getListQuoteForBook(currentBookID);
 
+    QStringList quotesBook = QListQuotesToQStringList(lst);
 
     modelQuotes->setStringList(quotesBook);
 }
 
-void MainWindow::repaintSecondaryWindows(int index)
+void MainWindow::updateSecondaryWindowsForCurrentBook(int currentBookCountFrom1)
 {
-    Data currentData = dataListMain.at(index);
+    Data currentData = dataListMain.at(currentBookCountFrom1 - 1);
     QPixmap pic = currentData.getBookCoverPixmap();
     if (pic.isNull())
              pic.load(":empty.png");
@@ -681,7 +766,7 @@ void MainWindow::repaintSecondaryWindows(int index)
                                 "\n\n genre: " + currentData.getGenre());
 }
 
-void MainWindow::updateListOfTitles()
+void MainWindow::getALlBooksFromDB()
 {
     QSqlQuery query;
 
@@ -692,6 +777,7 @@ void MainWindow::updateListOfTitles()
     dataListMain.clear();
 
      while (query.next()) {
+         int id = query.value(0).toInt();
          QString title = query.value(1).toString();
          QString authors = query.value(2).toString();
          QString mainIdea = query.value(3).toString();
@@ -716,7 +802,7 @@ void MainWindow::updateListOfTitles()
          QString type = reader.format();
 
 
-         Data data(title, authors, mainIdea, rateInt, genreId, pages,
+         Data data(id, title, authors, mainIdea, rateInt, genreId, pages,
                            dateS, dateF, tagsList, review, pic, type);
 
          dataList.append(data);
@@ -726,9 +812,9 @@ void MainWindow::updateListOfTitles()
      dataListMain = dataList;
 }
 
-void MainWindow::repaintReview(int index)
+void MainWindow::repaintReviewForCurrentBook(int currentBookCountFrom1)
 {
-    Data currentData = dataListMain.at(index);
+    Data currentData = dataListMain.at(currentBookCountFrom1 - 1);
     ui->plainTextEdit->setPlainText(currentData.getReview());
 }
 
@@ -830,7 +916,7 @@ void MainWindow::saveXml()
 
 }
 
-void MainWindow::getNewItem(Data data)
+void MainWindow::addEditNewItem(Data data)
 {
     if (currentMode == add)
     {
@@ -838,12 +924,12 @@ void MainWindow::getNewItem(Data data)
     qDebug() << " getNewItem !!! " <<data.toString() << dataListMain.length();
 
     saveItemInDatabase(data);
-    updateListOfTitles();
+    getALlBooksFromDB();
 
     ui->titlelistView->setCurrentIndex(modelTitle->index(dataListMain.length() - 1));
 
-    repaintSecondaryWindows(dataListMain.length() - 1);
-    repaintReview(dataListMain.length() - 1);  //focus on last added
+    updateSecondaryWindowsForCurrentBook(dataListMain.length()); //Count from 1
+    repaintReviewForCurrentBook(dataListMain.length());  //focus on last added. Count from 1
 
 
     }
@@ -852,6 +938,13 @@ void MainWindow::getNewItem(Data data)
         QSqlError error =  updateBookTable(data);
         qDebug() << error.text();
         qDebug() <<"";
+
+        int currentBookCountFrom1 = getCurrentBookCountFrom1();
+        getALlBooksFromDB();    //we need update after edit
+
+       updateSecondaryWindowsForCurrentBook(currentBookCountFrom1);
+       repaintReviewForCurrentBook(currentBookCountFrom1);  //focus on last added
+
     }
 
   /*  int row = tableModel->rowCount(QModelIndex());
@@ -909,15 +1002,15 @@ void MainWindow::chooseListIndex(QModelIndex index)
 {
     qDebug() << "here" <<index.row() << index.column();
 
-    currentBook = index.row();
+    int currentBookCountFrom1 = index.row() + 1;
     Data currentData = dataListMain.at(index.row());
 
     if(currentTab == reviewTab)
     {
-    ui->plainTextEdit->setPlainText("<b>" + currentData.getMainIdea() + "</b> "+
+       ui->plainTextEdit->setPlainText("<b>" + currentData.getMainIdea() + "</b> "+
                                          + "\n \n" + currentData.getReview());
 
-    repaintSecondaryWindows(currentBook);
+    updateSecondaryWindowsForCurrentBook(currentBookCountFrom1);
 
 //    QPixmap pic = currentData.getBookCoverPixmap();
 //    if (pic.isNull())
@@ -938,7 +1031,7 @@ void MainWindow::chooseListIndex(QModelIndex index)
     else if (currentTab == quotesTab)
     {
         repaintQuoteView();
-        repaintSecondaryWindows(currentBook);
+        updateSecondaryWindowsForCurrentBook(currentBookCountFrom1);
     }
 
 //    QStringList list;
@@ -1004,20 +1097,17 @@ void MainWindow::on_changeTab_released(int tab)
     }
     else if (tab == quotesTab)
     {
+       int currentBookNumber = getCurrentBookCountFrom1();
+
+       int currentBookID =  getIDFromBookNumber(currentBookNumber);
+
        currentTab = quotesTab;
 
        modelQuotes->removeRows(0, modelQuotes->rowCount());
 
-       QStringList quotesBook;
+       QList <Quote> lst = getListQuoteForBook(currentBookID);
 
-       foreach(auto pair, quotesList)
-       {
-           int idBooks = pair.first;
-
-           if (idBooks == currentBook)
-               quotesBook << pair.second;
-       }
-
+       QStringList quotesBook = QListQuotesToQStringList(lst);
 
        modelQuotes->setStringList(quotesBook);
 
@@ -1037,24 +1127,51 @@ void MainWindow::showAddDialog()
     else if (currentTab == quotesTab)
     {
         editModeStart();
-        addQuotesDialog->show();
+        //addQuotesDialog->show();
     }
 
 }
 
 void MainWindow::saveQuote(QString quote)
 {
-    QSqlQuery q;
-    q.prepare(QLatin1String("insert into quotes "
-                               "(text, idBooks)"
-                               "values(?, ?)"));
+    if (currentMode == add)
+    {
+        int currentBookNumber = getCurrentBookCountFrom1();
+        int currentBookID = getIDFromBookNumber(currentBookNumber);
+        QSqlQuery q;
+        q.prepare(QLatin1String("insert into quotes "
+                                "(text, idBooks)"
+                                "values(?, ?)"));
 
 
-       QVariant id = addQuote(q,
-                             quote,
-                             currentBook);
+        QVariant id = addQuote(q,
+                               quote,
+                               currentBookID);
 
-       repaintQuoteView();
+        repaintQuoteView();
+    }
+    else if (currentMode == edit)
+    {
+         int currentQuoteNumber = getCurrentQuoteCountFrom1();
+         int idQuote = getIDFromQuoteNumber(currentQuoteNumber);
+
+         QSqlQuery q;
+//         if (
+                 q.prepare(QLatin1String("UPDATE quotes "
+                                 "SET "
+                                 "text = ? "
+                                 "WHERE id = ?"));
+//                 )
+//            return q.lastError();
+
+
+         QSqlError error =  updateQuote(q,
+                                   quote,
+                                   idQuote);
+
+         repaintQuoteView();
+
+    }
 }
 
 
@@ -1064,22 +1181,37 @@ void MainWindow::editModeStart()
 
      if (currentTab == reviewTab)
      {
-         Data currentData = dataListMain.at(currentBook);
+         int currentBook = getCurrentBookCountFrom1();
+         Data currentData = dataListMain.at(currentBook - 1);
          dialogAddEdit->setGenre(genreHash);
-         dialogAddEdit->viewData(currentData);
+         dialogAddEdit->viewDataForEdit(currentData);
          dialogAddEdit->show();
+
+
+        // updateSecondaryWindowsForCurrentBook(currentBook);
+        // repaintReviewForCurrentBook(currentBook);  //focus on last added
      }
      else if (currentTab == quotesTab)
      {
-         QModelIndexList currentQuoteIndexes = ui->quotesListView->selectionModel()->selectedIndexes();
-         QModelIndex currentIndex = currentQuoteIndexes.at(0);
-         qDebug() << "selected " << currentIndex.row();
+         int currentBookNumber = getCurrentBookCountFrom1();
+         int currentBookID = getIDFromBookNumber(currentBookNumber);
 
-         auto quote = quotesList.at(currentIndex.row());
+         QList <Quote> lst = getListQuoteForBook(currentBookID);
+
+         int currentQuoteNumber = getCurrentQuoteCountFrom1();
+
+         Quote quote = lst.at(currentQuoteNumber - 1);
 
 
-         addQuotesDialog->viewData(quote.second);
+//         QStringList quotesBook = QListQuotesToQStringList(quotesList);
+
+//         QString quoteCurrent = quotesBook.at(currentQuoteNumber - 1);
+
+         addQuotesDialog->viewData(quote.getQuoteString());
          addQuotesDialog->show();
+
+//         updateSecondaryWindowsForCurrentBook(currentIndex.row());
+//         repaintReviewForCurrentBook(currentIndex.row());  //focus on last added
      }
 
 
@@ -1162,6 +1294,52 @@ void MainWindow::editItem(Data data)
 
 void MainWindow::deleteItem()
 {
+    if (currentTab == reviewTab)
+    {
+        QModelIndexList currentsBooksIndexList = ui->titlelistView->selectionModel()->selectedIndexes();
+        int curentBookInt = currentsBooksIndexList.at(0).row();
+        Data currentData = dataListMain.at(curentBookInt);
+
+        QMessageBox msgBox;
+        msgBox.setText("Warning! You are going to delete line " + QString::number(curentBookInt ));
+        msgBox.setInformativeText("Do you really want it?");
+        msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::Cancel);
+        int ret = msgBox.exec();
+
+        switch (ret) {
+        case QMessageBox::Yes:
+            qDebug()<< "index for delete " << curentBookInt;
+           qDebug() <<  deleteBookFromDB(currentData.getId());
+
+            getALlBooksFromDB();    //we need update after edit
+
+         //?  updateSecondaryWindowsForCurrentBook(currentBook);
+         //?  repaintReviewForCurrentBook(currentBook);  //focus on last added
+
+            break;
+        case QMessageBox::Cancel:
+            break;
+        default:
+            break;
+        }
+
+
+
+
+
+    }
+    else if (currentTab == quotesTab)
+    {
+       // QModelIndexList currentsBooksIndexList = ui->titlelistView->selectionModel()->selectedIndexes();
+        //int curentBookInt = currentsBooksIndexList.at(0);
+
+
+
+
+    }
+
+
+
 //    QModelIndexList indexLst = ui->tableView->selectionModel()->selectedIndexes();
 //    QModelIndex indexEdit = indexLst.at(0);
 

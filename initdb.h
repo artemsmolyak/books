@@ -54,6 +54,17 @@ QVariant updateBook(QSqlQuery &q,
 }
 
 
+QSqlError deleteBook(QSqlQuery &q, const int &id)
+{
+    q.addBindValue(id);
+    q.exec();
+
+    QSqlError error = q.lastError();
+    return error;
+}
+
+
+
 
 QVariant addItem(QSqlQuery &q,
                            const QString &title,
@@ -102,6 +113,15 @@ QVariant addAuthor(QSqlQuery &q, const QString &name, const QDate &birthdate)
     return q.lastInsertId();
 }
 
+QSqlError updateQuote(QSqlQuery &q, const QString &quote, const int &idQuote)
+{
+    q.addBindValue(quote);
+    q.addBindValue(idQuote);
+    q.exec();
+    return q.lastError();
+}
+
+
 
 QVariant addQuote(QSqlQuery &q, const QString &quote, const int &idBooks)
 {
@@ -145,7 +165,7 @@ QSqlError initDb()
 
 
 
-    QStringList tables = db.tables();
+    //QStringList tables = db.tables();
 
 
 //    if (tables.contains("books", Qt::CaseInsensitive)
