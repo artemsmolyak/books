@@ -75,20 +75,6 @@ void Data::setDateF(const QDate &value)
     dateF = value;
 }
 
-//QString bookTitle;
-//QString authorsName;
-//QString mainIdea;
-//QStringList tagsList;
-
-//QDate dateS;
-//QDate dateF;
-//QString review;
-//QPixmap bookCoverPixmap;
-//int rateInt;
-//int genre;
-//int pages;
-//qint32 id;
-
 
 QString Data::getMainIdea() const
 {
@@ -150,6 +136,16 @@ void Data::setTypePic(const QString &value)
     typePic = value;
 }
 
+QDate Data::getDateAdded() const
+{
+    return dateAdded;
+}
+
+void Data::setDateAdded(const QDate &value)
+{
+    dateAdded = value;
+}
+
 Data::Data(int id, QString title, QString authors, QString mainIdea, int rateInt,
            int genre, int pages, QDate dateS, QDate dateF, QStringList tagsList,
            QString review, QPixmap bookCoverPixmap, QString typePic):
@@ -157,20 +153,15 @@ Data::Data(int id, QString title, QString authors, QString mainIdea, int rateInt
   genre(genre), pages(pages), dateS(dateS), dateF(dateF), tagsList(tagsList),
   review(review), bookCoverPixmap(bookCoverPixmap), typePic(typePic)
 {
-//    qDebug() <<" size "<< size;
-//    id = size;
-//    size++;
+
 }
 
 
 
 Data::Data()
 {
-//   id = size;
-//   size++;
+
 }
-
-
 
 
 QString Data::toString()
@@ -183,7 +174,6 @@ QString Data::toString()
                    pages + " " +
                    dateS.toString("dd.MM.yyyy") + " " +
                    dateF.toString("dd.MM.yyyy") + " " +
-                   //tagsList.toStdList() + " " +
                    review);
 }
 

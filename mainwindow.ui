@@ -149,7 +149,7 @@
             <enum>QTabWidget::Rounded</enum>
            </property>
            <property name="currentIndex">
-            <number>1</number>
+            <number>0</number>
            </property>
            <property name="elideMode">
             <enum>Qt::ElideNone</enum>
@@ -253,18 +253,9 @@
           <widget class="Assesment" name="assesmentWidget" native="true"/>
          </item>
          <item>
-          <widget class="QTextEdit" name="additionalWin2">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="baseSize">
-            <size>
-             <width>1</width>
-             <height>0</height>
-            </size>
+          <widget class="QLabel" name="commonText">
+           <property name="text">
+            <string/>
            </property>
           </widget>
          </item>

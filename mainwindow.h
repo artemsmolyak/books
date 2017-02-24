@@ -2,10 +2,8 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include "dialog.h"
 #include "data.h"
 #include "qstringlistmodel.h"
-#include "tablemodel.h"
 #include "QDir"
 #include "QSqlError"
 #include "editdialog.h"
@@ -14,7 +12,7 @@
 #include "QStringListModel"
 #include "quote.h"
 
-class Dialog;
+
 
 namespace Ui {
 class Window;
@@ -39,7 +37,6 @@ private:
     QString pathXml = QDir::homePath() + "/books.xml";
     QString pathDataBase = QDir::homePath() + "/books.sqlite";
 
-    Dialog * dialog; //to delete
     QStringListModel* modelTitle;
     QStringListModel* modelQuotes;
 
@@ -57,7 +54,6 @@ private:
     QList <Quote> quotesList;
 
 
-    TableModel * tableModel;
     QModelIndex indexEdit;
 
      //QSqlRelationalTableModel *model;

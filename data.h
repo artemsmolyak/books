@@ -18,6 +18,7 @@ private:
 
     QDate dateS;
     QDate dateF;
+    QDate dateAdded;
     QString review;
     QPixmap bookCoverPixmap;
     QString typePic;
@@ -70,6 +71,8 @@ public:
     void setTagsList(const QStringList &value);
     QString getTypePic() const;
     void setTypePic(const QString &value);
+    QDate getDateAdded() const;
+    void setDateAdded(const QDate &value);
 };
 Q_DECLARE_METATYPE(Data);
 

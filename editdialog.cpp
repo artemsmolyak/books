@@ -82,6 +82,7 @@ EditDialog::EditDialog()
       dateFinish = new QDateEdit;
 
       rate = new Assesment;
+      rate->setUseMouse(true);
 
       QLabel * tagsLable = new QLabel("tags: ");
       tagsText = new QLineEdit();

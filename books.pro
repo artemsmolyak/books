@@ -26,8 +26,6 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += main.cpp\
         mainwindow.cpp \
     data.cpp \
-    dialog.cpp \
-    tablemodel.cpp \
     assesment.cpp \
     editdialog.cpp \
     addquotesdialog.cpp \
@@ -36,8 +34,6 @@ SOURCES += main.cpp\
 
 HEADERS  += mainwindow.h \
     data.h \
-    dialog.h \
-    tablemodel.h \
     assesment.h \
     initdb.h \
     editdialog.h \
@@ -47,9 +43,7 @@ HEADERS  += mainwindow.h \
 
 FORMS    += \
     mainwindow.ui \
-    dialog.ui \
-    assesment.ui \
-    form.ui
+    assesment.ui
 
 
 
