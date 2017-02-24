@@ -2,7 +2,7 @@
 #include <QApplication>
 #include "QDebug"
 #include "addquotesdialog.h"
-
+#include "settingswindow.h"
 
 
 int main(int argc, char *argv[])
@@ -12,7 +12,7 @@ int main(int argc, char *argv[])
     MainWindow w;
     w.showMaximized();
 
-qDebug() << "";
+   qDebug() << "";
 
     return a.exec();
 }

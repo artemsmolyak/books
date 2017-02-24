@@ -28,6 +28,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->assesmentWidget->setUseMouse(false);
     dialogAddEdit = new EditDialog;
     addQuotesDialog = new AddQuotesDialog;
+    settingsWindow = new SettingsWindow();
     modelTitle = new QStringListModel();
     modelQuotes = new QStringListModel();
     currentTab = reviewTab;
@@ -43,6 +44,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->titlelistView, SIGNAL(clicked(QModelIndex)), this, SLOT(chooseListIndex(QModelIndex)));
     connect(ui->tabWidget, SIGNAL(tabBarClicked(int)), this, SLOT(on_changeTab_released(int)));
     connect(addQuotesDialog, SIGNAL(saveQuoteSignal(QString)), this, SLOT(saveQuote(QString)));
+    connect(ui->settingsButton, SIGNAL(clicked(bool)), settingsWindow, SLOT(show()));
 
     dbConnect();
     getInfFromDb();

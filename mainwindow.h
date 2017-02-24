@@ -11,6 +11,7 @@
 #include "QPair"
 #include "QStringListModel"
 #include "quote.h"
+#include "settingswindow.h"
 
 
 
@@ -42,6 +43,7 @@ private:
 
     EditDialog * dialogAddEdit;
     AddQuotesDialog * addQuotesDialog;
+    SettingsWindow * settingsWindow;
 
     QList <Data> dataListMain;
     //QStringList dataStringList;
