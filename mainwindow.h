@@ -88,6 +88,7 @@ public:
     bool dbConnect();
     void getInfFromDb();
     void fillMainWinFromDataBase(QList <Data> dataList);
+    QSqlError deleteQuoteFromDB(int id);
 
 
     QSqlError createGenresTable();

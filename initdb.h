@@ -54,6 +54,17 @@ QVariant updateBook(QSqlQuery &q,
 }
 
 
+QSqlError deleteQuote(QSqlQuery &q, const int &id)
+{
+    q.addBindValue(id);
+    q.exec();
+
+    QSqlError error = q.lastError();
+    return error;
+}
+
+
+
 QSqlError deleteBook(QSqlQuery &q, const int &id)
 {
     q.addBindValue(id);

@@ -531,6 +531,21 @@ QSqlError MainWindow::updateBookTable(Data data)
 
 }
 
+
+QSqlError MainWindow::deleteQuoteFromDB(int id)
+{
+     QSqlQuery q;
+
+     if (!q.prepare(QLatin1String("DELETE FROM quotes WHERE id = ?")))
+         return q.lastError();
+
+      deleteQuote(q, id);
+
+      return q.lastError();
+}
+
+
+
 QSqlError MainWindow::deleteBookFromDB(int id)
 {
      QSqlQuery q;
@@ -1330,9 +1345,41 @@ void MainWindow::deleteItem()
     }
     else if (currentTab == quotesTab)
     {
-       // QModelIndexList currentsBooksIndexList = ui->titlelistView->selectionModel()->selectedIndexes();
-        //int curentBookInt = currentsBooksIndexList.at(0);
 
+        int quoteNumber = getCurrentQuoteCountFrom1();
+        int quoteID = getIDFromQuoteNumber(quoteNumber);
+
+        QMessageBox msgBox;
+        msgBox.setText("Warning! You are going to delete quote " + QString::number(quoteNumber));
+        msgBox.setInformativeText("Do you really want it?");
+        msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::Cancel);
+        int ret = msgBox.exec();
+
+        switch (ret) {
+        case QMessageBox::Yes:
+        {
+            qDebug()<< "index for delete " << quoteNumber;
+            qDebug() << deleteQuoteFromDB(quoteID);
+
+
+            //we need update after delete
+
+            repaintQuoteView() ;
+//            int currentBookNumber = getCurrentBookCountFrom1();
+//            int currentBookID =  getIDFromBookNumber(currentBookNumber);
+//            modelQuotes->removeRows(0, modelQuotes->rowCount());
+//            QList <Quote> lst = getListQuoteForBook(currentBookID);
+//            QStringList quotesBook = QListQuotesToQStringList(lst);
+//            modelQuotes->setStringList(quotesBook);
+        }
+
+            break;
+
+        case QMessageBox::Cancel:
+            break;
+        default:
+            break;
+        }
 
 
 
