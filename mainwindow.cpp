@@ -88,10 +88,17 @@ void MainWindow::guiSettings()
     ui->tabWidget->setCurrentIndex(0);
 
 
+    ui->titlelistView->setWordWrap(true);
+    ui->quotesListView->setWordWrap(true);
+
+    qDebug()<<"wrap: "<<ui->titlelistView->isWrapping();
+
+    ui->titlelistView->setViewMode(QListView::ListMode);
+    ui->titlelistView->setIconSize(QSize(24, 24));
+
+
     ui->titlelistView->setModel(modelTitle);
     ui->quotesListView->setModel(modelQuotes);
-
-
 
     ui->tabWidget->setTabEnabled(0, true);
     ui->tabWidget->setTabEnabled(1, false);

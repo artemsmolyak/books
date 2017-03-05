@@ -64,7 +64,7 @@ void Assesment::setUseMouse(bool isUse)
     _isUseMouse = isUse;
 }
 
-void Assesment::mouseMoveEvent(QMouseEvent *me)
+void Assesment::mousePressEvent(QMouseEvent *me)
 {
     Q_UNUSED(me);
     if (_isEstimating == false || _isUseMouse == false) {
@@ -93,13 +93,13 @@ void Assesment::mouseMoveEvent(QMouseEvent *me)
     }
 }
 
-void Assesment::mousePressEvent(QMouseEvent *me)
-{
-    Q_UNUSED(me);
-    if (_isUseMouse) {
-        _isEstimating ? _isEstimating = false : _isEstimating = true;
-    }
-}
+//void Assesment::mousePressEvent(QMouseEvent *me)
+//{
+//    Q_UNUSED(me);
+//    if (_isUseMouse) {
+//        _isEstimating ? _isEstimating = false : _isEstimating = true;
+//    }
+//}
 
 void Assesment::fillStars(bool isFillFirstStar, bool isFillSecondStar, bool isFillThirdStar, bool isFillFourthStar, bool isFillFifthStar)
 {

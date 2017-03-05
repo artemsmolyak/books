@@ -21,8 +21,8 @@ public:
     int getAssesment();
 
 protected:
-    void mouseMoveEvent(QMouseEvent * me);
-    void mousePressEvent(QMouseEvent * me);
+    void mousePressEvent(QMouseEvent * me);   //mouseMoveEvent
+    //void mousePressEvent(QMouseEvent * me);
 
 private:
     void fillStars(bool isFillFirstStar, bool isFillSecondStar, bool isFillThirdStar, bool isFillFourthStar, bool isFillFifthStar);

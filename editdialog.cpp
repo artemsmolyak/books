@@ -79,6 +79,7 @@ EditDialog::EditDialog()
 
       QLabel * startReadLable = new QLabel("start: ");
       dateStart = new QDateEdit;
+      dateStart->setMinimumDate(QDate(1984, 01, 01));
 
       QLabel * finishReadLable = new QLabel("finish: ");      
       finishReadLable->setAlignment(Qt::AlignRight);
