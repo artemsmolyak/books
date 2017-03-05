@@ -112,6 +112,10 @@ public:
     QSqlError updateBookTable(Data data);
     QSqlError deleteBookFromDB(int id);
 
+    bool isGenresTableEXISTS();
+    bool isBookMainsTableEXISTS();
+    bool isQuotesTableEXISTS();
+
     QSqlError saveItemInDatabase(Data data);
 
     void repaintQuoteView();

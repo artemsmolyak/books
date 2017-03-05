@@ -210,6 +210,12 @@ bool MainWindow::dbConnect()
     // initialize the database
      QSqlError err = initDb();
 
+     if (!isGenresTableEXISTS()) createGenresTable();
+     if (!isBookMainsTableEXISTS()) createBookMainsTable();
+     if (!isQuotesTableEXISTS()) createQuotesTable();
+
+
+
 
 //     qDebug() << "**************************************";
 //     qDebug() << (createGenresTable()).text();
@@ -472,6 +478,42 @@ QSqlError MainWindow::deleteBookFromDB(int id)
       deleteBook(q, id);
 
       return q.lastError();
+}
+
+bool MainWindow::isGenresTableEXISTS()
+{
+    QSqlQuery query;
+
+    query.exec("SELECT name FROM sqlite_master WHERE type='table' AND name='genres';");
+
+     while (query.next()) {
+         return true;
+     }
+     return false;
+}
+
+bool MainWindow::isBookMainsTableEXISTS()
+{
+    QSqlQuery query;
+
+    query.exec("SELECT name FROM sqlite_master WHERE type='table' AND name='books';");
+
+     while (query.next()) {
+         return true;
+     }
+     return false;
+}
+
+bool MainWindow::isQuotesTableEXISTS()
+{
+    QSqlQuery query;
+
+    query.exec("SELECT name FROM sqlite_master WHERE type='table' AND name='quotes';");
+
+     while (query.next()) {
+         return true;
+     }
+     return false;
 }
 
 QSqlError MainWindow::createBookMainsTable()
@@ -814,6 +856,7 @@ void MainWindow::addEditNewItem(Data data)
     updateSecondaryWindowsForCurrentBook(dataListMain.length()); //Count from 1
     repaintReviewForCurrentBook(dataListMain.length());  //focus on last added. Count from 1
 
+    showHiddenWidgets();
 
     }
     else if (currentMode == edit)
@@ -866,13 +909,23 @@ void MainWindow::chooseListIndex(QModelIndex index)
 
 void MainWindow::showHiddenWidgets()
 {
-    ui->tabWidget->setTabEnabled(0, true);
-    ui->tabWidget->setTabEnabled(1, true);
+    if (!ui->tabWidget->isTabEnabled(0))
+            ui->tabWidget->setTabEnabled(0, true);
 
-    ui->editBtn->setEnabled(true);
-    ui->deleteButton->setEnabled(true);
-    ui->widget_3->setEnabled(true);
-    ui->assesmentWidget->setVisible(true);
+    if (!ui->tabWidget->isTabEnabled(1))
+             ui->tabWidget->setTabEnabled(1, true);
+
+    if (!ui->editBtn->isEnabled())
+          ui->editBtn->setEnabled(true);
+
+    if (!ui->deleteButton->isEnabled())
+         ui->deleteButton->setEnabled(true);
+
+    if (!ui->widget_3->isEnabled())
+        ui->widget_3->setEnabled(true);
+
+    if (!ui->assesmentWidget->isVisible())
+        ui->assesmentWidget->setVisible(true);
 
 }
 
