@@ -237,12 +237,13 @@ void EditDialog::textBold()
 
 
 
-void EditDialog::setGenre(QHash <int, QString> genreHash)
+void EditDialog::setGenre(QList<QString> genreList)
 {
-    qDebug() << "genre hash size" << genreHash.size();
+    qDebug() << "genre hash size" << genreList.size();
+    genreCombobox->clear();
 
     int i = 0;
-    for(QString item : genreHash)
+    for(QString item : genreList)
         genreCombobox->addItem(item);
 }
 
@@ -435,7 +436,7 @@ void EditDialog::on_SaveButton_released()
 
         int rateInt = rate->getAssesment();
 
-        int genre = genreCombobox->currentIndex() + 1;
+        int genre = genreCombobox->currentIndex();
 
         int pages = numberOfPagesText->text().toInt();
 
@@ -447,16 +448,17 @@ void EditDialog::on_SaveButton_released()
 
         QString  review = reviewText->toHtml();
 
-        // -------------
-        QString filename="Data.txt";
-        QFile file( filename );
-        if ( file.open(QIODevice::ReadWrite) )
-        {
-            QTextStream stream( &file );
-            stream <<review;
-        }
-        file.close();
-        //
+
+//        // -------------
+//        QString filename="Data.txt";
+//        QFile file( filename );
+//        if ( file.open(QIODevice::ReadWrite) )
+//        {
+//            QTextStream stream( &file );
+//            stream <<review;
+//        }
+//        file.close();
+//        //
 
          QIcon icon  = picButton->icon();
 
@@ -475,7 +477,7 @@ void EditDialog::on_SaveButton_released()
         emit newItemIsReady(
                     Data(idData, title, authors, mainIdea, rateInt, genre,
                          pages, dateS, dateF, tagsList,
-                         review,  pixmapPic, typePic)
+                         review,  pixmapPic, typePic, QDate())
                     );
         clearAll();
     }

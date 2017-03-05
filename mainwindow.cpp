@@ -77,6 +77,7 @@ MainWindow::MainWindow(QWidget *parent) :
 void MainWindow::guiSettings()
 {
 
+//ui->quotesListView->setStyleSheet( "QListView::item { border-bottom: 1px solid grey; list-style-type: circle; }" );
 
 //    centralWidget()->setStyleSheet(
 //             "background-image:url(/home/artem/Downloads/f.jpeg); " );
@@ -249,10 +250,12 @@ void MainWindow::getInfFromDb()
 
     query.exec("SELECT * FROM genres");
 
+   genreList.clear();
+
     while (query.next()) {
         QString name = query.value(0).toString();
         QString value = query.value(1).toString();
-        genreHash[name.toInt()] = value;
+        genreList.append(value);
     }
 
     getQuotes();
@@ -670,14 +673,20 @@ void MainWindow::updateSecondaryWindowsForCurrentBook(int currentBookCountFrom1)
 
     ui->assesmentWidget->setAssesment(currentData.getRateInt());
 
-    ui->commonText->setText(currentData.getPages() + " pages "
-                                                     "\n\n authors: " + currentData.getAuthorsName() +
-                                                     "\n\n tags: " + currentData.getTagsList().join(",") +
-                                                     "\n\n date: " + currentData.getDateS().toString("dd.MM.yyyy") +
-                                                     "\n\n date: " + currentData.getDateF().toString("dd.MM.yyyy") +
-                                                     "\n\n genre: " + currentData.getGenre() +
-                                                     "\n\n date added: " + currentData.getDateAdded().toString("dd.MM.yyyy"));
+    ui->commonText->setText("");
 
+    //QString str = "<b>" + currentData.getMainIdea() + "</b>" + "<br><br>";
+    QString str =  "<b>pages: </b>" + QString::number(currentData.getPages()) + "<br>";
+    str += "<b>authors: </b>" + currentData.getAuthorsName()  + "<br>";
+    str += "<b>tags: </b>" + currentData.getTagsList().join(",") + "<br>";
+    str += "<b>date: </b>" + currentData.getDateS().toString("dd.MM.yyyy") + "<br>";
+    str += "<b>date: </b>" + currentData.getDateF().toString("dd.MM.yyyy") + "<br>";
+
+    QString genreString = getGenreById(currentData.getGenre());
+    str += "<b>genre: </b>" + genreString  + "<br>";
+    str += "<b>date added: </b>" + currentData.getDateAdded().toString("dd.MM.yyyy");
+
+    ui->commonText->setText(str);
 }
 
 void MainWindow::getALlBooksFromDB()
@@ -710,6 +719,8 @@ void MainWindow::getALlBooksFromDB()
 
          QByteArray picArray = query.value(11).toByteArray();
 
+         QDate dateAdded = query.value(12).toDate();
+
          QPixmap pic;
          pic.loadFromData(picArray);
 
@@ -718,7 +729,7 @@ void MainWindow::getALlBooksFromDB()
 
 
          Data data(id, title, authors, mainIdea, rateInt, genreId, pages,
-                           dateS, dateF, tagsList, review, pic, type);
+                           dateS, dateF, tagsList, review, pic, type, dateAdded);
 
          dataList.append(data);
      }
@@ -945,6 +956,41 @@ void MainWindow::showHiddenWidgets()
 
 }
 
+QString MainWindow::getGenreById(int id)
+{
+    switch(id)
+    {
+    case 0:
+        return QString("Science Fiction");
+    case 1:
+        return QString("Comedy");
+    case 2:
+        return QString("Fiction");
+    case 3:
+        return QString("Fantasy");
+    case 4:
+        return QString("Drama");
+    case 5:
+        return QString("Horror");
+    case 6:
+        return QString("Non-fiction");
+    case 7:
+        return QString("Realistic fiction");
+    case 8:
+        return QString("Romance novel");
+    case 9:
+        return QString("Satire");
+    case 10:
+        return QString("Tragedy");
+    case 11:
+        return QString("Tragicomedy");
+
+     default:
+        return QString();
+
+    }
+}
+
 
 void MainWindow::on_addButton_released()
 {
@@ -979,6 +1025,7 @@ void MainWindow::on_changeTab_released(int tab)
             msgBox.exec();
 
             currentTab = reviewTab;
+            ui->tabWidget->setTabEnabled(1, false);
         }
         else
         {
@@ -1082,7 +1129,7 @@ void MainWindow::editModeStart()
          else
          {
              Data currentData = dataListMain.at(currentBook - 1);
-             dialogAddEdit->setGenre(genreHash);
+             dialogAddEdit->setGenre(genreList);
              dialogAddEdit->viewDataForEdit(currentData);
              dialogAddEdit->show();
          }
@@ -1110,7 +1157,7 @@ void MainWindow::addModeStart()
 
     if (currentTab == reviewTab)
     {
-        dialogAddEdit->setGenre(genreHash);
+        dialogAddEdit->setGenre(genreList);
         dialogAddEdit->setStartDate();
         dialogAddEdit->setFinishDate();
         dialogAddEdit->setPicDefault();

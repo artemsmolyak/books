@@ -66,7 +66,7 @@ private:
     Mode currentMode;
     TabWindow currentTab;
 
-    QHash <int, QString> genreHash;
+    QList <QString> genreList;
     QList <Quote> quotesList;
 
 
@@ -126,6 +126,9 @@ public:
 
     void setGeneralInf();
     void showHiddenWidgets();
+
+
+    QString getGenreById(int id);
 
 private:
     Ui:: Window *ui;

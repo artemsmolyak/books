@@ -35,7 +35,7 @@ public:
          int rateInt, int genre, int pages,
          QDate dateS, QDate dateF,
          QStringList tagsList,
-         QString  review, QPixmap bookCoverPixmap, QString typePic);
+         QString  review, QPixmap bookCoverPixmap, QString typePic, QDate dateAdded);
 
     Data();
 
