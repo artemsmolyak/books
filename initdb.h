@@ -88,7 +88,9 @@ QVariant addItem(QSqlQuery &q,
                            const QDate &dataF,
                            const QString &tagsList,
                            const QString &review,
-                           const QByteArray &bookPicBuffer)
+                           const QByteArray &bookPicBuffer,
+                           const QDate &dateToday,
+                           const QString &type)
 {
     qDebug() << q.lastError().text();
 
@@ -103,7 +105,8 @@ QVariant addItem(QSqlQuery &q,
     q.addBindValue(tagsList);
     q.addBindValue(review);
     q.addBindValue(bookPicBuffer);
-
+    q.addBindValue(dateToday);
+    q.addBindValue(type);
     q.exec();
     qDebug() <<"E: "<< q.lastError().text();
     return q.lastInsertId();

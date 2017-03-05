@@ -536,6 +536,7 @@ QSqlError MainWindow::createBookMainsTable()
                               "review TEXT, "
                               "bookCoverPixmap BLOB, "
                               "dateAdded date, "
+                              "typePic varchar, "
                               "FOREIGN KEY(genreId) REFERENCES genres(id)"
                               ")")))
         return q.lastError();
@@ -599,8 +600,8 @@ QSqlError MainWindow::saveItemInDatabase(Data data)
                             "(title, authors, mainIdea, "
                             "rateInt, genreId, pages, "
                             "dateS, dateF, tagsList, "
-                            "review, bookCoverPixmap)"
-                            "values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"));
+                            "review, bookCoverPixmap, dateAdded, typePic)"
+                            "values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"));
 
 
     QByteArray inByteArrayBookCover;
@@ -627,7 +628,9 @@ QSqlError MainWindow::saveItemInDatabase(Data data)
                          dateF,
                          tags,
                          review,
-                         inByteArrayBookCover);
+                         inByteArrayBookCover,
+                         QDateTime::currentDateTime().date(),
+                         type);
 
    return q.lastError();
 }
@@ -707,8 +710,9 @@ void MainWindow::getALlBooksFromDB()
 
          QPixmap pic;
          pic.loadFromData(picArray);
-         QImageReader reader(picArray);
-         QString type = reader.format();
+
+         //QImageReader reader(picArray);
+         QString type = query.value(13).toString(); //reader.format();
 
 
          Data data(id, title, authors, mainIdea, rateInt, genreId, pages,
@@ -846,17 +850,27 @@ void MainWindow::addEditNewItem(Data data)
     if (currentMode == add)
     {
 
-    qDebug() << " getNewItem !!! " <<data.toString() << dataListMain.length();
+        qDebug() << " getNewItem !!! " <<data.toString() << dataListMain.length();
 
-    saveItemInDatabase(data);
-    getALlBooksFromDB();
+        QSqlError error =  saveItemInDatabase(data);
+        if (error.type() != QSqlError::NoError)
+        {
+            QMessageBox msgBox;
+            msgBox.setText("Problems with save in database");
+            msgBox.exec();
+        }
 
-    ui->titlelistView->setCurrentIndex(modelTitle->index(dataListMain.length() - 1));
+        getALlBooksFromDB();
 
-    updateSecondaryWindowsForCurrentBook(dataListMain.length()); //Count from 1
-    repaintReviewForCurrentBook(dataListMain.length());  //focus on last added. Count from 1
+        if (dataListMain.length() != 0)
+        {
+            ui->titlelistView->setCurrentIndex(modelTitle->index(dataListMain.length() - 1));
 
-    showHiddenWidgets();
+            updateSecondaryWindowsForCurrentBook(dataListMain.length()); //Count from 1
+            repaintReviewForCurrentBook(dataListMain.length());  //focus on last added. Count from 1
+
+            showHiddenWidgets();
+        }
 
     }
     else if (currentMode == edit)
@@ -1041,10 +1055,19 @@ void MainWindow::editModeStart()
      if (currentTab == reviewTab)
      {
          int currentBook = getCurrentBookCountFrom1();
-         Data currentData = dataListMain.at(currentBook - 1);
-         dialogAddEdit->setGenre(genreHash);
-         dialogAddEdit->viewDataForEdit(currentData);
-         dialogAddEdit->show();
+         if (currentBook == -1)
+         {
+             QMessageBox msgBox;
+             msgBox.setText("Please choose book for edit in list");
+             msgBox.exec();
+         }
+         else
+         {
+             Data currentData = dataListMain.at(currentBook - 1);
+             dialogAddEdit->setGenre(genreHash);
+             dialogAddEdit->viewDataForEdit(currentData);
+             dialogAddEdit->show();
+         }
      }
      else if (currentTab == quotesTab)
      {
@@ -1097,7 +1120,7 @@ void MainWindow::deleteItem()
         Data currentData = dataListMain.at(curentBookInt);
 
         QMessageBox msgBox;
-        msgBox.setText("Warning! You are going to delete line " + QString::number(curentBookInt ));
+        msgBox.setText("Warning! You are going to delete book number " + QString::number(curentBookInt + 1));
         msgBox.setInformativeText("Do you really want it?");
         msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::Cancel);
         int ret = msgBox.exec();

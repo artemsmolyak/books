@@ -186,6 +186,11 @@ EditDialog::EditDialog()
        connect(saveBtn, SIGNAL(clicked(bool)), this, SLOT(on_SaveButton_released()));
 }
 
+void EditDialog::closeEvent(QCloseEvent * e){
+   clearAll();
+   QWidget::closeEvent(e);
+}
+
 
 void EditDialog::textUnderline()
 {
@@ -315,6 +320,8 @@ void EditDialog::viewDataForEdit(Data data)
 
     picButton->setIconSize(sizePic);
 
+    typePic = data.getTypePic();
+
 }
 
 void EditDialog::slotBold()
@@ -375,7 +382,7 @@ void EditDialog::slotTextAlign(QAction *a)
 
 void EditDialog::addBookPic()
 {
-    qDebug() << "signal";
+    qDebug() << "signal addBookPic";
     QString fileName = QFileDialog::getOpenFileName(this,
                                                    tr("Open Image"), "/home", tr("Image Files (*.png *.jpg *.bmp)"));
 
@@ -399,9 +406,11 @@ void EditDialog::addBookPic()
 
 QString EditDialog::getFileType(QString pathFilePic)
 {
-    QImageReader reader(pathFilePic);
-    QByteArray nameArray = reader.format();
-    return QString::fromLatin1(nameArray.data());
+    QFileInfo fi(pathFilePic);
+    return fi.suffix();
+//    QImageReader reader(pathFilePic);
+//    QByteArray nameArray = reader.format();
+//    return QString::fromLatin1(nameArray.data());
 }
 
 void EditDialog::getNewItem(Data data)

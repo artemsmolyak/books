@@ -79,6 +79,8 @@ public:
     void mergeFormatOnWordOrSelection(const QTextCharFormat &format);
 
 
+    virtual void closeEvent(QCloseEvent * e);
+
 public slots:
     void slotBold();
     void slotCenter();
