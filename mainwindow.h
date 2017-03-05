@@ -153,6 +153,8 @@ public  slots:
 
     void showAddDialog();
     void saveQuote(QString quote);
+
+    void searching();
 };
 
 #endif // MAINWINDOW_H

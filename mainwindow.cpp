@@ -50,6 +50,8 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(addQuotesDialog, SIGNAL(saveQuoteSignal(QString)), this, SLOT(saveQuote(QString)));
     connect(ui->settingsButton, SIGNAL(clicked(bool)), settingsWindow, SLOT(show()));
 
+    connect(ui->lineEdit, SIGNAL(textChanged(QString)), this, SLOT(searching()));
+
     dbConnect();
     getInfFromDb();
 
@@ -1045,6 +1047,22 @@ void MainWindow::saveQuote(QString quote)
          repaintQuoteView();
 
     }
+}
+
+void MainWindow::searching()
+{
+    qDebug()<<"serching "<< ui->lineEdit->text();
+    QString findStr = ui->lineEdit->text();
+
+    QList<Data> dataList;
+
+    foreach (Data data, dataListMain) {
+    if (data.getBookTitle().toLower().contains(findStr))
+        dataList.append(data);
+    }
+
+    fillMainWinFromDataBase(dataList);
+
 }
 
 
