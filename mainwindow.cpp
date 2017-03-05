@@ -19,12 +19,16 @@
 #include "QStandardItemModel"
 #include "string.h"
 #include "quote.h"
+#include "QToolBar"
+#include "QTextCharFormat"
+
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::Window)
 {
     ui->setupUi(this);
+
     ui->assesmentWidget->setUseMouse(false);
     dialogAddEdit = new EditDialog;
     addQuotesDialog = new AddQuotesDialog;
@@ -65,8 +69,17 @@ MainWindow::MainWindow(QWidget *parent) :
 
 }
 
+
+
+
 void MainWindow::guiSettings()
 {
+
+
+//    centralWidget()->setStyleSheet(
+//             "background-image:url(/home/artem/Downloads/f.jpeg); " );
+
+
     ui->sortComboBox->addItem("By title");
     ui->sortComboBox->addItem("By date read");
     ui->tabWidget->setCurrentIndex(0);
@@ -75,20 +88,17 @@ void MainWindow::guiSettings()
     ui->titlelistView->setModel(modelTitle);
     ui->quotesListView->setModel(modelQuotes);
 
-//    ui->tableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
-//    ui->tableView->setSelectionBehavior(QAbstractItemView::SelectRows);
 
-//    ui->tableView->setColumnHidden(0, true);
-//    ui->tableView->setColumnHidden(2, true);
-//    ui->tableView->setColumnHidden(3, true);
-//    ui->tableView->setColumnHidden(4, true);
-//    ui->tableView->setColumnHidden(5, true);
-//    ui->tableView->setColumnHidden(6, true);
 
-//    ui->tableView->resizeColumnsToContents();
-//    ui->tableView->resizeRowsToContents();
+    ui->tabWidget->setTabEnabled(0, true);
+    ui->tabWidget->setTabEnabled(1, false);
+    setGeneralInf();
 
-    //ui->tableView->setColumnWidth(0, 20);
+    ui->editBtn->setEnabled(false);
+    ui->deleteButton->setEnabled(false);
+    ui->widget_3->setEnabled(false);
+    ui->assesmentWidget->setVisible(false);
+
 }
 
 void MainWindow::setChooseFirstColumn()
@@ -276,6 +286,10 @@ int MainWindow::getCurrentQuoteCountFrom1()
 int MainWindow::getCurrentBookCountFrom1()
 {
     QModelIndexList currentsBooksIndexList = ui->titlelistView->selectionModel()->selectedIndexes();
+
+    if (currentsBooksIndexList.length() == 0)
+        return -1;
+
     return currentsBooksIndexList.at(0).row() + 1;  //cause we count in db from 1,  NOT from 0!
 }
 
@@ -668,12 +682,28 @@ void MainWindow::getALlBooksFromDB()
 void MainWindow::repaintReviewForCurrentBook(int currentBookCountFrom1)
 {
     Data currentData = dataListMain.at(currentBookCountFrom1 - 1);
-    ui->plainTextEdit->setPlainText(currentData.getReview());
+    ui->textEdit->setHtml(currentData.getReview());
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
+}
+
+void MainWindow::setGeneralInf()
+{
+    getALlBooksFromDB();
+
+
+    const QString str = "in database  "
+            + QString::number(dataListMain.length())
+               + " books,  choose one or add a new";
+
+    ui->textEdit->setAlignment(  Qt::AlignCenter );
+    ui->textEdit->setPlainText(str);
+    ui->textEdit->setAlignment(  Qt::AlignCenter );
+    ui->textEdit->setTextBackgroundColor(Qt::lightGray);
+
 }
 
 void MainWindow::saveXml()
@@ -813,6 +843,8 @@ void MainWindow::testSlot(Data mes)
 
 void MainWindow::chooseListIndex(QModelIndex index)
 {
+    showHiddenWidgets();
+
     qDebug() << "here" <<index.row() << index.column();
 
     int currentBookCountFrom1 = index.row() + 1;
@@ -821,15 +853,27 @@ void MainWindow::chooseListIndex(QModelIndex index)
     if(currentTab == reviewTab)
     {
         //ui->mainIdea->setText(currentData.getMainIdea());
-        ui->plainTextEdit->setPlainText(currentData.getReview());
+        ui->textEdit->setHtml(currentData.getReview());
 
-    updateSecondaryWindowsForCurrentBook(currentBookCountFrom1);
+        updateSecondaryWindowsForCurrentBook(currentBookCountFrom1);
     }
     else if (currentTab == quotesTab)
     {
         repaintQuoteView();
         updateSecondaryWindowsForCurrentBook(currentBookCountFrom1);
     }
+}
+
+void MainWindow::showHiddenWidgets()
+{
+    ui->tabWidget->setTabEnabled(0, true);
+    ui->tabWidget->setTabEnabled(1, true);
+
+    ui->editBtn->setEnabled(true);
+    ui->deleteButton->setEnabled(true);
+    ui->widget_3->setEnabled(true);
+    ui->assesmentWidget->setVisible(true);
+
 }
 
 
@@ -857,19 +901,25 @@ void MainWindow::on_changeTab_released(int tab)
     }
     else if (tab == quotesTab)
     {
-       int currentBookNumber = getCurrentBookCountFrom1();
+        int currentBookNumber = getCurrentBookCountFrom1();
 
-       int currentBookID =  getIDFromBookNumber(currentBookNumber);
+        if (currentBookNumber == -1) //it means we haven't any current book yet
+        {
+            QMessageBox msgBox;
+            msgBox.setText("you have not selected any books");
+            msgBox.exec();
 
-       currentTab = quotesTab;
-
-       modelQuotes->removeRows(0, modelQuotes->rowCount());
-
-       QList <Quote> lst = getListQuoteForBook(currentBookID);
-
-       QStringList quotesBook = QListQuotesToQStringList(lst);
-
-       modelQuotes->setStringList(quotesBook);
+            currentTab = reviewTab;
+        }
+        else
+        {
+            currentTab = quotesTab;
+            int currentBookID =  getIDFromBookNumber(currentBookNumber);
+            modelQuotes->removeRows(0, modelQuotes->rowCount());
+            QList <Quote> lst = getListQuoteForBook(currentBookID);
+            QStringList quotesBook = QListQuotesToQStringList(lst);
+            modelQuotes->setStringList(quotesBook);
+        }
     }
 
 }

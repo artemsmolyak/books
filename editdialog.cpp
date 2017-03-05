@@ -14,6 +14,9 @@
 #include "QFileDialog"
 #include "QDebug"
 #include "QImageReader"
+#include "QTextCharFormat"
+
+
 
 QLineEdit *EditDialog::getMainIdeaText() const
 {
@@ -47,7 +50,7 @@ void EditDialog::clearAll()
 EditDialog::EditDialog()
 {
     //setSizePolicy(QSizePolicy::Minimum);
-    resize(700, 700);
+     resize(700, 700);
      idData = -1;
 
 
@@ -88,35 +91,48 @@ EditDialog::EditDialog()
       tagsText = new QLineEdit();
 
       //Toolbar
-      QAction * actionBold = new QAction(QIcon(":/picButtons/textbold.png"), "bold", this);
-      connect(actionBold, SIGNAL(triggered(bool)), this, SLOT(actionBold()));
-      QAction * actionCenter = new QAction(QIcon(":/picButtons/textcenter.png"), "center", this);
-      connect(actionCenter, SIGNAL(triggered(bool)), this, SLOT(actionCenter()));
-      QAction * actionItalic = new QAction(QIcon(":/picButtons/textitalic.png"), "italic", this);
-      connect(actionItalic, SIGNAL(triggered(bool)), this, SLOT(actionItalic()));
-      QAction * actionJustify = new QAction(QIcon(":/picButtons/textjustify.png"), "justify", this);
-      connect(actionJustify, SIGNAL(triggered(bool)), this, SLOT(actionJustify()));
-      QAction * actionLeft = new QAction(QIcon(":/picButtons/textleft.png"), "left", this);
-      connect(actionLeft, SIGNAL(triggered(bool)), this, SLOT(actionLeft()));
-      QAction * actionRight = new QAction(QIcon(":/picButtons/textright.png"), "right", this);
-      connect(actionRight, SIGNAL(triggered(bool)), this, SLOT(actionRigth()));
-      QAction * actionUnder = new QAction(QIcon(":/picButtons/textunder.png"), "under", this);
-      connect(actionUnder, SIGNAL(triggered(bool)), this, SLOT(actionUnder()));
+      actionBold = new QAction(QIcon(":/picButtons/textbold.png"), "bold", this);
+      connect(actionBold, SIGNAL(triggered(bool)), this, SLOT(slotBold()));
+      actionBold->setCheckable(true);
+
+
+      actionItalic = new QAction(QIcon(":/picButtons/textitalic.png"), "italic", this);
+      connect(actionItalic, SIGNAL(triggered(bool)), this, SLOT(slotItalic()));
+      actionItalic->setCheckable(true);
+
+      actionJustify = new QAction(QIcon(":/picButtons/textjustify.png"), "justify", this);
+      connect(actionJustify, SIGNAL(triggered(bool)), this, SLOT(slotJustify()));
+      actionJustify->setCheckable(true);
+      actionLeft = new QAction(QIcon(":/picButtons/textleft.png"), "left", this);
+      connect(actionLeft, SIGNAL(triggered(bool)), this, SLOT(slotLeft()));
+      actionLeft->setCheckable(true);
+      actionRight = new QAction(QIcon(":/picButtons/textright.png"), "right", this);
+      connect(actionRight, SIGNAL(triggered(bool)), this, SLOT(slotRigth()));
+      actionRight->setCheckable(true);
+      actionCenter = new QAction(QIcon(":/picButtons/textcenter.png"), "center", this);
+      connect(actionCenter, SIGNAL(triggered(bool)), this, SLOT(slotCenter()));
+      actionCenter->setCheckable(true);
+
+      actionUnder = new QAction(QIcon(":/picButtons/textunder.png"), "under", this);
+      connect(actionUnder, SIGNAL(triggered(bool)), this, SLOT(slotUnder()));
+      actionUnder->setCheckable(true);
 
 
       QToolBar * toolBar = new QToolBar;
-      toolBar->addAction(actionBold);
-      toolBar->addAction(actionCenter);
+      toolBar->addAction(actionBold);     
       toolBar->addAction(actionItalic);
+      toolBar->addAction(actionUnder);
+
       toolBar->addAction(actionJustify);
+      toolBar->addAction(actionCenter);
       toolBar->addAction(actionLeft);
       toolBar->addAction(actionRight);
-      toolBar->addAction(actionUnder);
+
 
       fontComboBox = new QFontComboBox;
 
       //review
-      reviewText = new QPlainTextEdit;
+      reviewText = new QTextEdit();
 
 
       QPushButton * saveBtn =new QPushButton("save");
@@ -167,8 +183,54 @@ EditDialog::EditDialog()
 
       setLayout(layout);
 
-      connect(saveBtn, SIGNAL(clicked(bool)), this, SLOT(on_SaveButton_released()));
+       connect(saveBtn, SIGNAL(clicked(bool)), this, SLOT(on_SaveButton_released()));
 }
+
+
+void EditDialog::textUnderline()
+{
+    QTextCharFormat fmt;
+    fmt.setFontUnderline(actionUnder->isChecked());
+    mergeFormatOnWordOrSelection(fmt);
+}
+
+void EditDialog::mergeFormatOnWordOrSelection(const QTextCharFormat &format)
+{
+    QTextCursor cursor = reviewText->textCursor();
+    if (!cursor.hasSelection())
+        cursor.select(QTextCursor::WordUnderCursor);
+
+    cursor.mergeCharFormat(format);
+    reviewText->mergeCurrentCharFormat(format);
+}
+
+void EditDialog::textAlign(QAction *a)
+{
+//    if (a == actionAlignLeft)
+//        reviewText->setAlignment(Qt::AlignLeft | Qt::AlignAbsolute);
+//    else if (a == actionAlignCenter)
+//         reviewText->setAlignment(Qt::AlignHCenter);
+//    else if (a == actionAlignRight)
+//         reviewText->setAlignment(Qt::AlignRight | Qt::AlignAbsolute);
+//    else if (a == actionAlignJustify)
+//         reviewText->setAlignment(Qt::AlignJustify);
+}
+
+void EditDialog::textItalic()
+{
+//    QTextCharFormat fmt;
+//    fmt.setFontItalic(actionTextItalic->isChecked());
+//    mergeFormatOnWordOrSelection(fmt);
+}
+
+void EditDialog::textBold()
+{
+//    QTextCharFormat fmt;
+//    fmt.setFontWeight(actionTextBold->isChecked() ? QFont::Bold : QFont::Normal);
+//    mergeFormatOnWordOrSelection(fmt);
+}
+
+
 
 void EditDialog::setGenre(QHash <int, QString> genreHash)
 {
@@ -235,51 +297,80 @@ void EditDialog::viewDataForEdit(Data data)
 
     tagsText->setText(data.getTagsList().join(", "));
 
-    reviewText->setPlainText(data.getReview());
+    reviewText->setHtml(data.getReview());
 
     QPixmap pic = data.getBookCoverPixmap();
     QSize sizePic = pic.rect().size();
     if (sizePic.width() > minSizePic.width() || sizePic.height() > minSizePic.height())
         sizePic = minSizePic;
 
-    picButton->setIcon(pic);
+    if (!pic)
+    {
+        picButton->setIcon(QPixmap(":/empty.png"));
+    }
+    else
+    {
+        picButton->setIcon(pic);
+    }
+
     picButton->setIconSize(sizePic);
 
 }
 
-void EditDialog::actionBold()
+void EditDialog::slotBold()
 {
-qDebug() << "signal";
+    qDebug() << "signal Bold";
+
+    QTextCharFormat fmt;
+    fmt.setFontWeight(actionBold->isChecked() ? QFont::Bold : QFont::Normal);
+    mergeFormatOnWordOrSelection(fmt);
+
 }
 
-void EditDialog::actionCenter()
+void EditDialog::slotCenter()
 {
-qDebug() << "signal";
+     reviewText->setAlignment(Qt::AlignHCenter);
 }
 
-void EditDialog::actionItalic()
+void EditDialog::slotItalic()
 {
-qDebug() << "signal";
+    QTextCharFormat fmt;
+    fmt.setFontItalic(actionItalic->isChecked());
+    mergeFormatOnWordOrSelection(fmt);
 }
 
-void EditDialog::actionJustify()
+void EditDialog::slotJustify()
 {
-qDebug() << "signal";
+ reviewText->setAlignment(Qt::AlignJustify);
 }
 
-void EditDialog::actionLeft()
+void EditDialog::slotLeft()
 {
-qDebug() << "signal";
+   reviewText->setAlignment(Qt::AlignLeft | Qt::AlignAbsolute);
 }
 
-void EditDialog::actionRigth()
+void EditDialog::slotRigth()
 {
-qDebug() << "signal";
+reviewText->setAlignment(Qt::AlignRight | Qt::AlignAbsolute);
 }
 
-void EditDialog::actionUnder()
+void EditDialog::slotUnder()
 {
-qDebug() << "signal";
+    QTextCharFormat fmt;
+    fmt.setFontUnderline(actionUnder->isChecked());
+    mergeFormatOnWordOrSelection(fmt);
+}
+
+void EditDialog::slotTextAlign(QAction *a)
+{
+//    if (a == actionLeft)
+
+//    else if (a == actionCenter)
+
+//    else if (a == actionRight)
+
+//    else if (a == actionJustify)
+
 }
 
 void EditDialog::addBookPic()
@@ -289,8 +380,8 @@ void EditDialog::addBookPic()
                                                    tr("Open Image"), "/home", tr("Image Files (*.png *.jpg *.bmp)"));
 
 
-    pixmapPic = new QPixmap(fileName);
-    QPixmap pixmapTmp(*pixmapPic);
+    pixmapPic.load(fileName);
+    QPixmap pixmapTmp(pixmapPic);
 
     QSize minSize(150, 150);
     if (pixmapTmp.size().width() > minSize.width() ||
@@ -345,15 +436,37 @@ void EditDialog::on_SaveButton_released()
         QString tags = tagsText->text();
         QStringList tagsList = tags.split(",");
 
-        QString  review = reviewText->toPlainText();
+        QString  review = reviewText->toHtml();
 
-        qDebug() << "pic size " << pixmapPic->width() << pixmapPic->height()
+        // -------------
+        QString filename="Data.txt";
+        QFile file( filename );
+        if ( file.open(QIODevice::ReadWrite) )
+        {
+            QTextStream stream( &file );
+            stream <<review;
+        }
+        file.close();
+        //
+
+         QIcon icon  = picButton->icon();
+
+         if (pixmapPic.isNull())
+         {
+             qDebug() << "!!!!!!!!!!!!!!!!!!!!!" ;
+         }
+
+         QSize size(200, 200);
+         pixmapPic = icon.pixmap(size);
+
+
+        qDebug() << "pic size " << pixmapPic.width() << pixmapPic.height()
                  << typePic;
 
         emit newItemIsReady(
                     Data(idData, title, authors, mainIdea, rateInt, genre,
                          pages, dateS, dateF, tagsList,
-                         review,  *pixmapPic, typePic)
+                         review,  pixmapPic, typePic)
                     );
         clearAll();
     }

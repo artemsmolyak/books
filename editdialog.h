@@ -25,7 +25,7 @@ private:
     int idData;
 
     QString typePic;
-    QPixmap *pixmapPic;
+    QPixmap pixmapPic;
 
     QPushButton * picButton;
     QComboBox * genreCombobox;
@@ -38,9 +38,23 @@ private:
     QLineEdit * titleText;
     QLineEdit * numberOfPagesText;
     QLineEdit * tagsText;
-    QPlainTextEdit * reviewText;
+    QTextEdit * reviewText;
     QFontComboBox * fontComboBox;
 
+
+    //text editor
+    //QTextDocument *m_doc;
+//    int m_cursorPosition;
+//    int m_selectionStart;
+//    int m_selectionEnd;
+
+     QAction * actionBold;
+     QAction * actionCenter;
+     QAction * actionItalic ;
+     QAction * actionJustify;
+     QAction * actionLeft ;
+     QAction * actionRight;
+     QAction * actionUnder;
 
 public:
     explicit EditDialog();
@@ -56,14 +70,24 @@ public:
     void setMainIdeaText(QLineEdit *value);
     void clearAll();
 
+
+    //
+    void textBold();
+    void textItalic();
+    void textUnderline();
+    void textAlign(QAction *a);
+    void mergeFormatOnWordOrSelection(const QTextCharFormat &format);
+
+
 public slots:
-    void actionBold();
-    void actionCenter();
-    void actionItalic();
-    void actionJustify();
-    void actionLeft();
-    void actionRigth();
-    void actionUnder();
+    void slotBold();
+    void slotCenter();
+    void slotItalic();
+    void slotJustify();
+    void slotLeft();
+    void slotRigth();
+    void slotUnder();
+    void slotTextAlign(QAction *a);
 
     void addBookPic();
     QString getFileType(QString pathFilePic);

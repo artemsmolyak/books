@@ -31,6 +31,20 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 private:
+    QAction *actionSave;
+    QAction *actionTextBold;
+    QAction *actionTextUnderline;
+    QAction *actionTextItalic;
+    QAction *actionTextColor;
+    QAction *actionAlignLeft;
+    QAction *actionAlignCenter;
+    QAction *actionAlignRight;
+    QAction *actionAlignJustify;
+    QAction *actionUndo;
+    QAction *actionRedo;
+
+
+
     // recomended size of book's pic
     int widthPic = 200;
     int heightPic = 300;
@@ -60,6 +74,10 @@ private:
 
      //QSqlRelationalTableModel *model;
 
+
+    //
+     //QTextEdit *textEdit;
+
 public:
     explicit MainWindow(QWidget *parent = 0);
     void guiSettings();
@@ -87,8 +105,6 @@ public:
     void getInfFromDb();
     void fillMainWinFromDataBase(QList <Data> dataList);
     QSqlError deleteQuoteFromDB(int id);
-
-
     QSqlError createGenresTable();
     QSqlError createBookMainsTable();
     QSqlError createQuotesTable();
@@ -103,6 +119,9 @@ public:
     void getALlBooksFromDB();  //it needs after add new item
     void repaintReviewForCurrentBook(int index);
     ~MainWindow();
+
+    void setGeneralInf();
+    void showHiddenWidgets();
 
 private:
     Ui:: Window *ui;
