@@ -29,6 +29,8 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    //ui->titlelistView->setViewMode(QListView::IconMode);
+
     ui->assesmentWidget->setUseMouse(false);
     dialogAddEdit = new EditDialog;
     addQuotesDialog = new AddQuotesDialog;
@@ -109,6 +111,19 @@ void MainWindow::guiSettings()
     ui->widget_3->setEnabled(false);
     ui->assesmentWidget->setVisible(false);
 
+
+    //try
+//    QStandardItemModel m;
+//    QStandardItem *i = new QStandardItem();
+//    i->setIcon(QIcon(":/empty.png"));
+//    i->setSizeHint( QSize( 32,32 ) );
+//    //i->setText("Samba");
+
+//    m.appendRow(i);
+//    m.appendRow(i);
+//    m.appendRow(i);
+//     ui->titlelistView->setViewMode(QListView::IconMode);
+//    ui->titlelistView->setModel(&m);
 }
 
 void MainWindow::setChooseFirstColumn()
@@ -413,7 +428,8 @@ QSqlError MainWindow::updateBookTable(Data data)
                                  " dateF = ? , "
                                  " tagsList = ? , "
                                  " review = ? , "
-                                 " bookCoverPixmap = ? "
+                                 " bookCoverPixmap = ? ,"
+                                 " typePic = ? "
                                  "WHERE id = ?")))
         return q.lastError();
 
@@ -456,6 +472,7 @@ QSqlError MainWindow::updateBookTable(Data data)
                tags,
                review,
                inByteArrayBookCover,
+               data.getTypePic(),
                id);
 
     return q.lastError();

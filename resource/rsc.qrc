@@ -14,5 +14,7 @@
         <file>picButtons/textleft.png</file>
         <file>picButtons/textright.png</file>
         <file>picButtons/textunder.png</file>
+        <file>styles/black.css</file>
+        <file>styles/QTDark.css</file>
     </qresource>
 </RCC>

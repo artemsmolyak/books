@@ -32,6 +32,7 @@ QVariant updateBook(QSqlQuery &q,
                     const QString &tagsList,
                     const QString &review,
                     const QByteArray &bookPicBuffer,
+                    const QString &type,
                     const int id)
 {
     q.addBindValue(title);
@@ -45,6 +46,7 @@ QVariant updateBook(QSqlQuery &q,
     q.addBindValue(tagsList);
     q.addBindValue(review);
     q.addBindValue(bookPicBuffer);
+    q.addBindValue(type);
     q.addBindValue(id);
 
     q.exec();
