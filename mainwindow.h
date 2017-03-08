@@ -46,8 +46,8 @@ private:
 
 
     // recomended size of book's pic
-    int widthPic = 200;
-    int heightPic = 300;
+    int widthPic = 300;
+    int heightPic = 400;
 
     QString pathXml = QDir::homePath() + "/books.xml";
     QString pathDataBase = QDir::homePath() + "/books.sqlite";

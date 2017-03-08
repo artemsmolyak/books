@@ -21,6 +21,9 @@ class EditDialog : public QDialog
      Q_OBJECT
 
 private:
+    int widthPic = 150;
+    int heightPic = 200;
+
     Mode mode;
     int idData;
 

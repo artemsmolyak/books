@@ -65,8 +65,8 @@ EditDialog::EditDialog()
 
 
       picButton = new QPushButton;
-      minSizePic.setWidth(150);
-      minSizePic.setHeight(150);
+      minSizePic.setWidth(widthPic);
+      minSizePic.setHeight(heightPic);
       picButton->setMinimumSize(minSizePic);
 
       connect(picButton, SIGNAL(clicked(bool)), this, SLOT(addBookPic()));
@@ -264,14 +264,17 @@ void EditDialog::setFinishDate()
 
 void EditDialog::setPicDefault()
 {
-    QPixmap * pixmap = new QPixmap(":/empty");
-    if (pixmap->size().width() > minSizePic.width() ||
-       pixmap->size().height() > minSizePic.height())
-        *pixmap = pixmap->scaled(minSizePic.width(), minSizePic.height(), Qt::KeepAspectRatio);
+    pixmapPic.load(":/empty");
 
-    QIcon buttonIcon(*pixmap);
+    QPixmap * pixmapForButton = new QPixmap(":/empty");
+
+    if (pixmapForButton->size().width() > minSizePic.width() ||
+       pixmapForButton->size().height() > minSizePic.height())
+        *pixmapForButton = pixmapForButton->scaled(minSizePic.width(), minSizePic.height(), Qt::KeepAspectRatio);
+
+    QIcon buttonIcon(*pixmapForButton);
     picButton->setIcon(buttonIcon);
-    picButton->setIconSize(pixmap->rect().size());
+    picButton->setIconSize(pixmapForButton->rect().size());
 }
 
 void EditDialog::reset()
@@ -306,18 +309,21 @@ void EditDialog::viewDataForEdit(Data data)
 
     reviewText->setHtml(data.getReview());
 
-    QPixmap pic = data.getBookCoverPixmap();
-    QSize sizePic = pic.rect().size();
+    QPixmap picForButton = data.getBookCoverPixmap();
+    pixmapPic =  data.getBookCoverPixmap();
+
+    QSize sizePic = picForButton.rect().size();
     if (sizePic.width() > minSizePic.width() || sizePic.height() > minSizePic.height())
         sizePic = minSizePic;
 
-    if (!pic)
+    if (!picForButton)
     {
         picButton->setIcon(QPixmap(":/empty.png"));
+        pixmapPic.load(":/empty.png");
     }
     else
     {
-        picButton->setIcon(pic);
+        picButton->setIcon(picForButton);
     }
 
     picButton->setIconSize(sizePic);
@@ -386,13 +392,13 @@ void EditDialog::addBookPic()
 {
     qDebug() << "signal addBookPic";
     QString fileName = QFileDialog::getOpenFileName(this,
-                                                   tr("Open Image"), "/home", tr("Image Files (*.png *.jpg *.bmp)"));
+                                                   tr("Open Image"), "/home", tr("Image Files (*.png *.jpg *.jpeg  *.bmp)"));
 
 
     pixmapPic.load(fileName);
     QPixmap pixmapTmp(pixmapPic);
 
-    QSize minSize(150, 150);
+    QSize minSize(widthPic, heightPic);
     if (pixmapTmp.size().width() > minSize.width() ||
        pixmapTmp.size().height() > minSize.height())
         pixmapTmp = pixmapTmp.scaled(minSize.width(), minSize.height(), Qt::KeepAspectRatio);
@@ -461,19 +467,19 @@ void EditDialog::on_SaveButton_released()
 //        file.close();
 //        //
 
-         QIcon icon  = picButton->icon();
+//         QIcon icon  = picButton->icon();
 
-         if (pixmapPic.isNull())
-         {
-             qDebug() << "!!!!!!!!!!!!!!!!!!!!!" ;
-         }
+//         if (pixmapPic.isNull())
+//         {
+//             qDebug() << "!!!!!!!!!!!!!!!!!!!!!" ;
+//         }
 
-         QSize size(200, 200);
-         pixmapPic = icon.pixmap(size);
+//         QSize size(widthPic, heightPic);
+//         pixmapPic = icon.pixmap(size);
 
 
-        qDebug() << "pic size " << pixmapPic.width() << pixmapPic.height()
-                 << typePic;
+//        qDebug() << "pic size " << pixmapPic.width() << pixmapPic.height()
+//                 << typePic;
 
         emit newItemIsReady(
                     Data(idData, title, authors, mainIdea, rateInt, genre,

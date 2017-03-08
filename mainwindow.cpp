@@ -706,6 +706,8 @@ void MainWindow::updateSecondaryWindowsForCurrentBook(int currentBookCountFrom1)
 
     ui->commonText->setText("");    
 
+    ui->commonText->setWordWrap(true);
+
     //QString str = "<b>" + currentData.getMainIdea() + "</b>" + "<br><br>";
     QString str =  "<b>pages: </b>" + QString::number(currentData.getPages()) + "<br>";
     str += "<b>authors: </b>" + currentData.getAuthorsName()  + "<br>";
