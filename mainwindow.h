@@ -117,6 +117,7 @@ public:
     bool isQuotesTableEXISTS();
 
     QSqlError saveItemInDatabase(Data data);
+    bool checkDataBeforeSave(Data data);
 
     void repaintQuoteView();
     void updateSecondaryWindowsForCurrentBook(int index); //it's rate-window and pic-windows

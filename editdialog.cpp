@@ -295,7 +295,7 @@ void EditDialog::viewDataForEdit(Data data)
 
     rate->setAssesment(data.getRateInt());
 
-    genreCombobox->setCurrentIndex(data.getGenre());
+    genreCombobox->setCurrentIndex(data.getGenre() - 1);  //count from 1
 
     numberOfPagesText->setText(QString::number(data.getPages()));
 
@@ -437,7 +437,7 @@ void EditDialog::on_SaveButton_released()
 
         int rateInt = rate->getAssesment();
 
-        int genre = genreCombobox->currentIndex();
+        int genre = genreCombobox->currentIndex() + 1;  //count from 1
 
         int pages = numberOfPagesText->text().toInt();
 

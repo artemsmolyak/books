@@ -664,6 +664,11 @@ QSqlError MainWindow::saveItemInDatabase(Data data)
    return q.lastError();
 }
 
+bool MainWindow::checkDataBeforeSave(Data data)
+{
+
+}
+
 void MainWindow::repaintQuoteView()
 {
     modelQuotes->removeRows(0, modelQuotes->rowCount());
@@ -697,7 +702,9 @@ void MainWindow::updateSecondaryWindowsForCurrentBook(int currentBookCountFrom1)
 
     ui->assesmentWidget->setAssesment(currentData.getRateInt());
 
-    ui->commonText->setText("");
+
+
+    ui->commonText->setText("");    
 
     //QString str = "<b>" + currentData.getMainIdea() + "</b>" + "<br><br>";
     QString str =  "<b>pages: </b>" + QString::number(currentData.getPages()) + "<br>";
@@ -711,6 +718,8 @@ void MainWindow::updateSecondaryWindowsForCurrentBook(int currentBookCountFrom1)
     str += "<b>date added: </b>" + currentData.getDateAdded().toString("dd.MM.yyyy");
 
     ui->commonText->setText(str);
+
+
 }
 
 void MainWindow::getALlBooksFromDB()
@@ -889,6 +898,8 @@ void MainWindow::addEditNewItem(Data data)
 
         qDebug() << " getNewItem !!! " <<data.toString() << dataListMain.length();
 
+        checkDataBeforeSave(data);
+
         QSqlError error =  saveItemInDatabase(data);
         if (error.type() != QSqlError::NoError)
         {
@@ -982,7 +993,7 @@ void MainWindow::showHiddenWidgets()
 
 QString MainWindow::getGenreById(int id)
 {
-    switch(id)
+    switch(id - 1)  //it's id from 1
     {
     case 0:
         return QString("Science Fiction");
