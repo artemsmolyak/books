@@ -380,8 +380,8 @@ void MainWindow::fillMainWinFromDataBase(QList<Data> dataList)
         item->setIcon(data.getBookCoverPixmap());
         if (flag)
         {
-            QBrush brush(QColor(255, 239, 213));
-            item->setBackground(brush);
+//            QBrush brush(QColor(255, 239, 213));
+//            item->setBackground(brush);
         }
         flag = !flag;
         modelTitle->setItem(i++, 0, item);
