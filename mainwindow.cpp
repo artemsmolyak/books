@@ -35,7 +35,7 @@ MainWindow::MainWindow(QWidget *parent) :
     dialogAddEdit = new EditDialog;
     addQuotesDialog = new AddQuotesDialog;
     settingsWindow = new SettingsWindow();
-    modelTitle = new QStringListModel();
+    modelTitle = new QStandardItemModel();
     modelQuotes = new QStringListModel();
     currentTab = reviewTab;
     currentMode = add;
@@ -371,11 +371,34 @@ QStringList MainWindow::QListQuotesToQStringList(QList<Quote> list)
 void MainWindow::fillMainWinFromDataBase(QList<Data> dataList)
 {
     QStringList titleList;
+    int i = 0;
+    bool flag = true;
     foreach (Data data, dataList) {
         titleList << data.getBookTitle();
+
+        QStandardItem *item = new QStandardItem(data.getBookTitle());
+        QIcon icon(":/empty.png");
+        item->setIcon(data.getBookCoverPixmap());
+        if (flag)
+        {
+            QBrush brush(QColor(255, 239, 213));
+            item->setBackground(brush);
+        }
+        flag = !flag;
+        modelTitle->setItem(i++, 0, item);
+
+
+
+//        QModelIndex vIndex = modelTitle->index(i++,0);
+//       modelTitle->setData(vIndex, QVariant(data.getBookTitle()), Qt::DisplayRole);
+//      QVariant variant =  modelTitle->data(vIndex, Qt::DisplayRole);
+//        modelTitle->setData(vIndex,  QBrush(Qt::red), Qt::ForegroundRole);
+
     }
 
-    modelTitle->setStringList(titleList);
+    //modelTitle->setStringList(titleList);
+
+
 }
 
 QSqlError MainWindow::createGenresTable()
@@ -703,7 +726,6 @@ void MainWindow::updateSecondaryWindowsForCurrentBook(int currentBookCountFrom1)
     ui->assesmentWidget->setAssesment(currentData.getRateInt());
 
 
-
     ui->commonText->setText("");    
 
     ui->commonText->setWordWrap(true);
@@ -914,7 +936,7 @@ void MainWindow::addEditNewItem(Data data)
 
         if (dataListMain.length() != 0)
         {
-            ui->titlelistView->setCurrentIndex(modelTitle->index(dataListMain.length() - 1));
+            ui->titlelistView->setCurrentIndex(modelTitle->index(dataListMain.length() - 1, 0));
 
             updateSecondaryWindowsForCurrentBook(dataListMain.length()); //Count from 1
             repaintReviewForCurrentBook(dataListMain.length());  //focus on last added. Count from 1

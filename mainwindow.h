@@ -12,7 +12,7 @@
 #include "QStringListModel"
 #include "quote.h"
 #include "settingswindow.h"
-
+#include "QStandardItemModel"
 
 
 namespace Ui {
@@ -52,7 +52,7 @@ private:
     QString pathXml = QDir::homePath() + "/books.xml";
     QString pathDataBase = QDir::homePath() + "/books.sqlite";
 
-    QStringListModel* modelTitle;
+    QStandardItemModel* modelTitle;
     QStringListModel* modelQuotes;
 
     EditDialog * dialogAddEdit;
