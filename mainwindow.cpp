@@ -377,7 +377,6 @@ void MainWindow::fillMainWinFromDataBase(QList<Data> dataList)
         titleList << data.getBookTitle();
 
         QStandardItem *item = new QStandardItem(data.getBookTitle());
-        QIcon icon(":/empty.png");
         item->setIcon(data.getBookCoverPixmap());
         if (flag)
         {
@@ -387,18 +386,7 @@ void MainWindow::fillMainWinFromDataBase(QList<Data> dataList)
         flag = !flag;
         modelTitle->setItem(i++, 0, item);
 
-
-
-//        QModelIndex vIndex = modelTitle->index(i++,0);
-//       modelTitle->setData(vIndex, QVariant(data.getBookTitle()), Qt::DisplayRole);
-//      QVariant variant =  modelTitle->data(vIndex, Qt::DisplayRole);
-//        modelTitle->setData(vIndex,  QBrush(Qt::red), Qt::ForegroundRole);
-
     }
-
-    //modelTitle->setStringList(titleList);
-
-
 }
 
 QSqlError MainWindow::createGenresTable()
@@ -731,15 +719,22 @@ void MainWindow::updateSecondaryWindowsForCurrentBook(int currentBookCountFrom1)
     ui->commonText->setWordWrap(true);
 
     //QString str = "<b>" + currentData.getMainIdea() + "</b>" + "<br><br>";
-    QString str =  "<b>pages: </b>" + QString::number(currentData.getPages()) + "<br>";
-    str += "<b>authors: </b>" + currentData.getAuthorsName()  + "<br>";
-    str += "<b>tags: </b>" + currentData.getTagsList().join(",") + "<br>";
-    str += "<b>date: </b>" + currentData.getDateS().toString("dd.MM.yyyy") + "<br>";
-    str += "<b>date: </b>" + currentData.getDateF().toString("dd.MM.yyyy") + "<br>";
+    QString str =  " <style>"
+            "h4 {"
+             "background: #FFEFD5; /* Цвет фона под заголовком */"
+            // "color: green; /* Цвет текста */"
+            // "padding: 2px; /* Поля вокруг текста */"
+            "}"
+           "</style>"
+           "<br><br><h4><b>pages:  </b>" + QString::number(currentData.getPages()) + " </h4><br>";
+    str += "<b>authors:  </b>" + currentData.getAuthorsName()  + "<br>";
+    str += "<h4><b>tags:  </b>" + currentData.getTagsList().join(",") + "</h4><br>";
+    str += "<b>date:  </b>" + currentData.getDateS().toString("dd.MM.yyyy") + "<br>";
+    str += "<h4><b>date:  </b>" + currentData.getDateF().toString("dd.MM.yyyy") + "</h4><br>";
 
     QString genreString = getGenreById(currentData.getGenre());
-    str += "<b>genre: </b>" + genreString  + "<br>";
-    str += "<b>date added: </b>" + currentData.getDateAdded().toString("dd.MM.yyyy");
+    str += "<b>genre:  </b>" + genreString  + "<br>";
+    str += "<h4><b>date added:  </b>" + currentData.getDateAdded().toString("dd.MM.yyyy") + "</h4>";
 
     ui->commonText->setText(str);
 
