@@ -146,6 +146,16 @@ void Data::setDateAdded(const QDate &value)
     dateAdded = value;
 }
 
+bool Data::getIsEmpty() const
+{
+    return isEmpty;
+}
+
+void Data::setIsEmpty(bool value)
+{
+    isEmpty = value;
+}
+
 Data::Data(int id, QString title, QString authors, QString mainIdea, int rateInt,
            int genre, int pages, QDate dateS, QDate dateF, QStringList tagsList,
            QString review, QPixmap bookCoverPixmap, QString typePic, QDate dateAdded):
@@ -153,14 +163,14 @@ Data::Data(int id, QString title, QString authors, QString mainIdea, int rateInt
   genre(genre), pages(pages), dateS(dateS), dateF(dateF), tagsList(tagsList),
   review(review), bookCoverPixmap(bookCoverPixmap), typePic(typePic), dateAdded(dateAdded)
 {
-
+    isEmpty = false;
 }
 
 
 
 Data::Data()
 {
-
+    isEmpty = true;
 }
 
 

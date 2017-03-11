@@ -3,7 +3,7 @@
 #include "QPushButton"
 #include "QLineEdit"
 #include "QGridLayout"
-
+#include "QDebug"
 
 
 SettingsWindow::SettingsWindow()
@@ -17,7 +17,8 @@ SettingsWindow::SettingsWindow()
     QLabel * labelXmlPath = new QLabel("xml: ");
     QLineEdit * xmlPathEdit = new QLineEdit();
     QPushButton * setXMLPath = new QPushButton("set xml path");
-    QPushButton * getXml = new QPushButton("get xml");
+
+    saveXmlButton = new QPushButton("save xml");
 
 
     QPushButton * drobAllTables = new QPushButton("drop all tables");
@@ -29,12 +30,20 @@ SettingsWindow::SettingsWindow()
     gridLayout->addWidget(setDBPath, 0, 2, 1, 2);
 
     gridLayout->addWidget(labelXmlPath, 1, 0, 1, 1);
-    gridLayout->addWidget(xmlPathEdit, 1, 1, 1, 1);
-    gridLayout->addWidget(setXMLPath, 1, 2, 1, 1);
-    gridLayout->addWidget(getXml, 1, 3, 1, 1);
+//    gridLayout->addWidget(xmlPathEdit, 1, 1, 1, 1);
+//    gridLayout->addWidget(setXMLPath, 1, 2, 1, 1);
+    gridLayout->addWidget(saveXmlButton, 1, 3, 1, 1);
 
 
     gridLayout->addWidget(drobAllTables, 2, 3, 1, 1);
 
     setLayout(gridLayout);
+
+    connect(saveXmlButton, SIGNAL(clicked(bool)), this, SIGNAL(saveXmlButtonClick()));
+    connect(saveXmlButton, SIGNAL(clicked(bool)), this, SLOT(test()));
+}
+
+void SettingsWindow::test()
+{
+    qDebug() <<"save";
 }

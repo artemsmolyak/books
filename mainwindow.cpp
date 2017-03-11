@@ -53,6 +53,9 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->settingsButton, SIGNAL(clicked(bool)), settingsWindow, SLOT(show()));
 
     connect(ui->lineEdit, SIGNAL(textChanged(QString)), this, SLOT(searching()));
+    connect(ui->sortComboBox, SIGNAL(activated(int)), this, SLOT(sort(int)));
+
+    connect(settingsWindow, SIGNAL(saveXmlButtonClick()), this, SLOT(saveXml()));
 
     dbConnect();
     getInfFromDb();
@@ -64,8 +67,7 @@ MainWindow::MainWindow(QWidget *parent) :
     //    sortModel->setSourceModel(tableModel);
     //    sortModel->setFilterKeyColumn(0);
     //    ui->tableView->setModel(sortModel);
-
-    guiSettings();
+    //guiSettings();
 
     setChooseFirstColumn();
 
@@ -87,6 +89,7 @@ void MainWindow::guiSettings()
 
     ui->sortComboBox->addItem("By title");
     ui->sortComboBox->addItem("By date read");
+    ui->sortComboBox->addItem("By ABC");
     ui->tabWidget->setCurrentIndex(0);
 
 
@@ -268,7 +271,7 @@ void MainWindow::getInfFromDb()
 
     qDebug() << "from db " <<query.size();
 
-    getALlBooksFromDB();
+    updateGetALlBooksFromDB();
 
     query.exec("SELECT * FROM genres");
 
@@ -326,6 +329,8 @@ int MainWindow::getCurrentBookCountFrom1()
     return currentsBooksIndexList.at(0).row() + 1;  //cause we count in db from 1,  NOT from 0!
 }
 
+
+
 int MainWindow::getIDFromBookNumber(int bookNumber)
 {
     Data data =  dataListMain.at(bookNumber - 1);
@@ -343,6 +348,17 @@ int MainWindow::getIDFromQuoteNumber(int quoteNumber)
     Quote quoteCurrent = listOneQuote.at(quoteNumber - 1);
 
     return quoteCurrent.getIdQuote();
+}
+
+Data MainWindow::findBookByTitle(QString title)
+{
+    int i = 0;
+    foreach (Data data, dataListMain) {
+        if (title == data.getBookTitle())
+            return data;
+        ++i;
+    }
+    return Data();
 }
 
 QList<Quote> MainWindow::getListQuoteForBook(int idBook)
@@ -697,9 +713,8 @@ void MainWindow::repaintQuoteView()
     modelQuotes->setStringList(quotesBook);
 }
 
-void MainWindow::updateSecondaryWindowsForCurrentBook(int currentBookCountFrom1)
+void MainWindow::updateSecondaryWindowsForCurrentBook(Data currentData)
 {
-    Data currentData = dataListMain.at(currentBookCountFrom1 - 1);
     QPixmap pic = currentData.getBookCoverPixmap();
     if (pic.isNull())
              pic.load(":empty.png");
@@ -741,7 +756,7 @@ void MainWindow::updateSecondaryWindowsForCurrentBook(int currentBookCountFrom1)
 
 }
 
-void MainWindow::getALlBooksFromDB()
+void MainWindow::updateGetALlBooksFromDB()
 {
     QSqlQuery query;
 
@@ -803,7 +818,7 @@ MainWindow::~MainWindow()
 
 void MainWindow::setGeneralInf()
 {
-    getALlBooksFromDB();
+    updateGetALlBooksFromDB();
 
 
     const QString str = "in database  "
@@ -817,96 +832,118 @@ void MainWindow::setGeneralInf()
 
 }
 
+
+
 void MainWindow::saveXml()
 {
-//    QFile xmlFile(path);
 
-//    if (xmlFile.exists())
-//    {
-//        qDebug() << "file exists";
-//    }
-//    else
-//    {
-//        qDebug() << "file doesn't exist";
-//    }
+    qDebug() << "save xml";
+
+    updateGetALlBooksFromDB();
 
 
-//    if (xmlFile.isOpen())
-//    {
-//        qDebug() << "file was open";
-//        xmlFile.close();
-//    }
+    QFile xmlFile(pathXml);
 
-//    QFileDevice::FileError err = QFileDevice::NoError;
-
-//    if (!xmlFile.open(QIODevice::WriteOnly | QIODevice::Text))
-//    {
-//        qDebug() << xmlFile.errorString();
-//        qDebug() << "file not open for save";
-
-//        return;
-//    }
+    if (xmlFile.exists())
+    {
+        qDebug() << "file exists";
+    }
+    else
+    {
+        qDebug() << "file doesn't exist";
+    }
 
 
-//    QXmlStreamWriter xml(&xmlFile);
-//    xml.setAutoFormatting(true);
+    if (xmlFile.isOpen())
+    {
+        qDebug() << "file was open";
+        xmlFile.close();
+    }
+
+    QFileDevice::FileError err = QFileDevice::NoError;
+
+    if (!xmlFile.open(QIODevice::WriteOnly | QIODevice::Text))
+    {
+        qDebug() << xmlFile.errorString();
+        qDebug() << "file not open for save";
+
+        return;
+    }
 
 
-//    xml.writeStartDocument();
-//    xml.writeStartElement("books");
+    QXmlStreamWriter xml(&xmlFile);
+    xml.setAutoFormatting(true);
 
 
-//    QList <Data> datalst = tableModel->getList();
-
-//    for(int i = 0; i < datalst.length(); i++)
-//    {
-//        Data data = datalst.at(i);
-
-//        QString assesment = data.getAssessment();
-//        QString authorName = data.getAuthorName();
-//        QString bookTitle = data.getBookTitle();
-//        QString date = data.getDate();
-//        QString review = data.getReview();
-//        QPixmap bookPic = data.getBookCoverPixmap();
-//        QString bookCoverQString = convertQPixmapToQString(bookPic);
-//        qint32  id = data.getId();
+    xml.writeStartDocument();
+    xml.writeStartElement("books");
 
 
-//        xml.writeStartElement("book");
-//        xml.writeAttribute("assesment", assesment);
-//        xml.writeAttribute("author", authorName);
-//        xml.writeAttribute("title", bookTitle);
-//        xml.writeAttribute("date", date);
-//        xml.writeAttribute("review", review);
-//        xml.writeAttribute("picture", bookCoverQString);
-//        xml.writeCharacters (QString::number(id));
+    QList <Data> datalst = dataListMain;
+
+    for(int i = 0; i < datalst.length(); i++)
+    {
+        Data data = datalst.at(i);
+
+        QString rate = QString::number(data.getRateInt());
+        QString authorName = data.getAuthorsName();
+        QString bookTitle = data.getBookTitle();
+        QString dateStart = data.getDateS().toString("dd.MM.yyyy");
+        QString dateFinish = data.getDateF().toString("dd.MM.yyyy");
+        QString review = data.getReview();
+
+        QString dataAdded = data.getDateAdded().toString("dd.MM.yyyy");
+        QString genre = getGenreById(data.getGenre());
+        QString pages = QString::number(data.getPages());
+        QString mainIdea = data.getMainIdea();
+
+        //QPixmap bookPic = data.getBookCoverPixmap();
+        //QString bookCoverQString = convertQPixmapToQString(bookPic);
+        qint32  id = data.getId();
 
 
-//        qDebug() << "assesment "<< assesment
-//                 <<" authorName "<< authorName
-//                <<" bookTitle "<< bookTitle
-//                 <<" date "<< date
-//                 << " review "<<  review;
+        xml.writeStartElement("book");
+        xml.writeCharacters (QString::number(id));
+        xml.writeAttribute("title", bookTitle);
+        xml.writeAttribute("author", authorName);
+        xml.writeAttribute("rate", rate);
+        xml.writeAttribute("dateStart", dateStart);
+        xml.writeAttribute("dateFinish", dateFinish);
+        xml.writeAttribute("review", review);
+
+        xml.writeAttribute("dataAdded", dataAdded);
+        xml.writeAttribute("genre", genre);
+        xml.writeAttribute("pages", pages);
+        xml.writeAttribute("mainIdea", mainIdea);
+        //xml.writeAttribute("picture", bookCoverQString);
 
 
 
-//        xml.writeEndElement();
-//    }
+        qDebug() << "assesment "<< rate
+                 <<" authorName "<< authorName
+                <<" bookTitle "<< bookTitle
+                 <<" date "<< dateStart
+                 << " review "<<  review;
 
 
-//    xml.writeEndElement();
-//    xml.writeEndDocument();
 
-//    xmlFile.close();
-//    if (xmlFile.error())
-//    {
-//        qDebug() << "file error!";
-//        return;
-//    }
+        xml.writeEndElement();
+    }
 
-//    qDebug() << "file is ok!";
 
-//  xmlFile.close();
+    xml.writeEndElement();
+    xml.writeEndDocument();
+
+    xmlFile.close();
+    if (xmlFile.error())
+    {
+        qDebug() << "file error!";
+        return;
+    }
+
+    qDebug() << "file is ok!";
+
+  xmlFile.close();
 
 }
 
@@ -927,14 +964,14 @@ void MainWindow::addEditNewItem(Data data)
             msgBox.exec();
         }
 
-        getALlBooksFromDB();
+        updateGetALlBooksFromDB();
 
         if (dataListMain.length() != 0)
         {
-            ui->titlelistView->setCurrentIndex(modelTitle->index(dataListMain.length() - 1, 0));
+           // ui->titlelistView->setCurrentIndex(modelTitle->index(dataListMain.length() - 1, 0));
 
-            updateSecondaryWindowsForCurrentBook(dataListMain.length()); //Count from 1
-            repaintReviewForCurrentBook(dataListMain.length());  //focus on last added. Count from 1
+           // updateSecondaryWindowsForCurrentBook(dataListMain.length()); //Count from 1
+           // repaintReviewForCurrentBook(dataListMain.length());  //focus on last added. Count from 1
 
             showHiddenWidgets();
         }
@@ -946,11 +983,11 @@ void MainWindow::addEditNewItem(Data data)
         qDebug() << error.text();
         qDebug() <<"";
 
-        int currentBookCountFrom1 = getCurrentBookCountFrom1();
-        getALlBooksFromDB();    //we need update after edit
+      //  int currentBookCountFrom1 = getCurrentBookCountFrom1();
+      //  updateGetALlBooksFromDB();    //we need update after edit
 
-       updateSecondaryWindowsForCurrentBook(currentBookCountFrom1);
-       repaintReviewForCurrentBook(currentBookCountFrom1);  //focus on last added
+      // updateSecondaryWindowsForCurrentBook(currentBookCountFrom1);
+      // repaintReviewForCurrentBook(currentBookCountFrom1);  //focus on last added
 
     }
 }
@@ -971,20 +1008,22 @@ void MainWindow::chooseListIndex(QModelIndex index)
 
     qDebug() << "here" <<index.row() << index.column();
 
-    int currentBookCountFrom1 = index.row() + 1;
-    Data currentData = dataListMain.at(index.row());
+    QMap<int, QVariant> map = modelTitle->itemData(index);
+
+    QVariant titleBook = map[0].toString();
+    Data currentData = findBookByTitle(titleBook.toString());
 
     if(currentTab == reviewTab)
     {
         //ui->mainIdea->setText(currentData.getMainIdea());
         ui->textEdit->setHtml(currentData.getReview());
 
-        updateSecondaryWindowsForCurrentBook(currentBookCountFrom1);
+        updateSecondaryWindowsForCurrentBook(currentData);
     }
     else if (currentTab == quotesTab)
     {
         repaintQuoteView();
-        updateSecondaryWindowsForCurrentBook(currentBookCountFrom1);
+        updateSecondaryWindowsForCurrentBook(currentData);
     }
 }
 
@@ -1166,6 +1205,27 @@ void MainWindow::searching()
 
 }
 
+void MainWindow::sort(int sortValue)
+{
+    qDebug() << "sort "<< sortValue;
+
+    switch (sortValue) {
+    case 0:
+
+        break;
+    case 1:
+
+        break;
+    case 2:
+        modelTitle->sort(0, Qt::AscendingOrder);
+        break;
+    default:
+        break;
+    }
+
+
+}
+
 
 void MainWindow::editModeStart()
 {
@@ -1173,20 +1233,29 @@ void MainWindow::editModeStart()
 
      if (currentTab == reviewTab)
      {
-         int currentBook = getCurrentBookCountFrom1();
-         if (currentBook == -1)
-         {
-             QMessageBox msgBox;
-             msgBox.setText("Please choose book for edit in list");
-             msgBox.exec();
-         }
-         else
-         {
-             Data currentData = dataListMain.at(currentBook - 1);
-             dialogAddEdit->setGenre(genreList);
-             dialogAddEdit->viewDataForEdit(currentData);
-             dialogAddEdit->show();
-         }
+        // int currentBook = getCurrentBookCountFrom1();
+
+
+              QModelIndexList currentsBooksIndex = ui->titlelistView->selectionModel()->selectedIndexes();
+
+              QMap<int, QVariant> map = modelTitle->itemData(currentsBooksIndex.at(0));
+
+              QVariant titleBook = map[0].toString();
+              Data currentData = findBookByTitle(titleBook.toString());
+
+              if (currentData.getIsEmpty())
+              {
+                  QMessageBox msgBox;
+                  msgBox.setText("Please choose book for edit in list");
+                  msgBox.exec();
+              }
+              else
+              {
+                  //Data currentData = dataListMain.at(currentBook - 1);
+                  dialogAddEdit->setGenre(genreList);
+                  dialogAddEdit->viewDataForEdit(currentData);
+                  dialogAddEdit->show();
+              }
      }
      else if (currentTab == quotesTab)
      {
@@ -1249,7 +1318,7 @@ void MainWindow::deleteItem()
             qDebug()<< "index for delete " << curentBookInt;
             qDebug() <<  deleteBookFromDB(currentData.getId());
 
-            getALlBooksFromDB();    //we need update after edit
+            updateGetALlBooksFromDB();    //we need update after edit
 
             //?  updateSecondaryWindowsForCurrentBook(currentBook);
             //?  repaintReviewForCurrentBook(currentBook);  //focus on last added

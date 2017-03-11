@@ -94,7 +94,7 @@ public:
     int getCurrentBookCountFrom1();
     int getIDFromBookNumber(int bookNumber);
     int getIDFromQuoteNumber(int quoteNumber);
-
+    Data findBookByTitle(QString title);
 
     //Quote
     QList <Quote> getListQuoteForBook(int idBook);
@@ -120,8 +120,8 @@ public:
     bool checkDataBeforeSave(Data data);
 
     void repaintQuoteView();
-    void updateSecondaryWindowsForCurrentBook(int index); //it's rate-window and pic-windows
-    void getALlBooksFromDB();  //it needs after add new item
+    void updateSecondaryWindowsForCurrentBook(Data data); //it's rate-window and pic-windows
+    void updateGetALlBooksFromDB();  //it needs after add new item
     void repaintReviewForCurrentBook(int index);
     ~MainWindow();
 
@@ -159,6 +159,7 @@ public  slots:
     void saveQuote(QString quote);
 
     void searching();
+    void sort(int sortValue);
 };
 
 #endif // MAINWINDOW_H

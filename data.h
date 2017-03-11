@@ -27,6 +27,7 @@ private:
     int genre;
     int pages;
     int id;
+    bool isEmpty;
 
 
 public:
@@ -73,6 +74,8 @@ public:
     void setTypePic(const QString &value);
     QDate getDateAdded() const;
     void setDateAdded(const QDate &value);
+    bool getIsEmpty() const;
+    void setIsEmpty(bool value);
 };
 Q_DECLARE_METATYPE(Data);
 

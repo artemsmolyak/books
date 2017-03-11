@@ -15,8 +15,12 @@
 #include "QDebug"
 #include "QImageReader"
 #include "QTextCharFormat"
-
-
+#include "QtNetwork/QNetworkAccessManager"
+#include "QNetworkReply"
+#include "QLoggingCategory";
+#include "QJsonDocument"
+#include "QJsonArray"
+#include "QMessageBox"
 
 QLineEdit *EditDialog::getMainIdeaText() const
 {
@@ -49,6 +53,20 @@ void EditDialog::clearAll()
 
 EditDialog::EditDialog()
 {
+
+//     QFile File(":/styles/QTDark.css"); //QTDark
+//     if (File.open(QFile::ReadOnly))
+//     {
+//     QString StyleSheet = QLatin1String(File.readAll());
+//      this->setStyleSheet(StyleSheet);
+//     }
+//     else
+//     {
+//         qDebug() << "!";
+//     }
+
+
+
     //setSizePolicy(QSizePolicy::Minimum);
      resize(700, 700);
      idData = -1;
@@ -67,7 +85,7 @@ EditDialog::EditDialog()
       picButton = new QPushButton;
       minSizePic.setWidth(widthPic);
       minSizePic.setHeight(heightPic);
-      picButton->setMinimumSize(minSizePic);
+      //picButton->setMinimumSize(minSizePic);
 
       connect(picButton, SIGNAL(clicked(bool)), this, SLOT(addBookPic()));
 
@@ -77,7 +95,7 @@ EditDialog::EditDialog()
       QLabel * numPagesLable = new QLabel("number of pages: ");
       numberOfPagesText = new QLineEdit();
 
-      QLabel * startReadLable = new QLabel("start: ");
+      QLabel * startReadLable = new QLabel("start reading: ");
       dateStart = new QDateEdit;
       dateStart->setMinimumDate(QDate(1984, 01, 01));
 
@@ -155,7 +173,7 @@ EditDialog::EditDialog()
       layout->addWidget(genreCombobox, 3,  1, 1, 1 );
 
       layout->addWidget(numPagesLable, 3,  2, 1, 1  );
-      layout->addWidget(numberOfPagesText, 3,  3, 1, 1  );
+      layout->addWidget(numberOfPagesText, 3,  3, 1,  1  );
 
       layout->addWidget(startReadLable, 4,  0, 1, 1  );
       layout->addWidget(dateStart, 4,  1, 1, 1  );
@@ -168,7 +186,18 @@ EditDialog::EditDialog()
       layout->addWidget(tagsLable, 6,  0, 1, 1  );
       layout->addWidget(tagsText, 6,  1, 1, 3  );
 
+
       layout->addWidget(picButton, 3, 4, 4, 4);
+
+
+      QPushButton * btnSearchPic = new QPushButton("Search");
+      layout->addWidget(btnSearchPic, 7,  4, 1, 3);
+
+      nextBtn = new QPushButton(">>");
+      nextBtn->setEnabled(false);
+      layout->addWidget(nextBtn, 7,  7, 1, 1);
+
+
 
 
       //
@@ -185,11 +214,53 @@ EditDialog::EditDialog()
       setLayout(layout);
 
        connect(saveBtn, SIGNAL(clicked(bool)), this, SLOT(on_SaveButton_released()));
+       connect(btnSearchPic, SIGNAL(clicked(bool)), this, SLOT(searchPic()));
+
+
+
+       //bing search
+       picLoader = new QNetworkAccessManager(this);
+
+       connect(picLoader, SIGNAL(finished(QNetworkReply*)),
+               this, SLOT(loadPicSlot(QNetworkReply*)));
+
+
+       connect(nextBtn, SIGNAL(clicked(bool)), this, SLOT(showBingPicture()));
+
 }
 
 void EditDialog::closeEvent(QCloseEvent * e){
    clearAll();
    QWidget::closeEvent(e);
+}
+
+void EditDialog::showBingPicture()
+{
+    if (picBingNumber > 9 || tenPicturesFromBing.length() < picBingNumber)
+               picBingNumber = 0;
+
+qDebug() << "showBingPicture 1";
+    QString urlPic = (QString)tenPicturesFromBing.at(picBingNumber++);
+qDebug() << "2";
+
+    QUrl url(urlPic);
+    QString stringURL = url.fromPercentEncoding(urlPic.toUtf8());
+    int index = stringURL.indexOf("=http");
+
+    //qDebug() << "before " << stringURL;
+    stringURL =  stringURL.remove(0, index + 1);
+    //qDebug() << "after " << stringURL;
+
+    index = stringURL.indexOf("&p=DevEx");
+    //qDebug() << "before " << stringURL;
+    stringURL =  stringURL.remove(index, stringURL.length() - 1);
+    //qDebug() << "after " << stringURL;
+
+    qDebug() << "url " << stringURL;
+
+    url.setUrl(stringURL);
+    QNetworkRequest request(url);
+    picLoader->get(request);
 }
 
 
@@ -501,3 +572,135 @@ void EditDialog::on_SaveButton_released()
     this->hide();
     this->reset();
 }
+
+void EditDialog::searchPic()
+{
+    QString authorsForSearch = "book cover ";
+    authorsForSearch += authorsText->text();
+    authorsForSearch = authorsForSearch.toUtf8();
+
+    QString titleForSearch = titleText->text().toUtf8();
+
+    QString searchString ="https://api.cognitive.microsoft.com/"
+                          "bing/v5.0/images/search?q=" + titleForSearch +
+            " " + authorsForSearch + "&count=10" + "&offset=0&mkt=ru-ru&safeSearch=Moderate";
+
+    //&nbsp
+
+    QLoggingCategory::setFilterRules("qt.network.ssl.w arning=false");
+
+    manager = new QNetworkAccessManager(this);
+    connect(manager, SIGNAL(finished(QNetworkReply*)),
+            this, SLOT(replyFinished(QNetworkReply*)));
+
+    qDebug() << "search "<<searchString;
+
+    QUrl urlSearch(searchString);
+    QNetworkRequest request(urlSearch);
+
+    //request.setHeader(QNetworkRequest::ContentTypeHeader, "multipart/form-data");
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "charset=utf-8");
+    request.setRawHeader(QByteArray("Ocp-Apim-Subscription-Key"), QByteArray("f7c8c77ee00247ada569c026dae186df"));
+
+
+    manager->get(request);
+    //manager->get(QNetworkRequest(QUrl("https://www.google.ru/search?q=книга+марсианин&newwindow=1&source=lnms&tbm=isch")));
+}
+
+
+
+void EditDialog::replyFinished(QNetworkReply* reply)
+{
+    QString otvet;
+
+    switch (reply->error())
+    {
+    case 0:
+    {
+        //        otvet = QString::fromUtf8(reply->readAll());
+        //        qDebug() <<"otvet: "<< otvet;
+
+        QStringList responseFromBing;
+
+        QString strReply = QString::fromUtf8(reply->readAll());
+        //qDebug() <<"reply "<<strReply;
+        QJsonDocument jsonResponse = QJsonDocument::fromJson(strReply.toUtf8());
+
+        QJsonObject jsonObject = jsonResponse.object();
+        QJsonArray jsonArray = jsonObject["value"].toArray();
+
+        foreach (const QJsonValue & value, jsonArray) {
+            QJsonObject obj = value.toObject();
+            responseFromBing.append(obj["contentUrl"].toString());
+            //propertyKeys.append(obj["key"].toString());
+        }
+
+
+        if (responseFromBing.length() == 0)
+        {
+            picButton->setIcon(QIcon(":/netu.jpg"));
+            nextBtn->setEnabled(false);
+        }
+        else
+        {
+            tenPicturesFromBing = responseFromBing;
+            picBingNumber = 0;
+            showBingPicture();
+            nextBtn->setEnabled(true);
+        }
+        break;
+    }
+    default:
+        QMessageBox msgBox;
+        msgBox.setText("Problems with searching. Try later");
+        msgBox.exec();
+        break;
+    }
+}
+
+void EditDialog::loadPicSlot(QNetworkReply *reply)
+{
+//    qDebug() << "loadPicSlot";
+//    QString otvet;
+
+
+//        otvet = QString::fromUtf8(reply->readAll());
+//        qDebug() << otvet;
+//        break;
+
+    if (reply->error() == QNetworkReply::NoError)
+    {
+        QByteArray data = reply->readAll();
+        QImage image = QImage::fromData(data);
+
+        qDebug() <<"image size height "<< image.width()<<image.height();
+
+        if (image.width() == 0 || image.height() == 0)
+        {
+            picButton->setIcon(QIcon(":/netu.jpg"));
+        }
+        else
+        {
+            int picNum = picBingNumber - 1;
+             QString str= (QString)tenPicturesFromBing.at(picNum);
+             QUrl url(str);
+             QString path = url.fromPercentEncoding(str.toUtf8());
+             int index = path.indexOf("=http");
+             path =  path.remove(0, index + 1);
+             index = path.indexOf("&p=DevEx");
+             path =  path.remove(index, path.length() - 1);
+
+             QFileInfo fi(path);
+             typePic = fi.completeSuffix();
+
+             qDebug() <<"path "<< path;
+
+            pixmapPic = QPixmap::fromImage(image);
+
+            pixmapPic.save("/home/artem/Downloads/pixmap.jpg");
+            QIcon icon;
+            icon.addPixmap(pixmapPic);
+            picButton->setIcon(icon);
+        }
+    }
+  }

@@ -8,7 +8,7 @@
 #include "assesment.h"
 #include "QPlainTextEdit"
 #include "QFontComboBox"
-
+#include "QtNetwork/QNetworkAccessManager"
 
 enum Mode {
     add,
@@ -31,6 +31,7 @@ private:
     QPixmap pixmapPic;
 
     QPushButton * picButton;
+    QPushButton * nextBtn;
     QComboBox * genreCombobox;
     QDateEdit * dateStart;
     QDateEdit * dateFinish;
@@ -43,6 +44,12 @@ private:
     QLineEdit * tagsText;
     QTextEdit * reviewText;
     QFontComboBox * fontComboBox;
+
+
+    QNetworkAccessManager * manager ;
+    QNetworkAccessManager * picLoader;
+    QStringList tenPicturesFromBing;
+    int picBingNumber;
 
 
     //text editor
@@ -84,6 +91,8 @@ public:
 
     virtual void closeEvent(QCloseEvent * e);
 
+
+
 public slots:
     void slotBold();
     void slotCenter();
@@ -101,11 +110,20 @@ public slots:
     void editItem(Data data);
 
     void on_SaveButton_released();
+    void searchPic();
+    void replyFinished(QNetworkReply *reply);
+    void loadPicSlot(QNetworkReply *reply);
+
+
+    //bing http
+    void showBingPicture();
 
   signals:
     void newItemIsReady(Data data);
     void editItemIsReady(Data data);
 
+
 };
+
 
 #endif // EDITDIALOG_H

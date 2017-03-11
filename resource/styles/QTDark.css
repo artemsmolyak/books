@@ -32,6 +32,7 @@ QWidget::item:selected {
 	background: #3D7848;
 }
 
+
 QCheckBox, QRadioButton {
 	border: none;
 }
@@ -73,6 +74,8 @@ QScrollBar {
 	border: 1px solid #5A5A5A;
 	background: #191919;
 }
+
+
 
 QScrollBar:horizontal {
 	height: 15px;

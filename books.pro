@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui xml sql
+QT       += core gui xml sql   network
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
