@@ -122,7 +122,7 @@ public:
     void repaintQuoteView();
     void updateSecondaryWindowsForCurrentBook(Data data); //it's rate-window and pic-windows
     void updateGetALlBooksFromDB();  //it needs after add new item
-    void repaintReviewForCurrentBook(int index);
+    void repaintReviewForCurrentBook(Data currentData);
     ~MainWindow();
 
     void setGeneralInf();

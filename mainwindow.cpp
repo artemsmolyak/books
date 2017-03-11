@@ -39,7 +39,7 @@ MainWindow::MainWindow(QWidget *parent) :
     modelQuotes = new QStringListModel();
     currentTab = reviewTab;
     currentMode = add;
-    guiSettings();
+
 
     //
 
@@ -58,6 +58,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(settingsWindow, SIGNAL(saveXmlButtonClick()), this, SLOT(saveXml()));
 
     dbConnect();
+    guiSettings();
     getInfFromDb();
 
 
@@ -81,12 +82,7 @@ MainWindow::MainWindow(QWidget *parent) :
 void MainWindow::guiSettings()
 {
 
-//ui->quotesListView->setStyleSheet( "QListView::item { border-bottom: 1px solid grey; list-style-type: circle; }" );
-
-//    centralWidget()->setStyleSheet(
-//             "background-image:url(/home/artem/Downloads/f.jpeg); " );
-
-
+    ui->sortComboBox->clear();
     ui->sortComboBox->addItem("By title");
     ui->sortComboBox->addItem("By date read");
     ui->sortComboBox->addItem("By ABC");
@@ -107,6 +103,7 @@ void MainWindow::guiSettings()
 
     ui->tabWidget->setTabEnabled(0, true);
     ui->tabWidget->setTabEnabled(1, false);
+
     setGeneralInf();
 
     ui->editBtn->setEnabled(false);
@@ -114,19 +111,6 @@ void MainWindow::guiSettings()
     ui->widget_3->setEnabled(false);
     ui->assesmentWidget->setVisible(false);
 
-
-    //try
-//    QStandardItemModel m;
-//    QStandardItem *i = new QStandardItem();
-//    i->setIcon(QIcon(":/empty.png"));
-//    i->setSizeHint( QSize( 32,32 ) );
-//    //i->setText("Samba");
-
-//    m.appendRow(i);
-//    m.appendRow(i);
-//    m.appendRow(i);
-//     ui->titlelistView->setViewMode(QListView::IconMode);
-//    ui->titlelistView->setModel(&m);
 }
 
 void MainWindow::setChooseFirstColumn()
@@ -396,8 +380,8 @@ void MainWindow::fillMainWinFromDataBase(QList<Data> dataList)
         item->setIcon(data.getBookCoverPixmap());
         if (flag)
         {
-//            QBrush brush(QColor(255, 239, 213));
-//            item->setBackground(brush);
+            QBrush brush(QColor(255, 239, 213));
+            item->setBackground(brush);
         }
         flag = !flag;
         modelTitle->setItem(i++, 0, item);
@@ -805,9 +789,8 @@ void MainWindow::updateGetALlBooksFromDB()
      dataListMain = dataList;
 }
 
-void MainWindow::repaintReviewForCurrentBook(int currentBookCountFrom1)
+void MainWindow::repaintReviewForCurrentBook(Data currentData)
 {
-    Data currentData = dataListMain.at(currentBookCountFrom1 - 1);
     ui->textEdit->setHtml(currentData.getReview());
 }
 
@@ -970,8 +953,8 @@ void MainWindow::addEditNewItem(Data data)
         {
            // ui->titlelistView->setCurrentIndex(modelTitle->index(dataListMain.length() - 1, 0));
 
-           // updateSecondaryWindowsForCurrentBook(dataListMain.length()); //Count from 1
-           // repaintReviewForCurrentBook(dataListMain.length());  //focus on last added. Count from 1
+            updateSecondaryWindowsForCurrentBook(data); //Count from 1
+            repaintReviewForCurrentBook(data);  //focus on last added. Count from 1
 
             showHiddenWidgets();
         }
@@ -983,12 +966,9 @@ void MainWindow::addEditNewItem(Data data)
         qDebug() << error.text();
         qDebug() <<"";
 
-      //  int currentBookCountFrom1 = getCurrentBookCountFrom1();
-      //  updateGetALlBooksFromDB();    //we need update after edit
-
-      // updateSecondaryWindowsForCurrentBook(currentBookCountFrom1);
-      // repaintReviewForCurrentBook(currentBookCountFrom1);  //focus on last added
-
+        updateGetALlBooksFromDB();    //we need update after edit
+        updateSecondaryWindowsForCurrentBook(data);
+        repaintReviewForCurrentBook(data);  //focus on last added
     }
 }
 
@@ -1054,29 +1034,37 @@ QString MainWindow::getGenreById(int id)
     switch(id - 1)  //it's id from 1
     {
     case 0:
-        return QString("Science Fiction");
+        return QString("Biographies");
     case 1:
-        return QString("Comedy");
+        return QString("Autobiographies");
     case 2:
-        return QString("Fiction");
-    case 3:
         return QString("Fantasy");
+    case 3:
+        return QString("Science");
     case 4:
-        return QString("Drama");
-    case 5:
         return QString("Horror");
+    case 5:
+        return QString("Romance");
     case 6:
-        return QString("Non-fiction");
+        return QString("Action and Adventure");
     case 7:
-        return QString("Realistic fiction");
+        return QString("Drama");
     case 8:
-        return QString("Romance novel");
+        return QString("Science fiction");
     case 9:
-        return QString("Satire");
+        return QString("Psychology");
     case 10:
-        return QString("Tragedy");
+        return QString("Humor and Comedy");
     case 11:
-        return QString("Tragicomedy");
+        return QString("Historical Fiction");
+    case 12:
+        return QString("In foreign language");
+    case 13:
+        return QString("Computer Science");
+    case 14:
+        return QString("Classic literature");
+    case 15:
+        return QString("Fiction");
 
      default:
         return QString();
@@ -1303,25 +1291,27 @@ void MainWindow::deleteItem()
 {
     if (currentTab == reviewTab)
     {
-        QModelIndexList currentsBooksIndexList = ui->titlelistView->selectionModel()->selectedIndexes();
-        int curentBookInt = currentsBooksIndexList.at(0).row();
-        Data currentData = dataListMain.at(curentBookInt);
+
+        QModelIndexList currentsBooksIndex = ui->titlelistView->selectionModel()->selectedIndexes();
+        QMap<int, QVariant> map = modelTitle->itemData(currentsBooksIndex.at(0));
+        QVariant titleBook = map[0].toString();
+        Data currentData = findBookByTitle(titleBook.toString());
 
         QMessageBox msgBox;
-        msgBox.setText("Warning! You are going to delete book number " + QString::number(curentBookInt + 1));
+        msgBox.setText("Warning! You are going to delete book " + titleBook.toString());
         msgBox.setInformativeText("Do you really want it?");
         msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::Cancel);
         int ret = msgBox.exec();
 
         switch (ret) {
         case QMessageBox::Yes:
-            qDebug()<< "index for delete " << curentBookInt;
             qDebug() <<  deleteBookFromDB(currentData.getId());
 
             updateGetALlBooksFromDB();    //we need update after edit
 
-            //?  updateSecondaryWindowsForCurrentBook(currentBook);
-            //?  repaintReviewForCurrentBook(currentBook);  //focus on last added
+            guiSettings();
+             // updateSecondaryWindowsForCurrentBook(currentBook);
+             // repaintReviewForCurrentBook(currentBook);  //focus on last added
 
             break;
         case QMessageBox::Cancel:

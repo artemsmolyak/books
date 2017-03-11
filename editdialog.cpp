@@ -85,7 +85,7 @@ EditDialog::EditDialog()
       picButton = new QPushButton;
       minSizePic.setWidth(widthPic);
       minSizePic.setHeight(heightPic);
-      //picButton->setMinimumSize(minSizePic);
+      picButton->setMaximumHeight(minSizePic.height());
 
       connect(picButton, SIGNAL(clicked(bool)), this, SLOT(addBookPic()));
 
