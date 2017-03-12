@@ -236,7 +236,7 @@ void EditDialog::closeEvent(QCloseEvent * e){
 
 void EditDialog::showBingPicture()
 {
-    if (picBingNumber > 9 || tenPicturesFromBing.length() < picBingNumber)
+    if (tenPicturesFromBing.length() == picBingNumber)
                picBingNumber = 0;
 
 qDebug() << "showBingPicture 1";
@@ -681,10 +681,14 @@ void EditDialog::loadPicSlot(QNetworkReply *reply)
         }
         else
         {
+            qDebug() <<"count "<< picBingNumber - 1 <<  tenPicturesFromBing.length();
+
             int picNum = picBingNumber - 1;
              QString str= (QString)tenPicturesFromBing.at(picNum);
+             qDebug() <<"! "<< str;
              QUrl url(str);
              QString path = url.fromPercentEncoding(str.toUtf8());
+             qDebug() <<"! "<< path;
              int index = path.indexOf("=http");
              path =  path.remove(0, index + 1);
              index = path.indexOf("&p=DevEx");
@@ -693,14 +697,30 @@ void EditDialog::loadPicSlot(QNetworkReply *reply)
              QFileInfo fi(path);
              typePic = fi.completeSuffix();
 
-             qDebug() <<"path "<< path;
+             if (typePic.length() > 4)
+             {
+                 QFileInfo fi(typePic);
+                 typePic = fi.completeSuffix();
+             }
 
-            pixmapPic = QPixmap::fromImage(image);
+             if (typePic.length() == 0)
+             {
+                 QMessageBox msgBox;
+                 msgBox.setText("Sorry have problem with type of pic. Try another one");
+                 msgBox.exec();
+             }
+             else
+             {
+                 qDebug() <<"path "<< path;
 
-            pixmapPic.save("/home/artem/Downloads/pixmap.jpg");
-            QIcon icon;
-            icon.addPixmap(pixmapPic);
-            picButton->setIcon(icon);
+                 pixmapPic = QPixmap::fromImage(image);
+
+                 pixmapPic.save("/home/artem/Downloads/pixmap.jpg");
+                 QIcon icon;
+                 icon.addPixmap(pixmapPic);
+                 picButton->setIcon(icon);
+                 picButton->setIconSize(minSizePic);
+             }
         }
     }
   }

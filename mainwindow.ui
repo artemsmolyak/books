@@ -263,6 +263,13 @@
           <widget class="Assesment" name="assesmentWidget" native="true"/>
          </item>
          <item>
+          <widget class="QLabel" name="mainIdeaLbl">
+           <property name="text">
+            <string>TextLabel</string>
+           </property>
+          </widget>
+         </item>
+         <item>
           <widget class="QLabel" name="commonText">
            <property name="text">
             <string/>

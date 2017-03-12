@@ -717,10 +717,13 @@ void MainWindow::updateSecondaryWindowsForCurrentBook(Data currentData)
 
     ui->commonText->setWordWrap(true);
 
+    ui->mainIdeaLbl->setWordWrap(true);
+    ui->mainIdeaLbl->setText("<i>" + currentData.getMainIdea()+"</i>");
+
     //QString str = "<b>" + currentData.getMainIdea() + "</b>" + "<br><br>";
     QString str =  " <style>"
             "h4 {"
-             "background: #FFEFD5; /* Цвет фона под заголовком */"
+             "background: #000000;  /* #FFEFD5;  Цвет фона под заголовком */"
             // "color: green; /* Цвет текста */"
             // "padding: 2px; /* Поля вокруг текста */"
             "}"
