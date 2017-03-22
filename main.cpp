@@ -12,16 +12,7 @@ int main(int argc, char *argv[])
     MainWindow w;
 
 
-//    QFile File(":/styles/QTDark.css"); //QTDark
-//     if (File.open(QFile::ReadOnly))
-//     {
-//     QString StyleSheet = QLatin1String(File.readAll());
-//      w.setStyleSheet(StyleSheet);
-//     }
-//     else
-//     {
-//         qDebug() << "!";
-//     }
+
 
     w.showMaximized();
 

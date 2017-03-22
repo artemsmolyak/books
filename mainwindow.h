@@ -158,6 +158,8 @@ public  slots:
     void showAddDialog();
     void saveQuote(QString quote);
 
+    void changeStyle(int type);
+
     void searching();
     void sort(int sortValue);
 };

@@ -21,6 +21,7 @@
 #include "quote.h"
 #include "QToolBar"
 #include "QTextCharFormat"
+#include "QStyleFactory"
 
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -56,6 +57,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->sortComboBox, SIGNAL(activated(int)), this, SLOT(sort(int)));
 
     connect(settingsWindow, SIGNAL(saveXmlButtonClick()), this, SLOT(saveXml()));
+    connect(settingsWindow, SIGNAL(changeStyle(int)), this, SLOT(changeStyle(int)));
 
     dbConnect();
     guiSettings();
@@ -1194,6 +1196,63 @@ void MainWindow::saveQuote(QString quote)
          repaintQuoteView();
 
     }
+}
+
+void MainWindow::changeStyle(int type)
+{
+    switch (type) {
+    case 0:
+       this->setStyleSheet("");
+        dialogAddEdit->setStyleSheet("");
+        settingsWindow->setStyleSheet("");
+        break;
+
+    case 1:
+    {
+
+         this->setStyle(QStyleFactory::create("Fusion"));
+
+        QFile File(":/styles/QTDark.css"); //QTDark
+        if (File.open(QFile::ReadOnly))
+        {
+            QString StyleSheet = QLatin1String(File.readAll());
+            this->setStyleSheet(StyleSheet);
+            dialogAddEdit->setStyleSheet(StyleSheet);
+            settingsWindow->setStyleSheet(StyleSheet);
+
+        }
+        else
+        {
+            qDebug() << "can't find style css";
+        }
+    }
+        break;
+
+    case 2:
+    {
+
+        QFile File(":/styles/black.css"); //
+        if (File.open(QFile::ReadOnly))
+        {
+            QString StyleSheet = QLatin1String(File.readAll());
+            this->setStyleSheet(StyleSheet);
+
+
+            dialogAddEdit->setStyleSheet(StyleSheet);
+            settingsWindow->setStyleSheet(StyleSheet);
+        }
+        else
+        {
+            qDebug() << "can't find style css";
+        }
+    }
+        break;
+
+
+    default:
+        break;
+    }
+
 }
 
 void MainWindow::searching()

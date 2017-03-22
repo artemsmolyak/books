@@ -18,6 +18,7 @@ public:
 
  signals:
     void saveXmlButtonClick();
+    void  changeStyle(int);
 
 public slots:
    void test();
