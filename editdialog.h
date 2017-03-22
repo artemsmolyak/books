@@ -114,13 +114,18 @@ public slots:
     void replyFinished(QNetworkReply *reply);
     void loadPicSlot(QNetworkReply *reply);
 
+    void hideClear();
 
     //bing http
     void showBingPicture();
+    void changeCursorStart();
+    void changeCursorStop();
 
   signals:
     void newItemIsReady(Data data);
     void editItemIsReady(Data data);
+    void cursorStartWorking();
+    void cursorStopWorking();
 
 
 };

@@ -265,7 +265,7 @@
          <item>
           <widget class="QLabel" name="mainIdeaLbl">
            <property name="text">
-            <string>TextLabel</string>
+            <string> </string>
            </property>
           </widget>
          </item>

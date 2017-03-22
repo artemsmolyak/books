@@ -81,11 +81,12 @@ MainWindow::MainWindow(QWidget *parent) :
 
 void MainWindow::guiSettings()
 {
+   ui->toRightButton->setEnabled(false);
 
     ui->sortComboBox->clear();
+    //ui->sortComboBox->addItem("By title");
+    ui->sortComboBox->addItem("By date added");
     ui->sortComboBox->addItem("By title");
-    ui->sortComboBox->addItem("By date read");
-    ui->sortComboBox->addItem("By ABC");
     ui->tabWidget->setCurrentIndex(0);
 
 
@@ -370,6 +371,8 @@ QStringList MainWindow::QListQuotesToQStringList(QList<Quote> list)
 
 void MainWindow::fillMainWinFromDataBase(QList<Data> dataList)
 {
+    modelTitle->clear();
+
     QStringList titleList;
     int i = 0;
     bool flag = true;
@@ -723,20 +726,29 @@ void MainWindow::updateSecondaryWindowsForCurrentBook(Data currentData)
     //QString str = "<b>" + currentData.getMainIdea() + "</b>" + "<br><br>";
     QString str =  " <style>"
             "h4 {"
-             "background: #000000;  /* #FFEFD5;  Цвет фона под заголовком */"
-            // "color: green; /* Цвет текста */"
+             "background: #F5DEB3;  /* #FFEFD5;  Цвет фона под заголовком */"
+             // "color: green; /* Цвет текста */"
             // "padding: 2px; /* Поля вокруг текста */"
             "}"
            "</style>"
-           "<br><br><h4><b>pages:  </b>" + QString::number(currentData.getPages()) + " </h4><br>";
+           "<br> <h4>   </h4><br>";
+
     str += "<b>authors:  </b>" + currentData.getAuthorsName()  + "<br>";
-    str += "<h4><b>tags:  </b>" + currentData.getTagsList().join(",") + "</h4><br>";
-    str += "<b>date:  </b>" + currentData.getDateS().toString("dd.MM.yyyy") + "<br>";
-    str += "<h4><b>date:  </b>" + currentData.getDateF().toString("dd.MM.yyyy") + "</h4><br>";
+
+    str += "<h4>  </h4><br>";
+
+    str += "<b>date read:  </b>" + currentData.getDateF().toString("dd.MM.yyyy") + "<br>";
+
+    str += "<h4>  </h4><br>";
+
 
     QString genreString = getGenreById(currentData.getGenre());
     str += "<b>genre:  </b>" + genreString  + "<br>";
-    str += "<h4><b>date added:  </b>" + currentData.getDateAdded().toString("dd.MM.yyyy") + "</h4>";
+    str += "<h4></h4><br>";
+
+   //  str += "<b>date added:  </b>" + currentData.getDateAdded().toString("dd.MM.yyyy") + "<br>";
+
+   //  str += "<h4></h4>";
 
     ui->commonText->setText(str);
 
@@ -930,6 +942,10 @@ void MainWindow::saveXml()
     qDebug() << "file is ok!";
 
   xmlFile.close();
+
+  QMessageBox msgBox;
+  msgBox.setText("xml saved");
+  msgBox.exec();
 
 }
 
@@ -1187,6 +1203,9 @@ void MainWindow::searching()
 
     QList<Data> dataList;
 
+
+     qDebug() << "size " << dataListMain.length();
+
     foreach (Data data, dataListMain) {
     if (data.getBookTitle().toLower().contains(findStr))
         dataList.append(data);
@@ -1202,14 +1221,15 @@ void MainWindow::sort(int sortValue)
 
     switch (sortValue) {
     case 0:
+        //modelTitle->sort(1, Qt::AscendingOrder);
+        updateGetALlBooksFromDB();
 
         break;
     case 1:
-
-        break;
-    case 2:
         modelTitle->sort(0, Qt::AscendingOrder);
         break;
+    case 2:
+
     default:
         break;
     }
@@ -1224,28 +1244,37 @@ void MainWindow::editModeStart()
 
      if (currentTab == reviewTab)
      {
-        // int currentBook = getCurrentBookCountFrom1();
-
-
               QModelIndexList currentsBooksIndex = ui->titlelistView->selectionModel()->selectedIndexes();
 
-              QMap<int, QVariant> map = modelTitle->itemData(currentsBooksIndex.at(0));
+              qDebug() <<"INDEX:  "<< currentsBooksIndex;
 
-              QVariant titleBook = map[0].toString();
-              Data currentData = findBookByTitle(titleBook.toString());
+              if (!currentsBooksIndex.isEmpty())
+              {
 
-              if (currentData.getIsEmpty())
+                  QMap<int, QVariant> map = modelTitle->itemData(currentsBooksIndex.at(0));
+
+                  QVariant titleBook = map[0].toString();
+                  Data currentData = findBookByTitle(titleBook.toString());
+
+                  if (currentData.getIsEmpty())
+                  {
+                      QMessageBox msgBox;
+                      msgBox.setText("Please choose book for edit in list");
+                      msgBox.exec();
+                  }
+                  else
+                  {
+                      //Data currentData = dataListMain.at(currentBook - 1);
+                      dialogAddEdit->setGenre(genreList);
+                      dialogAddEdit->viewDataForEdit(currentData);
+                      dialogAddEdit->show();
+                  }
+              }
+              else
               {
                   QMessageBox msgBox;
                   msgBox.setText("Please choose book for edit in list");
                   msgBox.exec();
-              }
-              else
-              {
-                  //Data currentData = dataListMain.at(currentBook - 1);
-                  dialogAddEdit->setGenre(genreList);
-                  dialogAddEdit->viewDataForEdit(currentData);
-                  dialogAddEdit->show();
               }
      }
      else if (currentTab == quotesTab)
@@ -1296,31 +1325,41 @@ void MainWindow::deleteItem()
     {
 
         QModelIndexList currentsBooksIndex = ui->titlelistView->selectionModel()->selectedIndexes();
-        QMap<int, QVariant> map = modelTitle->itemData(currentsBooksIndex.at(0));
-        QVariant titleBook = map[0].toString();
-        Data currentData = findBookByTitle(titleBook.toString());
 
-        QMessageBox msgBox;
-        msgBox.setText("Warning! You are going to delete book " + titleBook.toString());
-        msgBox.setInformativeText("Do you really want it?");
-        msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::Cancel);
-        int ret = msgBox.exec();
+        if (currentsBooksIndex.isEmpty())
+        {
+            QMessageBox msgBox;
+            msgBox.setText("Please choose book for delete in list");
+            msgBox.exec();
+        }
+        else
+        {
+            QMap<int, QVariant> map = modelTitle->itemData(currentsBooksIndex.at(0));
+            QVariant titleBook = map[0].toString();
+            Data currentData = findBookByTitle(titleBook.toString());
 
-        switch (ret) {
-        case QMessageBox::Yes:
-            qDebug() <<  deleteBookFromDB(currentData.getId());
+            QMessageBox msgBox;
+            msgBox.setText("Warning! You are going to delete book " + titleBook.toString());
+            msgBox.setInformativeText("Do you really want it?");
+            msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::Cancel);
+            int ret = msgBox.exec();
 
-            updateGetALlBooksFromDB();    //we need update after edit
+            switch (ret) {
+            case QMessageBox::Yes:
+                qDebug() <<  deleteBookFromDB(currentData.getId());
 
-            guiSettings();
-             // updateSecondaryWindowsForCurrentBook(currentBook);
-             // repaintReviewForCurrentBook(currentBook);  //focus on last added
+                updateGetALlBooksFromDB();    //we need update after edit
 
-            break;
-        case QMessageBox::Cancel:
-            break;
-        default:
-            break;
+                guiSettings();
+                // updateSecondaryWindowsForCurrentBook(currentBook);
+                // repaintReviewForCurrentBook(currentBook);  //focus on last added
+
+                break;
+            case QMessageBox::Cancel:
+                break;
+            default:
+                break;
+            }
         }
 
     }

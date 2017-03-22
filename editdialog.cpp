@@ -214,6 +214,8 @@ EditDialog::EditDialog()
       setLayout(layout);
 
        connect(saveBtn, SIGNAL(clicked(bool)), this, SLOT(on_SaveButton_released()));
+       connect(cancelBtn, SIGNAL(clicked(bool)), this, SLOT(hideClear()));
+
        connect(btnSearchPic, SIGNAL(clicked(bool)), this, SLOT(searchPic()));
 
 
@@ -227,6 +229,9 @@ EditDialog::EditDialog()
 
        connect(nextBtn, SIGNAL(clicked(bool)), this, SLOT(showBingPicture()));
 
+       connect(this, SIGNAL(cursorStartWorking()), this, SLOT(changeCursorStart()));
+
+
 }
 
 void EditDialog::closeEvent(QCloseEvent * e){
@@ -236,31 +241,42 @@ void EditDialog::closeEvent(QCloseEvent * e){
 
 void EditDialog::showBingPicture()
 {
+    emit cursorStartWorking();
+
     if (tenPicturesFromBing.length() == picBingNumber)
                picBingNumber = 0;
 
 qDebug() << "showBingPicture 1";
     QString urlPic = (QString)tenPicturesFromBing.at(picBingNumber++);
-qDebug() << "2";
 
     QUrl url(urlPic);
     QString stringURL = url.fromPercentEncoding(urlPic.toUtf8());
     int index = stringURL.indexOf("=http");
 
-    //qDebug() << "before " << stringURL;
     stringURL =  stringURL.remove(0, index + 1);
-    //qDebug() << "after " << stringURL;
 
     index = stringURL.indexOf("&p=DevEx");
-    //qDebug() << "before " << stringURL;
+
     stringURL =  stringURL.remove(index, stringURL.length() - 1);
-    //qDebug() << "after " << stringURL;
+
 
     qDebug() << "url " << stringURL;
 
     url.setUrl(stringURL);
     QNetworkRequest request(url);
     picLoader->get(request);
+
+    connect(picLoader, SIGNAL(finished(QNetworkReply*)), this, SLOT(changeCursorStop()));
+}
+
+void EditDialog::changeCursorStart()
+{
+    this->setCursor(Qt::WaitCursor);
+}
+
+void EditDialog::changeCursorStop()
+{
+    this->setCursor(Qt::ArrowCursor);
 }
 
 
@@ -504,7 +520,7 @@ void EditDialog::editItem(Data data)
 
 void EditDialog::on_SaveButton_released()
 {
-    //if (mode == add)
+
     {
         setWindowTitle("Add book");
 
@@ -527,30 +543,6 @@ void EditDialog::on_SaveButton_released()
         QString  review = reviewText->toHtml();
 
 
-//        // -------------
-//        QString filename="Data.txt";
-//        QFile file( filename );
-//        if ( file.open(QIODevice::ReadWrite) )
-//        {
-//            QTextStream stream( &file );
-//            stream <<review;
-//        }
-//        file.close();
-//        //
-
-//         QIcon icon  = picButton->icon();
-
-//         if (pixmapPic.isNull())
-//         {
-//             qDebug() << "!!!!!!!!!!!!!!!!!!!!!" ;
-//         }
-
-//         QSize size(widthPic, heightPic);
-//         pixmapPic = icon.pixmap(size);
-
-
-//        qDebug() << "pic size " << pixmapPic.width() << pixmapPic.height()
-//                 << typePic;
 
         emit newItemIsReady(
                     Data(idData, title, authors, mainIdea, rateInt, genre,
@@ -559,22 +551,15 @@ void EditDialog::on_SaveButton_released()
                     );
         clearAll();
     }
-    //else if (mode == edit)
-//    {
-//        QString assessment = QString::number(ui->assesmentWidget->getAssesment());
-//        QString  author = ui->authorEdit->text();
-//        QString  title  = ui->titleEdit->text();
-//        QString   date = ui->dateEdit->text();
-//        QString  review = ui->reviewEdit->toPlainText();
-//        const QPixmap *bookCoverPix = ui->bookCoverLabel->pixmap();
-//        emit editItemIsReady(Data(assessment, author, title, date, review, *bookCoverPix));
-//    }
+
     this->hide();
     this->reset();
 }
 
 void EditDialog::searchPic()
 {
+    emit cursorStartWorking();
+
     QString authorsForSearch = "book cover ";
     authorsForSearch += authorsText->text();
     authorsForSearch = authorsForSearch.toUtf8();
@@ -604,7 +589,7 @@ void EditDialog::searchPic()
 
 
     manager->get(request);
-    //manager->get(QNetworkRequest(QUrl("https://www.google.ru/search?q=книга+марсианин&newwindow=1&source=lnms&tbm=isch")));
+    connect(manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(changeCursorStop()));
 }
 
 
@@ -723,4 +708,10 @@ void EditDialog::loadPicSlot(QNetworkReply *reply)
              }
         }
     }
-  }
+}
+
+void EditDialog::hideClear()
+{
+     clearAll();
+      hide();
+}
