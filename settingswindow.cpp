@@ -44,7 +44,7 @@ SettingsWindow::SettingsWindow()
     QLabel * version = new QLabel("Version: ");
     QLabel * versionLabel = new QLabel("1.0");
 
-    QLabel * author = new QLabel("Yon can email to author: ");
+    QLabel * author = new QLabel("You can email to author: ");
     QLabel * email = new QLabel("osckyg@mail.ru");
 
     QPushButton * okBtn = new QPushButton("Close");
