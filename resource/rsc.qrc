@@ -17,5 +17,6 @@
         <file>styles/black.css</file>
         <file>styles/QTDark.css</file>
         <file>netu.jpg</file>
+        <file>bookPic.ico</file>
     </qresource>
 </RCC>

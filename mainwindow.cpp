@@ -30,6 +30,8 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    setWindowTitle("bookshelf");
+
     //ui->titlelistView->setViewMode(QListView::IconMode);
 
     ui->assesmentWidget->setUseMouse(false);
@@ -74,7 +76,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     setChooseFirstColumn();
 
-    setWindowIcon(QIcon("://bookPic.jpg"));
+    setWindowIcon(QIcon("://bookPic.ico"));
 
 }
 
@@ -113,6 +115,7 @@ void MainWindow::guiSettings()
     ui->deleteButton->setEnabled(false);
     ui->widget_3->setEnabled(false);
     ui->assesmentWidget->setVisible(false);
+    ui->labelPic->setVisible(false);
 
 }
 
@@ -247,7 +250,7 @@ qDebug() << "err " << err.text();
 //        return;
 //    }
 
-
+      return true;
 }
 
 void MainWindow::getInfFromDb()
@@ -1047,6 +1050,9 @@ void MainWindow::showHiddenWidgets()
 
     if (!ui->assesmentWidget->isVisible())
         ui->assesmentWidget->setVisible(true);
+
+    if (!ui->labelPic->isVisible())
+         ui->labelPic->setVisible(true);
 
 }
 
