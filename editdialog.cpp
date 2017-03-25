@@ -21,6 +21,8 @@
 #include "QJsonDocument"
 #include "QJsonArray"
 #include "QMessageBox"
+#include "QApplication"
+
 
 QLineEdit *EditDialog::getMainIdeaText() const
 {
@@ -44,7 +46,7 @@ void EditDialog::clearAll()
     authorsText->setText("");
     mainIdeaText->setText("");
     titleText->setText("");
-    numberOfPagesText->setText("");
+    numberOfPagesText->setValue(0);
     tagsText->setText("");
     reviewText->setPlainText("");
 
@@ -53,6 +55,8 @@ void EditDialog::clearAll()
 
 EditDialog::EditDialog()
 {
+
+      typedef void (QComboBox::*QComboStringSignal)(const QString &);
 
 //     QFile File(":/styles/QTDark.css"); //QTDark
 //     if (File.open(QFile::ReadOnly))
@@ -93,13 +97,13 @@ EditDialog::EditDialog()
       genreCombobox = new QComboBox;
 
       QLabel * numPagesLable = new QLabel("number of pages: ");
-      numberOfPagesText = new QLineEdit();
+      numberOfPagesText = new QSpinBox();
 
-      QLabel * startReadLable = new QLabel("start reading: ");
+      QLabel * startReadLable = new QLabel("start reading:");
       dateStart = new QDateEdit;
       dateStart->setMinimumDate(QDate(1984, 01, 01));
 
-      QLabel * finishReadLable = new QLabel("finish: ");      
+      QLabel * finishReadLable = new QLabel("finish reading:");
       finishReadLable->setAlignment(Qt::AlignRight);
       dateFinish = new QDateEdit;
 
@@ -149,6 +153,19 @@ EditDialog::EditDialog()
 
 
       fontComboBox = new QFontComboBox;
+      connect(fontComboBox, static_cast<QComboStringSignal>(&QComboBox::activated), this, &EditDialog::setfont);
+
+
+      comboSize = new QComboBox;
+      comboSize->setEditable(true);
+
+      const QList<int> standardSizes = QFontDatabase::standardSizes();
+      foreach (int size, standardSizes)
+          comboSize->addItem(QString::number(size));
+      comboSize->setCurrentIndex(standardSizes.indexOf(QApplication::font().pointSize()));
+
+      connect(comboSize, static_cast<QComboStringSignal>(&QComboBox::activated), this, &EditDialog::textSize);
+
 
       //review
       reviewText = new QTextEdit();
@@ -160,13 +177,13 @@ EditDialog::EditDialog()
 
       QGridLayout * layout = new QGridLayout;
       layout->addWidget(titleLable, 0,  0,  1, 1  );
-      layout->addWidget(titleText, 0,  1, 1, 7  );
+      layout->addWidget(titleText, 0,  1, 1, 5 );
 
       layout->addWidget(authorLable, 1,  0, 1, 1  );
-      layout->addWidget(authorsText, 1,  1, 1, 7  );
+      layout->addWidget(authorsText, 1,  1, 1, 5  );
 
       layout->addWidget(mainIdeaLable, 2,  0, 1, 1  );
-      layout->addWidget(mainIdeaText, 2,  1, 1, 7  );
+      layout->addWidget(mainIdeaText, 2,  1, 1, 5 );
 
       //
       layout->addWidget(genreLable, 3,  0, 1, 1  );
@@ -181,34 +198,41 @@ EditDialog::EditDialog()
       layout->addWidget(finishReadLable, 4,  2, 1, 1  );
       layout->addWidget(dateFinish, 4,  3, 1, 1  );
 
-      layout->addWidget(rate, 5,  1, 1, 4  );
+      layout->addWidget(rate, 5,  0, 1, 4  );
 
       layout->addWidget(tagsLable, 6,  0, 1, 1  );
       layout->addWidget(tagsText, 6,  1, 1, 3  );
 
 
-      layout->addWidget(picButton, 3, 4, 4, 4);
+      layout->addWidget(picButton, 3, 4, 4, 2);
 
 
-      QPushButton * btnSearchPic = new QPushButton("Search");
-      layout->addWidget(btnSearchPic, 7,  4, 1, 3);
 
-      nextBtn = new QPushButton(">>");
-      nextBtn->setEnabled(false);
-      layout->addWidget(nextBtn, 7,  7, 1, 1);
 
 
 
 
       //
 
-      layout->addWidget(toolBar, 7,  0, 1, 3  );
+      layout->addWidget(toolBar, 7,  0, 1, 2  );
+       layout->addWidget(comboSize, 7, 2, 1, 1);
       layout->addWidget(fontComboBox, 7, 3, 1, 1);
 
-      layout->addWidget(reviewText, 8,  0, 1, 8);
+      QPushButton * btnSearchPic = new QPushButton("Search");
 
-      layout->addWidget(saveBtn, 10,  6, 1, 1 );
-      layout->addWidget(cancelBtn, 10,  7, 1, 1  );
+      layout->addWidget(btnSearchPic, 7,  4, 1, 1);
+
+      nextBtn = new QPushButton(">>");
+      nextBtn->setEnabled(false);
+      layout->addWidget(nextBtn, 7,  5,  1, 1);
+
+
+
+
+      layout->addWidget(reviewText, 8,  0, 1, 6);
+
+      layout->addWidget(saveBtn, 10,  4, 1, 1 );
+      layout->addWidget(cancelBtn, 10,  5, 1, 1  );
 
 
       setLayout(layout);
@@ -387,7 +411,7 @@ void EditDialog::viewDataForEdit(Data data)
 
     genreCombobox->setCurrentIndex(data.getGenre() - 1);  //count from 1
 
-    numberOfPagesText->setText(QString::number(data.getPages()));
+    numberOfPagesText->setValue(data.getPages());
 
     dateStart->setDate(data.getDateS());
     dateFinish->setDate(data.getDateF());
@@ -473,6 +497,24 @@ void EditDialog::slotTextAlign(QAction *a)
 
 //    else if (a == actionJustify)
 
+}
+
+void EditDialog::setfont(const QString &f)
+{
+    QTextCharFormat fmt;
+    fmt.setFontFamily(f);
+    mergeFormatOnWordOrSelection(fmt);
+}
+
+void EditDialog::textSize(const QString &p)
+{
+    qreal pointSize = p.toFloat();
+    if (p.toFloat() > 0) {
+        QTextCharFormat fmt;
+        //qDebug() << "set font "  <<
+        fmt.setFontPointSize(pointSize);
+        mergeFormatOnWordOrSelection(fmt);
+    }
 }
 
 void EditDialog::addBookPic()

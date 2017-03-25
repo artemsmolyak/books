@@ -9,6 +9,7 @@
 #include "QPlainTextEdit"
 #include "QFontComboBox"
 #include "QtNetwork/QNetworkAccessManager"
+#include "QSpinBox"
 
 enum Mode {
     add,
@@ -40,10 +41,11 @@ private:
     QLineEdit * authorsText;
     QLineEdit * mainIdeaText;
     QLineEdit * titleText;
-    QLineEdit * numberOfPagesText;
+    QSpinBox * numberOfPagesText;
     QLineEdit * tagsText;
     QTextEdit * reviewText;
     QFontComboBox * fontComboBox;
+    QComboBox *comboSize;
 
 
     QNetworkAccessManager * manager ;
@@ -102,6 +104,9 @@ public slots:
     void slotRigth();
     void slotUnder();
     void slotTextAlign(QAction *a);
+    void setfont(const QString &f);
+    void textSize(const QString &p);
+
 
     void addBookPic();
     QString getFileType(QString pathFilePic);
