@@ -54,3 +54,5 @@ RESOURCES += \
 CONFIG += c++11
 
 DISTFILES +=
+
+win32:RC_FILE = myapp.rc
