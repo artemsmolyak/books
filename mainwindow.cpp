@@ -76,7 +76,9 @@ MainWindow::MainWindow(QWidget *parent) :
 
     setChooseFirstColumn();
 
-    setWindowIcon(QIcon("://bookPic.ico"));
+
+    setWindowIcon(QIcon("://bookcase.ico"));
+
 
 }
 
@@ -250,7 +252,9 @@ qDebug() << "err " << err.text();
 //        return;
 //    }
 
-      return true;
+
+return true;
+
 }
 
 void MainWindow::getInfFromDb()
@@ -685,7 +689,7 @@ QSqlError MainWindow::saveItemInDatabase(Data data)
 
 bool MainWindow::checkDataBeforeSave(Data data)
 {
-
+return true;
 }
 
 void MainWindow::repaintQuoteView()
@@ -1053,6 +1057,7 @@ void MainWindow::showHiddenWidgets()
 
     if (!ui->labelPic->isVisible())
          ui->labelPic->setVisible(true);
+
 
 }
 

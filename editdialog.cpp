@@ -521,7 +521,7 @@ void EditDialog::addBookPic()
 {
     qDebug() << "signal addBookPic";
     QString fileName = QFileDialog::getOpenFileName(this,
-                                                   tr("Open Image"), "/home", tr("Image Files (*.png *.jpg *.jpeg  *.bmp)"));
+                                                   tr("Open Image"), "QDir::homePath() /", tr("Image Files (*.png *.jpg *.jpeg  *.bmp)"));
 
 
     pixmapPic.load(fileName);
