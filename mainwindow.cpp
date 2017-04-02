@@ -31,20 +31,18 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
 
     setWindowTitle("bookshelf");
+    setWindowIcon(QIcon("://bookPic.jpg"));
 
-    //ui->titlelistView->setViewMode(QListView::IconMode);
 
-    ui->assesmentWidget->setUseMouse(false);
     dialogAddEdit = new EditDialog;
     addQuotesDialog = new AddQuotesDialog;
     settingsWindow = new SettingsWindow();
     modelTitle = new QStandardItemModel();
     modelQuotes = new QStringListModel();
+
     currentTab = reviewTab;
     currentMode = add;
 
-
-    //
 
     connect(ui->addBtn, SIGNAL(clicked(bool)), this, SLOT(addModeStart()));
     connect(ui->editBtn, SIGNAL(clicked(bool)), this, SLOT(editModeStart()));
@@ -54,32 +52,14 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->tabWidget, SIGNAL(tabBarClicked(int)), this, SLOT(on_changeTab_released(int)));
     connect(addQuotesDialog, SIGNAL(saveQuoteSignal(QString)), this, SLOT(saveQuote(QString)));
     connect(ui->settingsButton, SIGNAL(clicked(bool)), settingsWindow, SLOT(show()));
-
     connect(ui->lineEdit, SIGNAL(textChanged(QString)), this, SLOT(searching()));
     connect(ui->sortComboBox, SIGNAL(activated(int)), this, SLOT(sort(int)));
-
     connect(settingsWindow, SIGNAL(saveXmlButtonClick()), this, SLOT(saveXml()));
     connect(settingsWindow, SIGNAL(changeStyle(int)), this, SLOT(changeStyle(int)));
 
     dbConnect();
     guiSettings();
-    getInfFromDb();
-
-
-    //    readXml();
-    //    tableModel = new TableModel(dataList);
-    //    QSortFilterProxyModel * sortModel = new QSortFilterProxyModel(this);
-    //    sortModel->setSourceModel(tableModel);
-    //    sortModel->setFilterKeyColumn(0);
-    //    ui->tableView->setModel(sortModel);
-    //guiSettings();
-
-    setChooseFirstColumn();
-
-
-    setWindowIcon(QIcon("://bookcase.ico"));
-
-
+    getInformationFromDb();
 }
 
 
@@ -87,10 +67,10 @@ MainWindow::MainWindow(QWidget *parent) :
 
 void MainWindow::guiSettings()
 {
-   ui->toRightButton->setEnabled(false);
-
+    ui->assesmentWidget->setUseMouse(false);
+    ui->toRightButton->setEnabled(false);
     ui->sortComboBox->clear();
-    //ui->sortComboBox->addItem("By title");
+
     ui->sortComboBox->addItem("By date added");
     ui->sortComboBox->addItem("By title");
     ui->tabWidget->setCurrentIndex(0);
@@ -99,7 +79,6 @@ void MainWindow::guiSettings()
     ui->titlelistView->setWordWrap(true);
     ui->quotesListView->setWordWrap(true);
 
-    qDebug()<<"wrap: "<<ui->titlelistView->isWrapping();
 
     ui->titlelistView->setViewMode(QListView::ListMode);
     ui->titlelistView->setIconSize(QSize(24, 24));
@@ -111,7 +90,7 @@ void MainWindow::guiSettings()
     ui->tabWidget->setTabEnabled(0, true);
     ui->tabWidget->setTabEnabled(1, false);
 
-    setGeneralInf();
+    setGeneralInformationOnMainWindow();
 
     ui->editBtn->setEnabled(false);
     ui->deleteButton->setEnabled(false);
@@ -119,13 +98,13 @@ void MainWindow::guiSettings()
     ui->assesmentWidget->setVisible(false);
     ui->labelPic->setVisible(false);
 
+
+    ui->textEdit->setAlignment(  Qt::AlignCenter );
+    ui->textEdit->setAlignment(  Qt::AlignCenter );
+    ui->textEdit->setTextBackgroundColor(Qt::lightGray);
+
 }
 
-void MainWindow::setChooseFirstColumn()
-{
-
-
-}
 
 QString MainWindow::convertQPixmapToQString(QPixmap pic)
 {
@@ -145,136 +124,90 @@ QPixmap MainWindow::convertQStringToQPixmap(QString pic)
     return pix;
 }
 
-bool MainWindow::readXml()
+bool MainWindow::readXml(QString path)
 {
-//    qDebug() << "reading";
+    qDebug() << "reading xml";
 
-//    QFile in(path);
-//    if(!in.open(QFile::ReadOnly | QFile::Text))
-//    {
-//      qDebug() << "file not open for read!";
-//      return false;
-//    }
+    QFile in(path);
+    if(!in.open(QFile::ReadOnly | QFile::Text))
+    {
+      qDebug() << "file not open for read!";
+      return false;
+    }
 
-//    QXmlStreamReader reader;
-//    reader.setDevice(&in);
+    QXmlStreamReader reader;
+    reader.setDevice(&in);
 
-//    while(!reader.atEnd() && !reader.error())
-//    {
-//        qDebug() <<"text start "<< reader.text().toString();
+    while(!reader.atEnd() && !reader.error())
+    {
+        qDebug() <<"text start "<< reader.text().toString();
 
-//        QXmlStreamReader::TokenType token = reader.readNext();
+        QXmlStreamReader::TokenType token = reader.readNext();
 
-//        if(token == QXmlStreamReader::StartDocument) {
-//            qDebug() << "StartDoc";
-//            continue;
-//        }
-
-
-
-//        if(token == QXmlStreamReader::StartElement) {
-//            qDebug() << "StartReader";
-//            if(reader.name() == "book") {
-//                qDebug() << "Book";
-//                QString assesment = reader.attributes().value("assesment").toString();
-//                QString authorName = reader.attributes().value("author").toString();
-//                QString bookTitle =  reader.attributes().value("title").toString();
-//                QString date = reader.attributes().value("date").toString();
-//                QString  review = reader.attributes().value("review").toString();
-//                QString imageQString = reader.attributes().value("picture").toString();
-
-//                QByteArray textByte =  QByteArray::fromBase64(imageQString.toLocal8Bit());
-
-//                QPixmap pix;
-//                pix.loadFromData(textByte, "png");
-
-//                Data tmpData(assesment, authorName, bookTitle,
-//                             date,  review, pix);
+        if(token == QXmlStreamReader::StartDocument) {
+            qDebug() << "StartDoc";
+            continue;
+        }
 
 
-//                qDebug() << "assesment "<< assesment
-//                         <<" authorName "<< authorName
-//                        <<" bookTitle "<< bookTitle
-//                         <<" date "<< date
-//                         << " review "<<  review;
 
+        if (token == QXmlStreamReader::StartElement) {
+            qDebug() << "StartReader";
+            if  (reader.name() == "book") {
+                qDebug() << "Book";
+                QString assesment = reader.attributes().value("assesment").toString();
+                QString authorName = reader.attributes().value("author").toString();
+                QString bookTitle =  reader.attributes().value("title").toString();
+                QString date = reader.attributes().value("date").toString();
+                QString  review = reader.attributes().value("review").toString();
+                QString imageQString = reader.attributes().value("picture").toString();
 
-//                dataList.append(tmpData);
-//                dataStringList.append(tmpData.toString());
+                QByteArray textByte =  QByteArray::fromBase64(imageQString.toLocal8Bit());
 
-//            }
-//        }
+                QPixmap pix;
+                pix.loadFromData(textByte, "png");
 
-//        reader.readNext();
+                //                Data tmpData(assesment, authorName, bookTitle,
+                //                             date,  review, pix);
+                //dataList.append(tmpData);
+                //dataStringList.append(tmpData.toString());
 
-//        qDebug() <<"text end "<< reader.text().toString();
-//    }
+            }
+        }
 
+        reader.readNext();
 
-//    updateDataList();
+        qDebug() <<"text end "<< reader.text().toString();
+    }
 
-//    in.close();
+    in.close();
 
    return true;
-
 }
 
-void MainWindow::showMainInformation()
-{
-
-}
 
 bool MainWindow::dbConnect()
 {
-
     // initialize the database
-     QSqlError err = initDb();
+    QSqlError err = initDb();
 
-     if (!isGenresTableEXISTS()) createGenresTable();
-     if (!isBookMainsTableEXISTS()) createBookMainsTable();
-     if (!isQuotesTableEXISTS()) createQuotesTable();
+    if (!isGenresTableEXISTS()) createGenresTable();
+    if (!isBookMainsTableEXISTS()) createBookMainsTable();
+    if (!isQuotesTableEXISTS()) createQuotesTable();
 
-
-
-
-//     qDebug() << "**************************************";
-//     qDebug() << (createGenresTable()).text();
-//     qDebug() << (createBookMainsTable()).text();
-//     qDebug() << (createQuotesTable()).text();
-//    // qDebug() << (createTagsTable()).text();
-//     qDebug() << "**************************************";
-
-
-qDebug() << "err " << err.text();
-
-//    if (err.type() != QSqlError::NoError) {
-//        showError(err);
-//        return;
-//    }
-
-
-return true;
-
+    return true;
 }
 
-void MainWindow::getInfFromDb()
+void MainWindow::getInformationFromDb()
 {
     QSqlQuery query;
-
-    //get in from books
-
-    qDebug() << "from db " <<query.size();
-
-    updateGetALlBooksFromDB();
-
+    getAllBooksFromDB();
     query.exec("SELECT * FROM genres");
-
    genreList.clear();
 
     while (query.next()) {
-        QString name = query.value(0).toString();
         QString value = query.value(1).toString();
-        genreList.append(value);
+         genreList.append(value);
     }
 
     getQuotes();
@@ -298,10 +231,9 @@ QSqlError MainWindow::getQuotes()
     return QSqlError();
 }
 
-void MainWindow::updateDataListMain()
+void MainWindow::clearDataListMain()
 {
     dataListMain.clear();
-
 }
 
 int MainWindow::getCurrentQuoteCountFrom1()
@@ -335,7 +267,6 @@ int MainWindow::getIDFromQuoteNumber(int quoteNumber)
 {
     int currentBookNumber = getCurrentBookCountFrom1();
     int idBook = getIDFromBookNumber(currentBookNumber);
-
 
     QList <Quote> listOneQuote = getListQuoteForBook(idBook);
 
@@ -373,8 +304,6 @@ QStringList MainWindow::QListQuotesToQStringList(QList<Quote> list)
     }
     return stringList;
 }
-
-
 
 
 
@@ -525,7 +454,6 @@ QSqlError MainWindow::deleteBookFromDB(int id)
 
      if (!q.prepare(QLatin1String("DELETE FROM books WHERE id = ?")))
          return q.lastError();
-
 
       deleteBook(q, id);
 
@@ -743,28 +671,21 @@ void MainWindow::updateSecondaryWindowsForCurrentBook(Data currentData)
            "<br> <h4>   </h4><br>";
 
     str += "<b>authors:  </b>" + currentData.getAuthorsName()  + "<br>";
-
     str += "<h4>  </h4><br>";
-
     str += "<b>date read:  </b>" + currentData.getDateF().toString("dd.MM.yyyy") + "<br>";
-
     str += "<h4>  </h4><br>";
-
 
     QString genreString = getGenreById(currentData.getGenre());
     str += "<b>genre:  </b>" + genreString  + "<br>";
     str += "<h4></h4><br>";
 
    //  str += "<b>date added:  </b>" + currentData.getDateAdded().toString("dd.MM.yyyy") + "<br>";
-
    //  str += "<h4></h4>";
 
     ui->commonText->setText(str);
-
-
 }
 
-void MainWindow::updateGetALlBooksFromDB()
+void MainWindow::getAllBooksFromDB()
 {
     QSqlQuery query;
 
@@ -823,20 +744,15 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::setGeneralInf()
+void MainWindow::setGeneralInformationOnMainWindow()
 {
-    updateGetALlBooksFromDB();
-
+    getAllBooksFromDB();
 
     const QString str = "in database  "
-            + QString::number(dataListMain.length())
-               + " books,  choose one or add a new";
+             + QString::number(dataListMain.length())
+                + " books,  choose one or add a new";
 
-    ui->textEdit->setAlignment(  Qt::AlignCenter );
     ui->textEdit->setPlainText(str);
-    ui->textEdit->setAlignment(  Qt::AlignCenter );
-    ui->textEdit->setTextBackgroundColor(Qt::lightGray);
-
 }
 
 
@@ -846,8 +762,7 @@ void MainWindow::saveXml()
 
     qDebug() << "save xml";
 
-    updateGetALlBooksFromDB();
-
+    getAllBooksFromDB();
 
     QFile xmlFile(pathXml);
 
@@ -925,14 +840,11 @@ void MainWindow::saveXml()
         //xml.writeAttribute("picture", bookCoverQString);
 
 
-
         qDebug() << "assesment "<< rate
                  <<" authorName "<< authorName
                 <<" bookTitle "<< bookTitle
                  <<" date "<< dateStart
                  << " review "<<  review;
-
-
 
         xml.writeEndElement();
     }
@@ -975,12 +887,10 @@ void MainWindow::addEditNewItem(Data data)
             msgBox.exec();
         }
 
-        updateGetALlBooksFromDB();
+        getAllBooksFromDB();
 
         if (dataListMain.length() != 0)
         {
-           // ui->titlelistView->setCurrentIndex(modelTitle->index(dataListMain.length() - 1, 0));
-
             updateSecondaryWindowsForCurrentBook(data); //Count from 1
             repaintReviewForCurrentBook(data);  //focus on last added. Count from 1
 
@@ -994,27 +904,15 @@ void MainWindow::addEditNewItem(Data data)
         qDebug() << error.text();
         qDebug() <<"";
 
-        updateGetALlBooksFromDB();    //we need update after edit
+        getAllBooksFromDB();    //we need update after edit
         updateSecondaryWindowsForCurrentBook(data);
         repaintReviewForCurrentBook(data);  //focus on last added
     }
 }
 
-void MainWindow::updateDataList()
-{
-
-}
-
-void MainWindow::testSlot(Data mes)
-{
-    qDebug() << "test Slot " << mes.toString();
-}
-
 void MainWindow::chooseListIndex(QModelIndex index)
 {
     showHiddenWidgets();
-
-    qDebug() << "here" <<index.row() << index.column();
 
     QMap<int, QVariant> map = modelTitle->itemData(index);
 
@@ -1023,9 +921,7 @@ void MainWindow::chooseListIndex(QModelIndex index)
 
     if(currentTab == reviewTab)
     {
-        //ui->mainIdea->setText(currentData.getMainIdea());
         ui->textEdit->setHtml(currentData.getReview());
-
         updateSecondaryWindowsForCurrentBook(currentData);
     }
     else if (currentTab == quotesTab)
@@ -1057,7 +953,6 @@ void MainWindow::showHiddenWidgets()
 
     if (!ui->labelPic->isVisible())
          ui->labelPic->setVisible(true);
-
 
 }
 
@@ -1105,20 +1000,6 @@ QString MainWindow::getGenreById(int id)
 }
 
 
-void MainWindow::on_addButton_released()
-{
-
-}
-
-void MainWindow::on_deleteButton_released()
-{
-
-}
-
-void MainWindow::on_updateButton_released()
-{
-
-}
 
 void MainWindow::on_changeTab_released(int tab)
 {
@@ -1242,7 +1123,7 @@ void MainWindow::changeStyle(int type)
     case 2:
     {
 
-        QFile File(":/styles/black.css"); //
+        QFile File(":/styles/black.css");
         if (File.open(QFile::ReadOnly))
         {
             QString StyleSheet = QLatin1String(File.readAll());
@@ -1292,7 +1173,7 @@ void MainWindow::sort(int sortValue)
     switch (sortValue) {
     case 0:
         //modelTitle->sort(1, Qt::AscendingOrder);
-        updateGetALlBooksFromDB();
+        getAllBooksFromDB();
 
         break;
     case 1:
@@ -1418,7 +1299,7 @@ void MainWindow::deleteItem()
             case QMessageBox::Yes:
                 qDebug() <<  deleteBookFromDB(currentData.getId());
 
-                updateGetALlBooksFromDB();    //we need update after edit
+                getAllBooksFromDB();    //we need update after edit
 
                 guiSettings();
                 // updateSecondaryWindowsForCurrentBook(currentBook);

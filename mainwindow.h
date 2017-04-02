@@ -84,12 +84,10 @@ public:
     QString convertQPixmapToQString(QPixmap pic);
     QPixmap convertQStringToQPixmap(QString pic);
 
-    void setChooseFirstColumn();
-    bool readXml();
+    bool readXml(QString path);
     void editMode();    
-    void showMainInformation();
     QSqlError getQuotes();   
-    void updateDataListMain();
+    void clearDataListMain();
     int getCurrentQuoteCountFrom1();
     int getCurrentBookCountFrom1();
     int getIDFromBookNumber(int bookNumber);
@@ -102,7 +100,7 @@ public:
 
    //DataBase
     bool dbConnect();
-    void getInfFromDb();
+    void getInformationFromDb();
     void fillMainWinFromDataBase(QList <Data> dataList);
     QSqlError deleteQuoteFromDB(int id);
     QSqlError createGenresTable();
@@ -121,11 +119,11 @@ public:
 
     void repaintQuoteView();
     void updateSecondaryWindowsForCurrentBook(Data data); //it's rate-window and pic-windows
-    void updateGetALlBooksFromDB();  //it needs after add new item
+    void getAllBooksFromDB();  //it needs after add new item
     void repaintReviewForCurrentBook(Data currentData);
     ~MainWindow();
 
-    void setGeneralInf();
+    void setGeneralInformationOnMainWindow();
     void showHiddenWidgets();
 
 
@@ -142,17 +140,12 @@ signals:
 public  slots:
     void saveXml();
     void addEditNewItem(Data data);
-    void updateDataList();
-    void testSlot(Data);
     void chooseListIndex(QModelIndex index);
     void editModeStart();
     void addModeStart();
     void editItem(Data data);
     void deleteItem();
 
-    void on_addButton_released();
-    void on_deleteButton_released();
-    void on_updateButton_released();
     void on_changeTab_released(int tab);
 
     void showAddDialog();
