@@ -4,7 +4,6 @@
         <file>books.xml</file>
         <file>star_fill.png</file>
         <file>star_no_fill.png</file>
-        <file>db/books.sqlite</file>
         <file>qml/main.qml</file>
         <file>picButtons/textbold.png</file>
         <file>picButtons/textcenter.png</file>
@@ -17,6 +16,6 @@
         <file>styles/QTDark.css</file>
         <file>netu.jpg</file>
         <file>bookcase.ico</file>
-
+        <file>bookPic.jpg</file>
     </qresource>
 </RCC>
