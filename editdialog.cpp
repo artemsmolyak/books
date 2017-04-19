@@ -524,6 +524,7 @@ void EditDialog::addBookPic()
                                                    tr("Open Image"), "QDir::homePath() /", tr("Image Files (*.png *.jpg *.jpeg  *.bmp)"));
 
 
+     qDebug() << "get pic: "<<fileName;
     pixmapPic.load(fileName);
     QPixmap pixmapTmp(pixmapPic);
 
@@ -538,6 +539,8 @@ void EditDialog::addBookPic()
 
     //save type
     typePic = getFileType(fileName);
+
+    qDebug() << "get type " <<typePic;
 
 }
 

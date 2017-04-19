@@ -311,11 +311,11 @@ void MainWindow::fillMainWinFromDataBase(QList<Data> dataList)
 {
     modelTitle->clear();
 
-    QStringList titleList;
+    //QStringList titleList;
     int i = 0;
     bool flag = true;
     foreach (Data data, dataList) {
-        titleList << data.getBookTitle();
+       // titleList << data.getBookTitle();
 
         QStandardItem *item = new QStandardItem(data.getBookTitle());
         item->setIcon(data.getBookCoverPixmap());
