@@ -1,7 +1,6 @@
 <RCC>
     <qresource prefix="/">
         <file>empty.png</file>
-        <file>books.xml</file>
         <file>star_fill.png</file>
         <file>star_no_fill.png</file>
         <file>qml/main.qml</file>

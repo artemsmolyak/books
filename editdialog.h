@@ -28,6 +28,8 @@ private:
     Mode mode;
     int idData;
 
+
+
     QString typePic;
     QPixmap pixmapPic;
 
@@ -69,7 +71,7 @@ private:
      QAction * actionUnder;
 
 public:
-    explicit EditDialog();
+    explicit EditDialog(QWidget *parent = 0);
     void setGenre(QList<QString> genreList);
     void setStartDate();
     void setFinishDate();

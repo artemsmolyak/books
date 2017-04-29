@@ -53,7 +53,7 @@ void EditDialog::clearAll()
 }
 
 
-EditDialog::EditDialog()
+EditDialog::EditDialog(QWidget * parent):QDialog(parent)
 {
 
       typedef void (QComboBox::*QComboStringSignal)(const QString &);

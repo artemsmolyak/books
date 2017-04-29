@@ -4,7 +4,7 @@
 #include "QPushButton"
 
 
-AddQuotesDialog::AddQuotesDialog()
+AddQuotesDialog::AddQuotesDialog(QWidget * parent): QDialog(parent)
 {
 
     QGridLayout * layout = new  QGridLayout;

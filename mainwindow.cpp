@@ -30,15 +30,13 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    setWindowTitle("bookshelf");
-    setWindowIcon(QIcon("://bookPic.jpg"));
+    setWindowTitle("bookshelf!");
 
-
-    dialogAddEdit = new EditDialog;
-    addQuotesDialog = new AddQuotesDialog;
-    settingsWindow = new SettingsWindow();
-    modelTitle = new QStandardItemModel();
-    modelQuotes = new QStringListModel();
+    dialogAddEdit = new EditDialog(this);
+    addQuotesDialog = new AddQuotesDialog(this);
+    settingsWindow = new SettingsWindow(this);
+    modelTitle = new QStandardItemModel(this);
+    modelQuotes = new QStringListModel(this);
 
     currentTab = reviewTab;
     currentMode = add;
@@ -309,6 +307,13 @@ QStringList MainWindow::QListQuotesToQStringList(QList<Quote> list)
 
 void MainWindow::fillMainWinFromDataBase(QList<Data> dataList)
 {
+
+    for(int i = 0; i < modelTitle->rowCount(); i++)
+    {
+        QStandardItem *item = modelTitle->item(i);
+        delete item;
+    }
+
     modelTitle->clear();
 
     //QStringList titleList;
@@ -326,7 +331,6 @@ void MainWindow::fillMainWinFromDataBase(QList<Data> dataList)
         }
         flag = !flag;
         modelTitle->setItem(i++, 0, item);
-
     }
 }
 

@@ -10,6 +10,7 @@ class Data
 {
    // static int size;
 
+
 private:
     QString bookTitle;
     QString authorsName;
@@ -28,6 +29,7 @@ private:
     int pages;
     int id;
     bool isEmpty;
+
 
 
 public:

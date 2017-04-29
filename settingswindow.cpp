@@ -8,7 +8,7 @@
 #include "QComboBox"
 
 
-SettingsWindow::SettingsWindow()
+SettingsWindow::SettingsWindow(QWidget *parent):QDialog(parent)
 {
 
 

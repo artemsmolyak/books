@@ -8,6 +8,8 @@ QT       += core gui xml sql   network
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
+
+
 TARGET = bookshelf
 TEMPLATE = app
 
@@ -49,10 +51,34 @@ FORMS    += \
 
 
 
-RESOURCES += \
-    resource/rsc.qrc
+RESOURCES += resource/rsc.qrc
+
+
 CONFIG += c++11
 
-DISTFILES +=
+QMAKE_CXXFLAGS += -g
+
+
+DISTFILES += \
+    resource/books.sqlite \
+    resource/books.xml \
+    resource/bookPic.jpg \
+    resource/netu.jpg \
+    resource/picButtons/textbold.png \
+    resource/picButtons/textcenter.png \
+    resource/picButtons/textitalic.png \
+    resource/picButtons/textjustify.png \
+    resource/picButtons/textleft.png \
+    resource/picButtons/textright.png \
+    resource/picButtons/textunder.png \
+    resource/empty.png \
+    resource/star_fill.png \
+    resource/star_no_fill.png \
+    resource/bookcase.ico \
+    resource/bookPic.ico \
+    resource/styles/black.css \
+    resource/styles/QTDark.css \
+    resource/qml/main (copy).qml \
+    resource/qml/main.qml
 
  win32:RC_FILE = myapp.rc

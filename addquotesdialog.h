@@ -13,7 +13,7 @@ private:
      QTextEdit * quoteTextEdit;
 
 public:
-    explicit AddQuotesDialog();
+    explicit AddQuotesDialog(QWidget * parent = 0);
     void viewData(QString quote);
 
 

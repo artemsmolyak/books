@@ -14,7 +14,7 @@ private:
 
 
 public:
-    SettingsWindow();
+    explicit SettingsWindow(QWidget * parent);
 
  signals:
     void saveXmlButtonClick();

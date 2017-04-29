@@ -49,6 +49,9 @@ int main(int argc, char *argv[])
 
     w.showMaximized();
 
+    QIcon icon("/home/artem/Documents/qtProjects/books/resource/bookcase.ico");
+    w.setWindowIcon(icon);
+
     return a.exec();
 }
 
