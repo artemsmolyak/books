@@ -56,12 +56,6 @@ private:
     int picBingNumber;
 
 
-    //text editor
-    //QTextDocument *m_doc;
-//    int m_cursorPosition;
-//    int m_selectionStart;
-//    int m_selectionEnd;
-
      QAction * actionBold;
      QAction * actionCenter;
      QAction * actionItalic ;

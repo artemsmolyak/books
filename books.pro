@@ -32,7 +32,8 @@ SOURCES += main.cpp\
     editdialog.cpp \
     addquotesdialog.cpp \
     quote.cpp \
-    settingswindow.cpp
+    settingswindow.cpp \
+    database.cpp
 
 
 HEADERS  += mainwindow.h \
@@ -42,7 +43,8 @@ HEADERS  += mainwindow.h \
     editdialog.h \
     addquotesdialog.h \
     quote.h \
-    settingswindow.h
+    settingswindow.h \
+    database.h
 
 
 FORMS    += \
@@ -79,6 +81,8 @@ DISTFILES += \
     resource/styles/black.css \
     resource/styles/QTDark.css \
     resource/qml/main (copy).qml \
-    resource/qml/main.qml
+    resource/qml/main.qml \
+    resource/icons/bookcase.ico \
+    resource/icons/bookPic.ico
 
  win32:RC_FILE = myapp.rc

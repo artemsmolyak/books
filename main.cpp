@@ -6,6 +6,8 @@
 
 void myMessageOutput(QtMsgType type, const QMessageLogContext &context, const QString &msg){
 
+    Q_UNUSED(context)
+
     QFile fMessFile(qApp->applicationDirPath() + "/log.txt");
 
     if(!fMessFile.open(QIODevice::Append | QIODevice::Text)){
@@ -45,12 +47,12 @@ int main(int argc, char *argv[])
         qInstallMessageHandler(myMessageOutput);
     }
 
-    MainWindow w;
 
+    MainWindow w;
     w.showMaximized();
 
-    QIcon icon("/home/artem/Documents/qtProjects/books/resource/bookcase.ico");
-    w.setWindowIcon(icon);
+//    QIcon icon("icons/bookcase.ico");
+//    w.setWindowIcon(icon);
 
     return a.exec();
 }

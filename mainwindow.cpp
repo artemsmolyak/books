@@ -962,6 +962,8 @@ void MainWindow::showHiddenWidgets()
 
 QString MainWindow::getGenreById(int id)
 {
+    //need to get it from database
+
     switch(id - 1)  //it's id from 1
     {
     case 0:
@@ -1153,13 +1155,9 @@ void MainWindow::changeStyle(int type)
 
 void MainWindow::searching()
 {
-    qDebug()<<"serching "<< ui->lineEdit->text();
     QString findStr = ui->lineEdit->text();
 
     QList<Data> dataList;
-
-
-     qDebug() << "size " << dataListMain.length();
 
     foreach (Data data, dataListMain) {
     if (data.getBookTitle().toLower().contains(findStr))

@@ -60,9 +60,6 @@ private:
     SettingsWindow * settingsWindow;
 
     QList <Data> dataListMain;
-    //QStringList dataStringList;
-
-    //int currentBook;
     Mode currentMode;
     TabWindow currentTab;
 
@@ -72,36 +69,51 @@ private:
 
     QModelIndex indexEdit;
 
-     //QSqlRelationalTableModel *model;
-
-
-    //
-     //QTextEdit *textEdit;
 
 public:
     explicit MainWindow(QWidget *parent = 0);
+
+
+    //GUI
     void guiSettings();
+    void editMode();
+    void repaintQuoteView();
+    void updateSecondaryWindowsForCurrentBook(Data data); //it's rate-window and pic-windows
+    void clearDataListMain();
+    void repaintReviewForCurrentBook(Data currentData);
+    void setGeneralInformationOnMainWindow();
+    void showHiddenWidgets();
+
+
+    //convert
     QString convertQPixmapToQString(QPixmap pic);
     QPixmap convertQStringToQPixmap(QString pic);
 
+
+    //xml
     bool readXml(QString path);
-    void editMode();    
-    QSqlError getQuotes();   
-    void clearDataListMain();
+
+
+
+    // current
+
     int getCurrentQuoteCountFrom1();
     int getCurrentBookCountFrom1();
     int getIDFromBookNumber(int bookNumber);
     int getIDFromQuoteNumber(int quoteNumber);
     Data findBookByTitle(QString title);
+    QString getGenreById(int id);
 
     //Quote
     QList <Quote> getListQuoteForBook(int idBook);
     QStringList QListQuotesToQStringList(QList <Quote> list);
 
+
    //DataBase
     bool dbConnect();
     void getInformationFromDb();
     void fillMainWinFromDataBase(QList <Data> dataList);
+    QSqlError getQuotes();
     QSqlError deleteQuoteFromDB(int id);
     QSqlError createGenresTable();
     QSqlError createBookMainsTable();
@@ -116,18 +128,16 @@ public:
 
     QSqlError saveItemInDatabase(Data data);
     bool checkDataBeforeSave(Data data);
-
-    void repaintQuoteView();
-    void updateSecondaryWindowsForCurrentBook(Data data); //it's rate-window and pic-windows
     void getAllBooksFromDB();  //it needs after add new item
-    void repaintReviewForCurrentBook(Data currentData);
+
+
+
     ~MainWindow();
 
-    void setGeneralInformationOnMainWindow();
-    void showHiddenWidgets();
 
 
-    QString getGenreById(int id);
+
+
 
 private:
     Ui:: Window *ui;

@@ -207,11 +207,6 @@ EditDialog::EditDialog(QWidget * parent):QDialog(parent)
       layout->addWidget(picButton, 3, 4, 4, 2);
 
 
-
-
-
-
-
       //
 
       layout->addWidget(toolBar, 7,  0, 1, 2  );
